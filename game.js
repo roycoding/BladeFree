@@ -4,6 +4,9 @@ const k = kaboom({
     background: [0, 0, 0], // Set background color to black (RGB: 0, 0, 0)
 });
 
+// Log the Kaboom context to inspect its contents
+console.log("Kaboom context:", k);
+
 // Define game constants
 // const PLAYER_SPEED = 200; // Pixels per second player moves horizontally // Temporarily commented out
 const SCROLL_SPEED = 120; // Pixels per second obstacles move up
@@ -13,7 +16,7 @@ const player = k.add([ // Use k.add
     k.rect(40, 40), // Use k.rect
     k.color(255, 0, 0), // Use k.color
     k.pos(k.width() / 2, k.height() - 60), // Use k.pos, k.width, k.height
-    k.origin('center'), // Use k.origin
+    // k.origin('center'), // Temporarily comment out k.origin to see if it's the specific issue
     k.area(), // Use k.area
     "player" // Tag it as "player"
 ]);
