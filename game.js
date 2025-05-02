@@ -1,5 +1,7 @@
-// Initialize Kaboom
-kaboom();
+// Initialize Kaboom with a black background
+kaboom({
+    background: [0, 0, 0], // Set background color to black (RGB: 0, 0, 0)
+});
 
 // Define game constants
 const PLAYER_SPEED = 200; // Pixels per second player moves horizontally
