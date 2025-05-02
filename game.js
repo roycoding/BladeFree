@@ -3,17 +3,8 @@ kaboom({
     background: [0, 0, 0], // Set background color to black (RGB: 0, 0, 0)
 });
 
-// Add a simple test object to see if rendering works at all
-add([
-    rect(50, 50),         // Shape: 50x50 square
-    pos(center()),        // Position: Center of the screen
-    origin('center'),     // Origin: Center
-    color(0, 255, 0),     // Color: Green
-]);
-
-
 // Define game constants
-const PLAYER_SPEED = 200; // Pixels per second player moves horizontally
+// const PLAYER_SPEED = 200; // Pixels per second player moves horizontally // Temporarily commented out
 const SCROLL_SPEED = 120; // Pixels per second obstacles move up
 
 // Add the player character
@@ -26,31 +17,29 @@ const player = add([
     "player" // Tag it as "player"
 ]);
 
-// Player movement
-onKeyPress("left", () => {
-    player.moveBy(-PLAYER_SPEED, 0);
-});
+// Player movement - Temporarily removed
+// onKeyPress("left", () => {
+//     player.moveBy(-PLAYER_SPEED, 0);
+// });
+//
+// onKeyPress("right", () => {
+//     player.moveBy(PLAYER_SPEED, 0);
+// });
 
-onKeyPress("right", () => {
-    player.moveBy(PLAYER_SPEED, 0);
-});
-
-// Function to spawn an obstacle
-function spawnObstacle() {
-    add([
-        rect(rand(20, 50), rand(20, 50)), // Obstacle shape: random width/height rectangle
-        pos(rand(0, width()), height()), // Position: random X, at the very bottom (Y = canvas height)
-        origin('botleft'), // Origin at bottom-left simplifies positioning at the bottom edge
-        color(0, 0, 255), // Color: Blue (placeholder)
-        area(),           // Give it a collision area
-        move(UP, SCROLL_SPEED), // Make it move upwards automatically at SCROLL_SPEED
-        cleanup(),        // Automatically destroy the object when it goes out of screen view
-        "obstacle"        // Tag it as an "obstacle"
-    ]);
-}
-
-// Start spawning obstacles periodically
-// Spawn a new obstacle every 1.5 seconds (adjust timing as needed)
-loop(1.5, () => {
-    spawnObstacle();
-});
+// Obstacle spawning - Temporarily removed
+// function spawnObstacle() {
+//     add([
+//         rect(rand(20, 50), rand(20, 50)), // Obstacle shape: random width/height rectangle
+//         pos(rand(0, width()), height()), // Position: random X, at the very bottom (Y = canvas height)
+//         origin('botleft'), // Origin at bottom-left simplifies positioning at the bottom edge
+//         color(0, 0, 255), // Color: Blue (placeholder)
+//         area(),           // Give it a collision area
+//         move(UP, SCROLL_SPEED), // Make it move upwards automatically at SCROLL_SPEED
+//         cleanup(),        // Automatically destroy the object when it goes out of screen view
+//         "obstacle"        // Tag it as an "obstacle"
+//     ]);
+// }
+//
+// loop(1.5, () => {
+//     spawnObstacle();
+// });
