@@ -8,7 +8,7 @@ const k = kaboom({
 console.log("Kaboom context:", k);
 
 // Define game constants
-// const PLAYER_SPEED = 200; // Pixels per second player moves horizontally // Temporarily commented out
+const PLAYER_SPEED = 200; // Pixels per second player moves horizontally
 const SCROLL_SPEED = 120; // Pixels per second obstacles move up
 
 // Add the player character
@@ -16,34 +16,36 @@ const player = k.add([ // Use k.add
     k.rect(40, 40), // Use k.rect
     k.color(255, 0, 0), // Use k.color
     k.pos(k.width() / 2, k.height() - 60), // Use k.pos, k.width, k.height
-    // k.origin('center'), // Temporarily comment out k.origin to see if it's the specific issue
+    k.origin('center'), // Use k.origin - Re-enabled
     k.area(), // Use k.area
     "player" // Tag it as "player"
 ]);
 
-// Player movement - Temporarily removed
-// onKeyPress("left", () => {
-//     player.moveBy(-PLAYER_SPEED, 0);
-// });
-//
-// onKeyPress("right", () => {
-//     player.moveBy(PLAYER_SPEED, 0);
-// });
+// Player movement
+k.onKeyPress("left", () => { // Use k.onKeyPress
+    player.moveBy(-PLAYER_SPEED, 0);
+});
 
-// Obstacle spawning - Temporarily removed
-// function spawnObstacle() {
-//     add([
-//         rect(rand(20, 50), rand(20, 50)), // Obstacle shape: random width/height rectangle
-//         pos(rand(0, width()), height()), // Position: random X, at the very bottom (Y = canvas height)
-//         origin('botleft'), // Origin at bottom-left simplifies positioning at the bottom edge
-//         color(0, 0, 255), // Color: Blue (placeholder)
-//         area(),           // Give it a collision area
-//         move(UP, SCROLL_SPEED), // Make it move upwards automatically at SCROLL_SPEED
-//         cleanup(),        // Automatically destroy the object when it goes out of screen view
-//         "obstacle"        // Tag it as an "obstacle"
-//     ]);
-// }
-//
-// loop(1.5, () => {
-//     spawnObstacle();
-// });
+k.onKeyPress("right", () => { // Use k.onKeyPress
+    player.moveBy(PLAYER_SPEED, 0);
+});
+
+// Function to spawn an obstacle
+function spawnObstacle() {
+    k.add([ // Use k.add
+        k.rect(k.rand(20, 50), k.rand(20, 50)), // Use k.rect, k.rand
+        k.pos(k.rand(0, k.width()), k.height()), // Use k.pos, k.rand, k.width, k.height
+        k.origin('botleft'), // Use k.origin
+        k.color(0, 0, 255), // Use k.color
+        k.area(),           // Use k.area
+        k.move(k.UP, SCROLL_SPEED), // Use k.move, k.UP
+        k.cleanup(),        // Use k.cleanup
+        "obstacle"        // Tag it as an "obstacle"
+    ]);
+}
+
+// Start spawning obstacles periodically
+// Spawn a new obstacle every 1.5 seconds (adjust timing as needed)
+k.loop(1.5, () => { // Use k.loop
+    spawnObstacle();
+});
