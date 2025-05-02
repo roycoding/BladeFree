@@ -1,7 +1,11 @@
-// Initialize Kaboom with a black background
-kaboom({
+// Initialize Kaboom, disable global imports, set background
+const k = kaboom({
+    global: false, // Prevent Kaboom functions from polluting the global namespace
     background: [0, 0, 0], // Set background color to black (RGB: 0, 0, 0)
 });
+
+// Destructure necessary functions from the Kaboom context
+const { add, rect, color, pos, origin, area, width, height } = k;
 
 // Define game constants
 // const PLAYER_SPEED = 200; // Pixels per second player moves horizontally // Temporarily commented out
