@@ -4,20 +4,17 @@ const k = kaboom({
     background: [0, 0, 0], // Set background color to black (RGB: 0, 0, 0)
 });
 
-// Destructure necessary functions from the Kaboom context
-const { add, rect, color, pos, origin, area, width, height } = k;
-
 // Define game constants
 // const PLAYER_SPEED = 200; // Pixels per second player moves horizontally // Temporarily commented out
 const SCROLL_SPEED = 120; // Pixels per second obstacles move up
 
 // Add the player character
-const player = add([
-    rect(40, 40), // Player shape: 40x40 rectangle
-    color(255, 0, 0), // Color: Red
-    pos(width() / 2, height() - 60), // Position: Center horizontally, near bottom vertically
-    origin('center'), // Origin at the center for easier positioning and movement
-    area(), // Give it a collision area
+const player = k.add([ // Use k.add
+    k.rect(40, 40), // Use k.rect
+    k.color(255, 0, 0), // Use k.color
+    k.pos(k.width() / 2, k.height() - 60), // Use k.pos, k.width, k.height
+    k.origin('center'), // Use k.origin
+    k.area(), // Use k.area
     "player" // Tag it as "player"
 ]);
 
