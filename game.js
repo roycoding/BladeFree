@@ -3,6 +3,15 @@ kaboom({
     background: [0, 0, 0], // Set background color to black (RGB: 0, 0, 0)
 });
 
+// Add a simple test object to see if rendering works at all
+add([
+    rect(50, 50),         // Shape: 50x50 square
+    pos(center()),        // Position: Center of the screen
+    origin('center'),     // Origin: Center
+    color(0, 255, 0),     // Color: Green
+]);
+
+
 // Define game constants
 const PLAYER_SPEED = 200; // Pixels per second player moves horizontally
 const SCROLL_SPEED = 120; // Pixels per second obstacles move up
