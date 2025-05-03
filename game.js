@@ -55,7 +55,8 @@ class GameplayScene extends Phaser.Scene {
         this.player = null;         // To hold the player sprite
         this.cursors = null;        // To hold cursor key input object
         this.obstacles = null;      // To hold the obstacle group
-        this.obstacleTimer = null;  // Timer event for spawning obstacles
+        this.ramps = null;          // To hold the ramp group
+        this.obstacleTimer = null;  // Timer event for spawning obstacles/ramps
         this.score = 0;             // Player's current score
         this.highScore = 0;         // Highest score achieved
         this.scoreText = null;      // Text object for current score
@@ -77,6 +78,13 @@ class GameplayScene extends Phaser.Scene {
         graphics = this.make.graphics({ fillStyle: { color: 0xff0000 } }); // Red color
         graphics.fillRect(0, 0, 40, 40); // 40x40 square
         graphics.generateTexture('obstacle_placeholder', 40, 40);
+        graphics.destroy();
+
+        // --- Ramp Placeholder ---
+        // Create a simple blue rectangle placeholder for ramps
+        graphics = this.make.graphics({ fillStyle: { color: 0x0000ff } }); // Blue color
+        graphics.fillRect(0, 0, 80, 20); // 80 wide, 20 high rectangle
+        graphics.generateTexture('ramp_placeholder', 80, 20);
         graphics.destroy();
 
         console.log("Assets preloaded");
@@ -105,17 +113,24 @@ class GameplayScene extends Phaser.Scene {
             allowGravity: false // Obstacles manage their own movement
         });
 
-        // Setup a timed event to spawn obstacles
+        // Create a physics group for ramps
+        this.ramps = this.physics.add.group({
+            allowGravity: false
+        });
+
+        // Setup a timed event to spawn obstacles or ramps
         this.obstacleTimer = this.time.addEvent({
-            delay: OBSTACLE_SPAWN_DELAY,
+            delay: OBSTACLE_SPAWN_DELAY, // Reuse same timer, decide type in spawn function
             callback: this.spawnObstacle,
             callbackScope: this,
             loop: true
         });
 
-        // --- Collisions ---
-        // Add collider between player and obstacles
+        // --- Collisions & Overlaps ---
+        // Add collider between player and obstacles (stops movement)
         this.physics.add.collider(this.player, this.obstacles, this.handleCollision, null, this);
+        // Add overlap check between player and ramps (doesn't stop movement)
+        this.physics.add.overlap(this.player, this.ramps, this.handleRampOverlap, null, this);
 
         // --- Score and UI ---
         // Load high score from local storage
@@ -165,27 +180,43 @@ class GameplayScene extends Phaser.Scene {
         console.log("GameplayScene create/reset finished");
     }
 
-    // --- Obstacle Spawning ---
-    spawnObstacle() {
-        // Calculate a random horizontal position for the obstacle
+    // --- Obstacle/Ramp Spawning ---
+    spawnObstacle() { // Renaming later might be good, but keep for now
+        // Decide whether to spawn an obstacle or a ramp (e.g., 20% chance for ramp)
+        const spawnType = (Phaser.Math.Between(1, 100) <= 20) ? 'ramp' : 'obstacle';
+
+        // Calculate a random horizontal position
         // Ensure it's not too close to the edges
         const spawnPadding = 50;
         const spawnX = Phaser.Math.Between(spawnPadding, GAME_WIDTH - spawnPadding);
         const spawnY = -50; // Start above the screen
 
-        // Create the obstacle sprite
-        const obstacle = this.obstacles.create(spawnX, spawnY, 'obstacle_placeholder');
+        let spawnedItem = null;
+        let itemKey = '';
+        let group = null;
 
-        if (obstacle) {
+        if (spawnType === 'ramp') {
+            itemKey = 'ramp_placeholder';
+            group = this.ramps;
+            spawnedItem = group.create(spawnX, spawnY, itemKey);
+            console.log(`Ramp spawned at (${spawnX}, ${spawnY})`);
+        } else { // 'obstacle'
+            itemKey = 'obstacle_placeholder';
+            group = this.obstacles;
+            spawnedItem = group.create(spawnX, spawnY, itemKey);
+            console.log(`Obstacle spawned at (${spawnX}, ${spawnY})`);
+        }
+
+
+        if (spawnedItem) {
             // Set its downward velocity
-            obstacle.setVelocityY(SCROLL_SPEED);
+            spawnedItem.setVelocityY(SCROLL_SPEED);
 
             // Make sure physics body matches sprite size
-            obstacle.body.setSize(obstacle.width, obstacle.height);
+            spawnedItem.body.setSize(spawnedItem.width, spawnedItem.height);
 
-            console.log(`Obstacle spawned at (${spawnX}, ${spawnY})`);
         } else {
-            console.error("Failed to create obstacle sprite.");
+            console.error(`Failed to create ${spawnType} sprite.`);
         }
     }
 
@@ -224,6 +255,24 @@ class GameplayScene extends Phaser.Scene {
         this.scene.start('GameOverScene', { score: finalScore });
     }
 
+    // --- Ramp Overlap Handling ---
+    handleRampOverlap(player, ramp) {
+        console.log("Ramp overlap detected!");
+
+        // Award points for hitting the ramp
+        const rampPoints = 50; // Example points
+        this.score += rampPoints;
+        this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
+        console.log(`+${rampPoints} points for ramp!`);
+
+        // Add jump logic here later (Phase 4/5)
+        // For now, maybe just give a small visual cue or sound placeholder
+        // player.setVelocityY(-200); // Temporary small upward boost? Needs gravity handling.
+
+        // Optional: Destroy the ramp after use? Or let it scroll off.
+        // ramp.destroy(); // If ramps are single-use
+    }
+
 
     update(time, delta) {
         // --- Player Movement ---
@@ -255,14 +304,16 @@ class GameplayScene extends Phaser.Scene {
         // The world/obstacles will move upwards in later phases.
         // The player's Y position remains fixed for now.
 
-        // --- Obstacle Cleanup ---
-        // Check obstacles and destroy them if they go off-screen below
-        this.obstacles.children.each(obstacle => {
-            // Check if obstacle exists and has a body (it might be queued for destruction)
-            if (obstacle && obstacle.body && obstacle.y > GAME_HEIGHT + obstacle.height) {
-                console.log("Destroying off-screen obstacle");
-                this.obstacles.remove(obstacle, true, true); // Remove from group, destroy sprite & body
-            }
+        // --- Obstacle & Ramp Cleanup ---
+        // Check items in both groups and destroy them if they go off-screen below
+        [this.obstacles, this.ramps].forEach(group => {
+            group.children.each(item => {
+                // Check if item exists and has a body
+                if (item && item.body && item.y > GAME_HEIGHT + item.height) {
+                    console.log(`Destroying off-screen ${item.texture.key}`);
+                    group.remove(item, true, true); // Remove from group, destroy sprite & body
+                }
+            });
         });
     }
 }
