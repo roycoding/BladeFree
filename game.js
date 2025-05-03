@@ -58,8 +58,10 @@ class GameplayScene extends Phaser.Scene {
         this.cursors = null;        // To hold cursor key input object
         this.obstacles = null;      // To hold the obstacle group
         this.ramps = null;          // To hold the ramp group
-        this.obstacleTimer = null;  // Timer event for spawning obstacles/ramps
+        this.grindables = null;     // To hold the grindable rails/ledges
+        this.obstacleTimer = null;  // Timer event for spawning obstacles/ramps/grindables
         this.score = 0;             // Player's current score
+        this.isGrinding = false;    // Flag to track if player is currently grinding
         this.highScore = 0;         // Highest score achieved
         this.scoreText = null;      // Text object for current score
         this.highScoreText = null;  // Text object for high score
@@ -87,6 +89,13 @@ class GameplayScene extends Phaser.Scene {
         graphics = this.make.graphics({ fillStyle: { color: 0x0000ff } }); // Blue color
         graphics.fillRect(0, 0, 80, 20); // 80 wide, 20 high rectangle
         graphics.generateTexture('ramp_placeholder', 80, 20);
+        graphics.destroy();
+
+        // --- Grindable Placeholder ---
+        // Create a simple grey rectangle placeholder for rails/ledges
+        graphics = this.make.graphics({ fillStyle: { color: 0xaaaaaa } }); // Grey color
+        graphics.fillRect(0, 0, 250, 15); // 250 wide, 15 high rectangle
+        graphics.generateTexture('grindable_placeholder', 250, 15);
         graphics.destroy();
 
         console.log("Assets preloaded");
@@ -123,7 +132,12 @@ class GameplayScene extends Phaser.Scene {
             allowGravity: false
         });
 
-        // Setup a timed event to spawn obstacles or ramps
+        // Create a physics group for grindables
+        this.grindables = this.physics.add.group({
+            allowGravity: false
+        });
+
+        // Setup a timed event to spawn obstacles, ramps or grindables
         this.obstacleTimer = this.time.addEvent({
             delay: OBSTACLE_SPAWN_DELAY, // Reuse same timer, decide type in spawn function
             callback: this.spawnObstacle,
@@ -134,8 +148,11 @@ class GameplayScene extends Phaser.Scene {
         // --- Collisions & Overlaps ---
         // Add collider between player and obstacles (stops movement)
         this.physics.add.collider(this.player, this.obstacles, this.handleCollision, null, this);
-        // Add overlap check between player and ramps (doesn't stop movement)
+        // Add overlap check between player and ramps (triggers jump)
         this.physics.add.overlap(this.player, this.ramps, this.handleRampOverlap, null, this);
+        // Add overlap check between player and grindables (triggers grind)
+        this.physics.add.overlap(this.player, this.grindables, this.handleGrindOverlap, null, this);
+
 
         // --- Score and UI ---
         // Load high score from local storage
@@ -185,10 +202,17 @@ class GameplayScene extends Phaser.Scene {
         console.log("GameplayScene create/reset finished");
     }
 
-    // --- Obstacle/Ramp Spawning ---
-    spawnObstacle() { // Renaming later might be good, but keep for now
-        // Decide whether to spawn an obstacle or a ramp (e.g., 20% chance for ramp)
-        const spawnType = (Phaser.Math.Between(1, 100) <= 20) ? 'ramp' : 'obstacle';
+    // --- Obstacle/Ramp/Grindable Spawning ---
+    spawnObstacle() {
+        // Decide what to spawn: 60% obstacle, 20% ramp, 20% grindable
+        const rand = Phaser.Math.Between(1, 100);
+        let spawnType = 'obstacle'; // Default
+        if (rand <= 20) {
+            spawnType = 'ramp';
+        } else if (rand <= 40) { // 21-40 range
+            spawnType = 'grindable';
+        }
+        // else: 41-100 remains 'obstacle'
 
         // Calculate a random horizontal position
         // Ensure it's not too close to the edges
@@ -205,6 +229,14 @@ class GameplayScene extends Phaser.Scene {
             group = this.ramps;
             spawnedItem = group.create(spawnX, spawnY, itemKey);
             console.log(`Ramp spawned at (${spawnX}, ${spawnY})`);
+        } else if (spawnType === 'grindable') {
+            itemKey = 'grindable_placeholder';
+            group = this.grindables;
+            // Ensure grindables don't spawn too close to the edge for their length
+            const grindableWidth = 250; // Match placeholder width
+            const safeSpawnX = Phaser.Math.Clamp(spawnX, grindableWidth / 2, GAME_WIDTH - grindableWidth / 2);
+            spawnedItem = group.create(safeSpawnX, spawnY, itemKey);
+            console.log(`Grindable spawned at (${safeSpawnX}, ${spawnY})`);
         } else { // 'obstacle'
             itemKey = 'obstacle_placeholder';
             group = this.obstacles;
@@ -290,6 +322,47 @@ class GameplayScene extends Phaser.Scene {
         // ramp.destroy();
     }
 
+    // --- Grind Overlap Handling ---
+    handleGrindOverlap(player, grindable) {
+        // Called continuously while overlapping
+
+        // If not already grinding, start the grind
+        if (!this.isGrinding) {
+            this.isGrinding = true;
+            console.log("Grind started!");
+
+            // Snap player's vertical position slightly above the rail
+            // Adjust the offset (-5) as needed for visual positioning
+            player.y = grindable.y - (player.height / 2) - 5;
+
+            // Stop vertical movement (important!)
+            player.setVelocityY(0);
+
+            // Optional: Visual cue for grinding (e.g., tint player)
+            // player.setTint(0xffff00); // Yellow tint while grinding
+        }
+
+        // Keep player snapped vertically while grinding
+        // This ensures they stay on the rail even if the overlap check flickers
+        if (this.isGrinding) {
+             player.y = grindable.y - (player.height / 2) - 5;
+             player.setVelocityY(0); // Continuously stop vertical movement
+        }
+
+        // Points are awarded in the update loop based on the isGrinding flag
+    }
+
+    // --- End Grind Logic ---
+    endGrind() {
+        if (this.isGrinding) {
+            this.isGrinding = false;
+            console.log("Grind ended.");
+            // Optional: Reset player tint if it was changed
+            // player.clearTint();
+            // Player will naturally fall due to gravity pull logic in update if they jumped off
+        }
+    }
+
 
     update(time, delta) {
         // --- Player Movement ---
@@ -311,13 +384,35 @@ class GameplayScene extends Phaser.Scene {
         }
 
         // --- Score Increment ---
-        // Increment score based on time (e.g., 10 points per second)
-        // delta is in milliseconds, so divide by 100 to get points per second approx
-        this.score += delta / 100;
+        if (this.isGrinding) {
+            // Award points faster while grinding (e.g., 30 points per second)
+            const grindPointsPerSecond = 30;
+            this.score += (grindPointsPerSecond * delta) / 1000;
+            console.log("Adding grind points..."); // Debug log
+        } else {
+            // Normal score increment based on time (e.g., 10 points per second)
+            const normalPointsPerSecond = 10;
+            this.score += (normalPointsPerSecond * delta) / 1000;
+        }
         this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
 
 
-        // --- Player Vertical Movement (Post-Jump) ---
+        // --- Grind End Check ---
+        // If currently grinding, check if still overlapping a grindable
+        if (this.isGrinding) {
+            let stillTouchingGrindable = false;
+            // Check physics world for overlaps between player and any grindable
+            this.physics.overlap(this.player, this.grindables, () => {
+                stillTouchingGrindable = true;
+            });
+
+            if (!stillTouchingGrindable) {
+                this.endGrind();
+            }
+        }
+
+
+        // --- Player Vertical Movement (Post-Jump / Post-Grind) ---
         // Only apply jump physics if the player has upward velocity or is above the ground line
         if (this.player.body.velocity.y < 0 || this.player.y < PLAYER_START_Y) {
             // Apply a downward acceleration to simulate gravity pulling them back
@@ -343,11 +438,11 @@ class GameplayScene extends Phaser.Scene {
         // The world/obstacles will move upwards in later phases.
         // The player's Y position remains fixed for now, unless jumping.
 
-        // --- Obstacle & Ramp Cleanup ---
-        // Check items in both groups and destroy them if they go off-screen below
-        [this.obstacles, this.ramps].forEach(group => {
+        // --- Obstacle, Ramp & Grindable Cleanup ---
+        // Check items in all groups and destroy them if they go off-screen below
+        [this.obstacles, this.ramps, this.grindables].forEach(group => {
             group.children.each(item => {
-                // Check if item exists and has a body
+                // Check if item exists and has a body (and isn't already marked for destruction)
                 if (item && item.body && item.y > GAME_HEIGHT + item.height) {
                     console.log(`Destroying off-screen ${item.texture.key}`);
                     group.remove(item, true, true); // Remove from group, destroy sprite & body
