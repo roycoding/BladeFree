@@ -18,7 +18,7 @@ class StartScene extends Phaser.Scene {
 
     preload() {
         // Load UI confirmation sound
-        this.load.audio('ui_confirm', 'assets/audio/ui_confirm.wav');
+        this.load.audio('ui_confirm', 'assets/audio/ui_confirm.mp3');
     }
 
     create() {
@@ -114,15 +114,15 @@ class GameplayScene extends Phaser.Scene {
 
         // --- Load Audio Assets ---
         this.load.audio('music', 'assets/audio/music.mp3');
-        this.load.audio('jump', 'assets/audio/jump.wav');
-        this.load.audio('collect', 'assets/audio/collect.wav');
-        this.load.audio('collide', 'assets/audio/collide.wav');
-        this.load.audio('grind_start', 'assets/audio/grind_start.wav');
-        this.load.audio('grind_end', 'assets/audio/grind_end.wav');
+        this.load.audio('jump', 'assets/audio/jump.mp3');
+        this.load.audio('collect', 'assets/audio/collect.mp3');
+        this.load.audio('collide', 'assets/audio/collide.mp3');
+        this.load.audio('grind_start', 'assets/audio/grind_start.mp3');
+        this.load.audio('grind_end', 'assets/audio/grind_end.mp3');
         // Also load UI confirm sound here in case it's needed for in-game UI later
-        this.load.audio('ui_confirm', 'assets/audio/ui_confirm.wav');
+        this.load.audio('ui_confirm', 'assets/audio/ui_confirm.mp3');
         // Load game over sound here so it's ready when transitioning
-        this.load.audio('game_over', 'assets/audio/game_over.wav');
+        this.load.audio('game_over', 'assets/audio/game_over.mp3');
 
 
         console.log("Assets preloaded");
@@ -535,7 +535,7 @@ class GameOverScene extends Phaser.Scene {
 
     preload() {
         // Load UI confirmation sound if needed for restart button
-        this.load.audio('ui_confirm', 'assets/audio/ui_confirm.wav');
+        this.load.audio('ui_confirm', 'assets/audio/ui_confirm.mp3');
         // Game over sound is loaded by GameplayScene before transition
     }
 
