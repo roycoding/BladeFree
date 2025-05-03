@@ -25,18 +25,18 @@
 
 ## Phase 2: Obstacles & Collision
 
-- [ ] **Obstacle Creation:**
-    - [ ] `preload`: Load placeholder obstacle assets (e.g., cone, rock).
-    - [ ] `create`: Create a Phaser Group for obstacles (`this.obstacles`).
-    - [ ] Implement timed event/function to spawn obstacles periodically.
-    - [ ] Spawn obstacles above the top screen edge.
-    - [ ] Add spawned obstacles to the `obstacles` group.
-    - [ ] Set obstacle vertical velocity (moving down screen).
-    - [ ] Implement logic to destroy obstacles when they go off-screen below.
-- [ ] **Collision Detection:**
-    - [ ] `create`: Set up physics collider between player and `obstacles` group.
-    - [ ] Create `handleCollision(player, obstacle)` function.
-    - [ ] `handleCollision`: Implement initial game over logic (e.g., stop player, log message).
+- [x] **Obstacle Creation:**
+    - [x] `preload`: Load placeholder obstacle assets (e.g., cone, rock).
+    - [x] `create`: Create a Phaser Group for obstacles (`this.obstacles`).
+    - [x] Implement timed event/function to spawn obstacles periodically.
+    - [x] Spawn obstacles above the top screen edge.
+    - [x] Add spawned obstacles to the `obstacles` group.
+    - [x] Set obstacle vertical velocity (moving down screen).
+    - [x] Implement logic to destroy obstacles when they go off-screen below.
+- [x] **Collision Detection:**
+    - [x] `create`: Set up physics collider between player and `obstacles` group.
+    - [x] Create `handleCollision(player, obstacle)` function.
+    - [x] `handleCollision`: Implement initial game over logic (e.g., stop player, log message).
 
 ## Phase 3: Scoring & UI
 
