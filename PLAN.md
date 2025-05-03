@@ -40,19 +40,19 @@
 
 ## Phase 3: Scoring & UI
 
-- [ ] **Basic Score:**
-    - [ ] Initialize `this.score = 0` in `create` or `init`.
-    - [ ] `update`: Increment score based on time/distance.
-    - [ ] `preload`: Load font or prepare to use default text.
-    - [ ] `create`: Create `this.scoreText` Phaser Text object.
-    - [ ] `create`: Position score text (e.g., top-right).
-    - [ ] `update`: Update `this.scoreText.setText()`.
-- [ ] **High Score:**
-    - [ ] `create`/`init`: Load high score from `localStorage` (default to 0).
-    - [ ] `create`: Create `this.highScoreText` Phaser Text object.
-    - [ ] `create`: Position high score text.
-    - [ ] `handleCollision`: Compare final score with high score.
-    - [ ] `handleCollision`: If higher, update high score variable and save to `localStorage`.
+- [x] **Basic Score:**
+    - [x] Initialize `this.score = 0` in `create` or `init`.
+    - [x] `update`: Increment score based on time/distance.
+    - [x] `preload`: Load font or prepare to use default text.
+    - [x] `create`: Create `this.scoreText` Phaser Text object.
+    - [x] `create`: Position score text (e.g., top-right).
+    - [x] `update`: Update `this.scoreText.setText()`.
+- [x] **High Score:**
+    - [x] `create`/`init`: Load high score from `localStorage` (default to 0).
+    - [x] `create`: Create `this.highScoreText` Phaser Text object.
+    - [x] `create`: Position high score text.
+    - [x] `handleCollision`: Compare final score with high score.
+    - [x] `handleCollision`: If higher, update high score variable and save to `localStorage`.
 
 ## Phase 4: Tricks, Collectibles & Game States
 
