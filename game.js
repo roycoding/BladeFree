@@ -260,7 +260,18 @@ class GameplayScene extends Phaser.Scene {
 
     // --- Ramp Overlap Handling ---
     handleRampOverlap(player, ramp) {
+        // Check if the ramp has already been hit
+        if (ramp.getData('hit')) {
+            return; // Ignore overlap if already hit
+        }
+
         console.log("Ramp overlap detected!");
+
+        // Mark the ramp as hit
+        ramp.setData('hit', true);
+
+        // Optional: Change appearance to show it's used (e.g., tint grey)
+        ramp.setTint(0x808080); // Grey tint
 
         // Award points for hitting the ramp
         const rampPoints = 50; // Example points
@@ -272,8 +283,8 @@ class GameplayScene extends Phaser.Scene {
         // For now, maybe just give a small visual cue or sound placeholder
         // player.setVelocityY(-200); // Temporary small upward boost? Needs gravity handling.
 
-        // Destroy the ramp after use to prevent multiple overlaps/score additions
-        ramp.destroy();
+        // Don't destroy the ramp, let it scroll off. It's marked as 'hit' now.
+        // ramp.destroy();
     }
 
 
