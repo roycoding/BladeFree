@@ -16,7 +16,7 @@ const player = k.add([ // Use k.add
     k.rect(40, 40), // Use k.rect
     k.color(255, 0, 0), // Use k.color
     k.pos(k.width() / 2, k.height() - 60), // Use k.pos, k.width, k.height
-    k.origin('center'), // Use k.origin - Re-enabled
+    // k.origin('center'), // Temporarily comment out k.origin again
     k.area(), // Use k.area
     "player" // Tag it as "player"
 ]);
