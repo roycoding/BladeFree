@@ -66,6 +66,7 @@ class GameplayScene extends Phaser.Scene {
         this.obstacleTimer = null;  // Timer event for spawning obstacles/ramps/grindables/collectibles
         this.score = 0;             // Player's current score
         this.isGrinding = false;    // Flag to track if player is currently grinding
+        this.isJumping = false;     // Flag to track if player is airborne from a jump
         this.highScore = 0;         // Highest score achieved
         this.scoreText = null;      // Text object for current score
         this.highScoreText = null;  // Text object for high score
@@ -373,6 +374,7 @@ class GameplayScene extends Phaser.Scene {
         // Add jump logic here later (Phase 4/5)
         // Apply upward velocity for the jump
         player.setVelocityY(-JUMP_VELOCITY);
+        this.isJumping = true; // Set jumping flag
         console.log(`Jump initiated! VelocityY: ${player.body.velocity.y}, PlayerY: ${player.y}`);
         this.sound.play('jump'); // Play jump sound
 
@@ -485,25 +487,24 @@ class GameplayScene extends Phaser.Scene {
 
 
         // --- Player Vertical Movement (Post-Jump / Post-Grind) ---
-        // Only apply jump physics if the player is not grinding and has upward velocity or is above the ground line
-        if (!this.isGrinding && (this.player.body.velocity.y < 0 || this.player.y < PLAYER_START_Y)) {
-             // Apply a downward acceleration to simulate gravity pulling them back
-            // console.log(`Applying gravity pull. Before VelY: ${this.player.body.velocity.y}, PlayerY: ${this.player.y}`);
-            this.player.body.velocity.y += JUMP_GRAVITY_PULL * (delta / 1000); // Adjust velocity based on delta time
-            // console.log(`Applying gravity pull. After VelY: ${this.player.body.velocity.y}, PlayerY: ${this.player.y}`);
-
-            // Check if player has landed (gone past the start line while moving down)
-            if (this.player.y >= PLAYER_START_Y && this.player.body.velocity.y > 0) {
-                console.log(`Landed. Snapping player Y from ${this.player.y} to ${PLAYER_START_Y}`);
-                this.player.setVelocityY(0);
-                this.player.setY(PLAYER_START_Y); // Snap back exactly to the start line
-                this.sound.play('land'); // Play landing sound
-            }
+        // Apply gravity pull if player is airborne (jumping or falling after grind) and not grinding
+        if (!this.isGrinding && this.player.y < PLAYER_START_Y) {
+            // Apply a downward acceleration to simulate gravity pulling them back
+            this.player.body.velocity.y += JUMP_GRAVITY_PULL * (delta / 1000);
         }
-        // Ensure player doesn't get stuck slightly below the line if gravity pull overshoots
-        else if (this.player.y > PLAYER_START_Y) {
+
+        // Check for landing after a jump
+        if (this.isJumping && this.player.y >= PLAYER_START_Y) {
+            console.log(`Landed after jump. Snapping player Y from ${this.player.y} to ${PLAYER_START_Y}`);
+            this.player.setVelocityY(0);
+            this.player.setY(PLAYER_START_Y); // Snap back exactly to the start line
+            this.sound.play('land'); // Play landing sound
+            this.isJumping = false; // Reset jumping flag
+        }
+        // Ensure player doesn't get stuck slightly below the line if not jumping/grinding
+        else if (!this.isJumping && !this.isGrinding && this.player.y > PLAYER_START_Y) {
              this.player.setY(PLAYER_START_Y);
-             this.player.setVelocityY(0); // Ensure vertical velocity is zeroed if below line
+             this.player.setVelocityY(0);
         }
 
 
