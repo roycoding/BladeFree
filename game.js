@@ -118,7 +118,7 @@ class GameplayScene extends Phaser.Scene {
         this.load.audio('collect', 'assets/audio/collect.mp3');
         this.load.audio('collide', 'assets/audio/collide.mp3');
         this.load.audio('grind_start', 'assets/audio/grind_start.mp3');
-        this.load.audio('grind_end', 'assets/audio/grind_end.mp3');
+        this.load.audio('land', 'assets/audio/land.mp3'); // Renamed from grind_end
         // Also load UI confirm sound here in case it's needed for in-game UI later
         this.load.audio('ui_confirm', 'assets/audio/ui_confirm.mp3');
         // Load game over sound here so it's ready when transitioning
@@ -428,7 +428,7 @@ class GameplayScene extends Phaser.Scene {
         if (this.isGrinding) {
             this.isGrinding = false;
             console.log("Grind ended.");
-            this.sound.play('grind_end'); // Play grind end sound
+            this.sound.play('land'); // Play landing sound (reused from grind end)
             // Optional: Reset player tint if it was changed
             // player.clearTint();
             // Player will naturally fall due to gravity pull logic in update if they jumped off
@@ -497,6 +497,7 @@ class GameplayScene extends Phaser.Scene {
                 console.log(`Landed. Snapping player Y from ${this.player.y} to ${PLAYER_START_Y}`);
                 this.player.setVelocityY(0);
                 this.player.setY(PLAYER_START_Y); // Snap back exactly to the start line
+                this.sound.play('land'); // Play landing sound
             }
         }
         // Ensure player doesn't get stuck slightly below the line if gravity pull overshoots
