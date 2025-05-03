@@ -16,6 +16,11 @@ class StartScene extends Phaser.Scene {
         super('StartScene');
     }
 
+    preload() {
+        // Load UI confirmation sound
+        this.load.audio('ui_confirm', 'assets/audio/ui_confirm.wav');
+    }
+
     create() {
         // Add title text
         this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 3, 'BladeFree', {
@@ -31,19 +36,17 @@ class StartScene extends Phaser.Scene {
             fontFamily: 'Arial'
         }).setOrigin(0.5);
 
+        // Function to start the game and play sound
+        const startGame = () => {
+            this.sound.play('ui_confirm');
+            this.scene.start('GameplayScene');
+        };
+
         // Listen for any arrow key press
-        this.input.keyboard.once('keydown-LEFT', () => {
-            this.scene.start('GameplayScene');
-        });
-        this.input.keyboard.once('keydown-RIGHT', () => {
-            this.scene.start('GameplayScene');
-        });
-        this.input.keyboard.once('keydown-UP', () => { // Also allow Up/Down if desired
-            this.scene.start('GameplayScene');
-        });
-        this.input.keyboard.once('keydown-DOWN', () => {
-            this.scene.start('GameplayScene');
-        });
+        this.input.keyboard.once('keydown-LEFT', startGame);
+        this.input.keyboard.once('keydown-RIGHT', startGame);
+        this.input.keyboard.once('keydown-UP', startGame); // Also allow Up/Down if desired
+        this.input.keyboard.once('keydown-DOWN', startGame);
 
         console.log("StartScene created");
     }
@@ -108,6 +111,18 @@ class GameplayScene extends Phaser.Scene {
         graphics.fillCircle(collectibleRadius, collectibleRadius, collectibleRadius); // Draw circle
         graphics.generateTexture('collectible_placeholder', collectibleRadius * 2, collectibleRadius * 2); // Texture size is diameter x diameter
         graphics.destroy();
+
+        // --- Load Audio Assets ---
+        this.load.audio('music', 'assets/audio/music.mp3');
+        this.load.audio('jump', 'assets/audio/jump.wav');
+        this.load.audio('collect', 'assets/audio/collect.wav');
+        this.load.audio('collide', 'assets/audio/collide.wav');
+        this.load.audio('grind_start', 'assets/audio/grind_start.wav');
+        this.load.audio('grind_end', 'assets/audio/grind_end.wav');
+        // Also load UI confirm sound here in case it's needed for in-game UI later
+        this.load.audio('ui_confirm', 'assets/audio/ui_confirm.wav');
+        // Load game over sound here so it's ready when transitioning
+        this.load.audio('game_over', 'assets/audio/game_over.wav');
 
 
         console.log("Assets preloaded");
@@ -215,8 +230,17 @@ class GameplayScene extends Phaser.Scene {
             });
         }
 
-        // Clear any existing obstacles if restarting
+        // Clear any existing obstacles, ramps, grindables, collectibles if restarting
         this.obstacles.clear(true, true);
+        this.ramps.clear(true, true);
+        this.grindables.clear(true, true);
+        this.collectibles.clear(true, true);
+
+        // --- Start Background Music ---
+        // Stop previous music if restarting, before starting new one
+        this.sound.stopByKey('music');
+        // Play music looping, adjust volume as needed
+        this.sound.play('music', { loop: true, volume: 0.5 });
 
         console.log("GameplayScene create/reset finished");
     }
@@ -315,6 +339,11 @@ class GameplayScene extends Phaser.Scene {
             this.obstacleTimer.paused = true;
         }
 
+        // Stop music and play collision sound
+        this.sound.stopByKey('music');
+        this.sound.play('collide');
+        this.sound.play('game_over'); // Play game over sound effect
+
         // Transition to GameOverScene, passing the final score
         console.log(`Transitioning to GameOverScene with score: ${finalScore}`);
         this.scene.start('GameOverScene', { score: finalScore });
@@ -345,6 +374,7 @@ class GameplayScene extends Phaser.Scene {
         // Apply upward velocity for the jump
         player.setVelocityY(-JUMP_VELOCITY);
         console.log(`Jump initiated! VelocityY: ${player.body.velocity.y}, PlayerY: ${player.y}`);
+        this.sound.play('jump'); // Play jump sound
 
         // Don't destroy the ramp, let it scroll off. It's marked as 'hit' now.
         // ramp.destroy();
@@ -361,6 +391,7 @@ class GameplayScene extends Phaser.Scene {
         console.log(`+${collectiblePoints} points for collectible!`);
 
         // Add sound/visual effect later (Phase 5)
+        this.sound.play('collect'); // Play collect sound
 
         // Destroy the collectible
         collectible.destroy();
@@ -382,6 +413,7 @@ class GameplayScene extends Phaser.Scene {
 
             // Stop vertical movement (important!)
             player.setVelocityY(0);
+            this.sound.play('grind_start'); // Play grind start sound
 
             // Optional: Visual cue for grinding (e.g., tint player)
             // player.setTint(0xffff00); // Yellow tint while grinding
@@ -396,6 +428,7 @@ class GameplayScene extends Phaser.Scene {
         if (this.isGrinding) {
             this.isGrinding = false;
             console.log("Grind ended.");
+            this.sound.play('grind_end'); // Play grind end sound
             // Optional: Reset player tint if it was changed
             // player.clearTint();
             // Player will naturally fall due to gravity pull logic in update if they jumped off
@@ -500,6 +533,12 @@ class GameOverScene extends Phaser.Scene {
         this.highScore = 0;
     }
 
+    preload() {
+        // Load UI confirmation sound if needed for restart button
+        this.load.audio('ui_confirm', 'assets/audio/ui_confirm.wav');
+        // Game over sound is loaded by GameplayScene before transition
+    }
+
     // Receive data from the scene that started this one (GameplayScene)
     init(data) {
         this.finalScore = data.score || 0; // Get score passed from GameplayScene
@@ -540,6 +579,7 @@ class GameOverScene extends Phaser.Scene {
 
         // Listen for 'R' key press to restart
         this.input.keyboard.once('keydown-R', () => {
+            this.sound.play('ui_confirm'); // Play sound on restart
             this.scene.start('GameplayScene'); // Restart the gameplay
         });
 
