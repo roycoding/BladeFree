@@ -5,27 +5,17 @@ const k = kaboom({
 });
 
 // Log the Kaboom context BEFORE destructuring
-console.log("Kaboom context (before destructuring):", k);
-
-// Destructure component functions and constants we need from the context
-const { rect, color, pos, origin, area, move, cleanup, UP } = k;
-
-// Log the Kaboom context AFTER destructuring (for comparison, though likely same)
-console.log("Kaboom context (after destructuring):", k);
-// Log the destructured 'origin' function specifically
-console.log("Destructured origin:", origin);
-
 // Define game constants
 const PLAYER_SPEED = 200; // Pixels per second player moves horizontally
 const SCROLL_SPEED = 120; // Pixels per second obstacles move up
 
 // Add the player character
-const player = k.add([ // k.add still needs prefix
-    rect(40, 40), // Use destructured component function
-    color(255, 0, 0), // Use destructured component function
-    pos(k.width() / 2, k.height() - 60), // Use destructured pos, but k.width/k.height still need prefix
-    origin('center'), // Use destructured component function
-    area(), // Use destructured component function
+const player = k.add([ // k.add needs prefix
+    rect(40, 40), // Component functions are called directly (no prefix)
+    color(255, 0, 0),
+    pos(k.width() / 2, k.height() - 60), // k.width/k.height need prefix
+    origin('center'),
+    area(),
     "player"
 ]);
 
@@ -40,14 +30,14 @@ k.onKeyPress("right", () => { // Use k.onKeyPress
 
 // Function to spawn an obstacle
 function spawnObstacle() {
-    k.add([ // k.add still needs prefix
-        rect(k.rand(20, 50), k.rand(20, 50)), // Use destructured rect, k.rand needs prefix
-        pos(k.rand(0, k.width()), k.height()), // Use destructured pos, k.rand/width/height need prefix
-        origin('botleft'), // Use destructured component function
-        color(0, 0, 255), // Use destructured component function
-        area(),           // Use destructured component function
-        move(UP, SCROLL_SPEED), // Use destructured move and UP constant
-        cleanup(),        // Use destructured component function
+    k.add([ // k.add needs prefix
+        rect(k.rand(20, 50), k.rand(20, 50)), // Component func called directly, k.rand needs prefix
+        pos(k.rand(0, k.width()), k.height()), // Component func called directly, k.rand/width/height need prefix
+        origin('botleft'),
+        color(0, 0, 255),
+        area(),
+        move(k.UP, SCROLL_SPEED), // Component func called directly, k.UP needs prefix
+        cleanup(),
         "obstacle"
     ]);
 }
