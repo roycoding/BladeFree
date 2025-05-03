@@ -184,13 +184,6 @@ class GameplayScene extends Phaser.Scene {
 
 
         // --- Scrolling (Placeholder) ---
-        if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-PLAYER_SPEED);
-        } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(PLAYER_SPEED);
-        }
-
-        // --- Scrolling (Placeholder) ---
         // The world/obstacles will move upwards in later phases.
         // The player's Y position remains fixed for now.
 
