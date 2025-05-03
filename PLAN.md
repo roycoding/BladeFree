@@ -56,15 +56,15 @@
 
 ## Phase 4: Tricks, Collectibles & Game States
 
-- [ ] **Ramps & Jumps:**
-    - [ ] `preload`: Load ramp asset.
-    - [ ] `create`: Create `ramps` group.
-    - [ ] Implement spawning logic for ramps.
-    - [ ] `create`: Set up physics *overlap* check between player and `ramps`.
-    - [ ] Create `handleRampOverlap(player, ramp)` function.
-    - [ ] `handleRampOverlap`: Trigger jump state (velocity change, animation).
-    - [ ] `handleRampOverlap`: Add points for the jump.
-    - [ ] `handleRampOverlap`: Play jump sound/visual effect.
+- [x] **Ramps & Jumps:**
+    - [x] `preload`: Load ramp asset.
+    - [x] `create`: Create `ramps` group.
+    - [x] Implement spawning logic for ramps.
+    - [x] `create`: Set up physics *overlap* check between player and `ramps`.
+    - [x] Create `handleRampOverlap(player, ramp)` function.
+    - [x] `handleRampOverlap`: Trigger jump state (velocity change, animation). *(Velocity change done)*
+    - [x] `handleRampOverlap`: Add points for the jump.
+    - [ ] `handleRampOverlap`: Play jump sound/visual effect. *(Phase 5)*
 - [ ] **Rails/Ledges & Grinding:**
     - [ ] `preload`: Load rail/ledge asset.
     - [ ] `create`: Create `grindables` group.
