@@ -2,26 +2,26 @@
 
 ## Phase 1: Project Setup & Core Mechanics
 
-- [ ] **Environment Setup:**
-    - [ ] Create `index.html` for the game host.
-    - [ ] Include Phaser 3 library (CDN or local file).
-    - [ ] Create `game.js` for game code.
-    - [ ] Initialize basic Phaser Game instance in `game.js` (set dimensions).
-    - [ ] Set up a local web server (e.g., using `npm install -g http-server` and running `http-server`).
-- [ ] **Create Main Game Scene (`GameplayScene`):**
-    - [ ] Define the `GameplayScene` class extending `Phaser.Scene`.
-    - [ ] Add `GameplayScene` to the Phaser game configuration.
-    - [ ] `preload`: Load placeholder skater asset.
-    - [ ] `create`: Add skater sprite.
-    - [ ] `create`: Enable Arcade Physics on the skater sprite.
-- [ ] **Player Movement:**
-    - [ ] `create`: Set up keyboard listeners (Left/Right arrows).
-    - [ ] `update`: Check key presses.
-    - [ ] `update`: Apply horizontal velocity/position change for movement.
-    - [ ] `update`: Constrain skater movement within screen bounds.
-- [ ] **Basic Scrolling World:**
-    - [ ] Keep player Y position relatively fixed.
-    - [ ] Define a constant scroll speed for obstacles/world elements.
+- [x] **Environment Setup:**
+    - [x] Create `index.html` for the game host.
+    - [x] Include Phaser 3 library (CDN or local file).
+    - [x] Create `game.js` for game code.
+    - [x] Initialize basic Phaser Game instance in `game.js` (set dimensions).
+    - [x] Set up a local web server (e.g., using `npm install -g http-server` and running `http-server`).
+- [x] **Create Main Game Scene (`GameplayScene`):**
+    - [x] Define the `GameplayScene` class extending `Phaser.Scene`.
+    - [x] Add `GameplayScene` to the Phaser game configuration.
+    - [x] `preload`: Load placeholder skater asset.
+    - [x] `create`: Add skater sprite.
+    - [x] `create`: Enable Arcade Physics on the skater sprite.
+- [x] **Player Movement:**
+    - [x] `create`: Set up keyboard listeners (Left/Right arrows).
+    - [x] `update`: Check key presses.
+    - [x] `update`: Apply horizontal velocity/position change for movement.
+    - [x] `update`: Constrain skater movement within screen bounds.
+- [x] **Basic Scrolling World:**
+    - [x] Keep player Y position relatively fixed.
+    - [x] Define a constant scroll speed for obstacles/world elements.
 
 ## Phase 2: Obstacles & Collision
 
