@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>BladeFree</title>
+    <!-- Using Phaser 3 via CDN -->
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #222; /* Dark background */
+        }
+        /* Ensure canvas is centered and scales reasonably on smaller screens */
+        #game-container canvas {
+            max-width: 100%;
+            max-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    <!-- Include our game logic -->
+    <script src="game.js"></script>
+</body>
+</html>
