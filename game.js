@@ -104,6 +104,9 @@ class GameplayScene extends Phaser.Scene {
         // If we add gravity later, it will be for specific jump mechanics.
         this.player.body.allowGravity = false; // Assuming default Arcade Physics gravity is y=300
 
+        // Set player depth to render on top of obstacles/ramps (default depth is 0)
+        this.player.setDepth(1);
+
         // Setup cursor keys for input
         this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -269,8 +272,8 @@ class GameplayScene extends Phaser.Scene {
         // For now, maybe just give a small visual cue or sound placeholder
         // player.setVelocityY(-200); // Temporary small upward boost? Needs gravity handling.
 
-        // Optional: Destroy the ramp after use? Or let it scroll off.
-        // ramp.destroy(); // If ramps are single-use
+        // Destroy the ramp after use to prevent multiple overlaps/score additions
+        ramp.destroy();
     }
 
 
