@@ -284,6 +284,7 @@ class GameplayScene extends Phaser.Scene {
         // Add jump logic here later (Phase 4/5)
         // Apply upward velocity for the jump
         player.setVelocityY(-JUMP_VELOCITY);
+        console.log(`Jump initiated! VelocityY: ${player.body.velocity.y}, PlayerY: ${player.y}`);
 
         // Don't destroy the ramp, let it scroll off. It's marked as 'hit' now.
         // ramp.destroy();
@@ -317,15 +318,25 @@ class GameplayScene extends Phaser.Scene {
 
 
         // --- Player Vertical Movement (Post-Jump) ---
-        // If player is above the normal line and moving up or stationary vertically, pull them down.
-        if (this.player.y < PLAYER_START_Y) {
-             // Apply a downward acceleration to simulate gravity pulling them back
-             this.player.body.velocity.y += JUMP_GRAVITY_PULL * (delta / 1000); // Adjust velocity based on delta time
+        // --- Player Vertical Movement (Post-Jump) ---
+        // Only apply jump physics if the player has upward velocity or is above the ground line
+        if (this.player.body.velocity.y < 0 || this.player.y < PLAYER_START_Y) {
+            // Apply a downward acceleration to simulate gravity pulling them back
+            // console.log(`Applying gravity pull. Before VelY: ${this.player.body.velocity.y}, PlayerY: ${this.player.y}`);
+            this.player.body.velocity.y += JUMP_GRAVITY_PULL * (delta / 1000); // Adjust velocity based on delta time
+            // console.log(`Applying gravity pull. After VelY: ${this.player.body.velocity.y}, PlayerY: ${this.player.y}`);
+
+            // Check if player has landed (gone past the start line while moving down)
+            if (this.player.y >= PLAYER_START_Y && this.player.body.velocity.y > 0) {
+                console.log(`Landed. Snapping player Y from ${this.player.y} to ${PLAYER_START_Y}`);
+                this.player.setVelocityY(0);
+                this.player.setY(PLAYER_START_Y); // Snap back exactly to the start line
+            }
         }
-        // If player has fallen back to or below the start line after a jump, stop their vertical movement.
-        else if (this.player.y >= PLAYER_START_Y && this.player.body.velocity.y > 0) {
-             this.player.setVelocityY(0);
-             this.player.setY(PLAYER_START_Y); // Snap back exactly to the start line
+        // Ensure player doesn't get stuck slightly below the line if gravity pull overshoots
+        else if (this.player.y > PLAYER_START_Y) {
+             this.player.setY(PLAYER_START_Y);
+             this.player.setVelocityY(0); // Ensure vertical velocity is zeroed if below line
         }
 
 
