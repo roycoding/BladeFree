@@ -65,16 +65,16 @@
     - [x] `handleRampOverlap`: Trigger jump state (velocity change, animation). *(Velocity change done)*
     - [x] `handleRampOverlap`: Add points for the jump.
     - [ ] `handleRampOverlap`: Play jump sound/visual effect. *(Phase 5)*
-- [ ] **Rails/Ledges & Grinding:**
-    - [ ] `preload`: Load rail/ledge asset.
-    - [ ] `create`: Create `grindables` group.
-    - [ ] Implement spawning logic for grindables.
-    - [ ] `create`: Set up physics *overlap* check between player and `grindables`.
-    - [ ] Create `handleGrindOverlapStart(player, grindable)` function.
-    - [ ] Create `handleGrindOverlapEnd(player, grindable)` function (or check in `update`).
-    - [ ] `handleGrindOverlapStart`: Enter grinding state (snap position, change animation, sparks).
-    - [ ] `update` (while grinding): Add points based on duration.
-    - [ ] `handleGrindOverlapEnd`: Exit grinding state.
+- [x] **Rails/Ledges & Grinding:**
+    - [x] `preload`: Load rail/ledge asset. *(Placeholder done)*
+    - [x] `create`: Create `grindables` group.
+    - [x] Implement spawning logic for grindables.
+    - [x] `create`: Set up physics *overlap* check between player and `grindables`.
+    - [x] Create `handleGrindOverlapStart(player, grindable)` function. *(Implemented in `handleGrindOverlap`)*
+    - [x] Create `handleGrindOverlapEnd(player, grindable)` function (or check in `update`). *(Implemented as `endGrind` and check in `update`)*
+    - [x] `handleGrindOverlapStart`: Enter grinding state (snap position, change animation, sparks). *(Snap position done)*
+    - [x] `update` (while grinding): Add points based on duration.
+    - [x] `handleGrindOverlapEnd`: Exit grinding state.
 - [ ] **Collectibles:**
     - [ ] `preload`: Load collectible item assets (skates, wheels, etc.).
     - [ ] `create`: Create `collectibles` group.
