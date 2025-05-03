@@ -333,9 +333,10 @@ class GameplayScene extends Phaser.Scene {
             this.isGrinding = true;
             console.log("Grind started!");
 
-            // Snap player's vertical position slightly above the rail
-            // Adjust the offset (-5) as needed for visual positioning
-            player.y = grindable.y - (player.height / 2) - 5;
+            // Snap player's vertical position relative to the TOP of the rail
+            // Place player's bottom edge slightly above the rail's top edge
+            const snapOffset = 5; // Pixels above the rail top
+            player.y = grindable.getBounds().top - (player.displayHeight / 2) - snapOffset; // Use displayHeight for visual size
 
             // Stop vertical movement (important!)
             player.setVelocityY(0);
@@ -347,7 +348,9 @@ class GameplayScene extends Phaser.Scene {
         // Keep player snapped vertically while grinding
         // This ensures they stay on the rail even if the overlap check flickers
         if (this.isGrinding) {
-             player.y = grindable.y - (player.height / 2) - 5;
+             // Continuously snap player's vertical position relative to the TOP of the rail
+             const snapOffset = 5;
+             player.y = grindable.getBounds().top - (player.displayHeight / 2) - snapOffset;
              player.setVelocityY(0); // Continuously stop vertical movement
         }
 
