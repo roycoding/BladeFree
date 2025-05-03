@@ -7,6 +7,47 @@ const PLAYER_SPEED = 350; // Horizontal speed in pixels per second
 const SCROLL_SPEED = 180; // Speed obstacles move down screen (pixels/sec)
 const OBSTACLE_SPAWN_DELAY = 1500; // Milliseconds between obstacle spawns
 
+
+// --- Start Scene ---
+class StartScene extends Phaser.Scene {
+    constructor() {
+        super('StartScene');
+    }
+
+    create() {
+        // Add title text
+        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 3, 'BladeFree', {
+            fontSize: '64px',
+            fill: '#fff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        // Add instruction text
+        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Press any Arrow Key to Start', {
+            fontSize: '24px',
+            fill: '#fff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        // Listen for any arrow key press
+        this.input.keyboard.once('keydown-LEFT', () => {
+            this.scene.start('GameplayScene');
+        });
+        this.input.keyboard.once('keydown-RIGHT', () => {
+            this.scene.start('GameplayScene');
+        });
+        this.input.keyboard.once('keydown-UP', () => { // Also allow Up/Down if desired
+            this.scene.start('GameplayScene');
+        });
+        this.input.keyboard.once('keydown-DOWN', () => {
+            this.scene.start('GameplayScene');
+        });
+
+        console.log("StartScene created");
+    }
+}
+
+
 // --- Gameplay Scene ---
 class GameplayScene extends Phaser.Scene {
     constructor() {
@@ -19,7 +60,7 @@ class GameplayScene extends Phaser.Scene {
         this.highScore = 0;         // Highest score achieved
         this.scoreText = null;      // Text object for current score
         this.highScoreText = null;  // Text object for high score
-        this.isGameOver = false;    // Flag to check if game is over
+        // this.isGameOver = false; // No longer needed, scene state handles this
     }
 
     preload() {
@@ -97,12 +138,31 @@ class GameplayScene extends Phaser.Scene {
             align: 'left'
         }).setOrigin(0, 0); // Anchor to top-left
 
-        // Reset game over flag
-        this.isGameOver = false;
         // Reset score
         this.score = 0;
+        this.scoreText.setText('Score: 0'); // Update display too
 
-        console.log("Player, input, obstacles, collisions, and UI created");
+        // Reset player appearance and state if restarting
+        this.player.setAlpha(1.0); // Make player fully visible
+        this.player.setVelocity(0, 0); // Ensure player starts stationary
+
+        // Ensure obstacle timer is running if restarting
+        if (this.obstacleTimer) {
+            this.obstacleTimer.paused = false;
+        } else {
+             // Setup a timed event to spawn obstacles (if first time)
+            this.obstacleTimer = this.time.addEvent({
+                delay: OBSTACLE_SPAWN_DELAY,
+                callback: this.spawnObstacle,
+                callbackScope: this,
+                loop: true
+            });
+        }
+
+        // Clear any existing obstacles if restarting
+        this.obstacles.clear(true, true);
+
+        console.log("GameplayScene create/reset finished");
     }
 
     // --- Obstacle Spawning ---
@@ -143,9 +203,6 @@ class GameplayScene extends Phaser.Scene {
         // Optional: Stop the colliding obstacle's movement
         // obstacle.setVelocity(0, 0); // Let's keep the obstacle moving for now
 
-        // Set game over flag
-        this.isGameOver = true;
-
         // --- High Score Check ---
         // Compare floor of current score with existing high score
         const finalScore = Math.floor(this.score);
@@ -157,7 +214,14 @@ class GameplayScene extends Phaser.Scene {
             console.log(`New high score: ${this.highScore}`);
         }
 
-        // In later phases, this will trigger the game over scene transition
+        // Stop the obstacle timer
+        if (this.obstacleTimer) {
+            this.obstacleTimer.paused = true;
+        }
+
+        // Transition to GameOverScene, passing the final score
+        console.log(`Transitioning to GameOverScene with score: ${finalScore}`);
+        this.scene.start('GameOverScene', { score: finalScore });
     }
 
 
@@ -167,27 +231,28 @@ class GameplayScene extends Phaser.Scene {
             return; // Exit if player or cursors aren't ready
         }
 
-        // Only allow movement and score increase if the game is not over
-        if (!this.isGameOver) {
-            // --- Player Horizontal Movement ---
-            if (this.cursors.left.isDown) {
-                this.player.setVelocityX(-PLAYER_SPEED);
-            } else if (this.cursors.right.isDown) {
-                this.player.setVelocityX(PLAYER_SPEED);
-            } else {
-                // No horizontal movement key pressed
-                this.player.setVelocityX(0);
-            }
+        // Game logic (movement, score) now runs continuously while this scene is active.
+        // Collision handling transitions away from this scene.
 
-            // --- Score Increment ---
-            // Increment score based on time (e.g., 10 points per second)
-            // delta is in milliseconds, so divide by 100 to get points per second approx
-            this.score += delta / 100;
-            this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
+        // --- Player Horizontal Movement ---
+        if (this.cursors.left.isDown) {
+            this.player.setVelocityX(-PLAYER_SPEED);
+        } else if (this.cursors.right.isDown) {
+            this.player.setVelocityX(PLAYER_SPEED);
+        } else {
+            // No horizontal movement key pressed
+            this.player.setVelocityX(0);
         }
+
+        // --- Score Increment ---
+        // Increment score based on time (e.g., 10 points per second)
+        // delta is in milliseconds, so divide by 100 to get points per second approx
+        this.score += delta / 100;
+        this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
 
 
         // --- Scrolling (Placeholder) ---
+                this.player.setVelocityX(PLAYER_SPEED);
         // The world/obstacles will move upwards in later phases.
         // The player's Y position remains fixed for now.
 
@@ -203,6 +268,64 @@ class GameplayScene extends Phaser.Scene {
     }
 }
 
+
+// --- Game Over Scene ---
+class GameOverScene extends Phaser.Scene {
+    constructor() {
+        super('GameOverScene');
+        this.finalScore = 0;
+        this.highScore = 0;
+    }
+
+    // Receive data from the scene that started this one (GameplayScene)
+    init(data) {
+        this.finalScore = data.score || 0; // Get score passed from GameplayScene
+        console.log(`GameOverScene received score: ${this.finalScore}`);
+    }
+
+    create() {
+        // Load high score
+        this.highScore = localStorage.getItem('bladeFreeHighScore') || 0;
+
+        // Game Over Text
+        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 3, 'GAME OVER', {
+            fontSize: '64px',
+            fill: '#ff0000', // Red for game over
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        // Final Score Text
+        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, `Your Score: ${this.finalScore}`, {
+            fontSize: '32px',
+            fill: '#fff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        // High Score Text
+        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, `High Score: ${this.highScore}`, {
+            fontSize: '32px',
+            fill: '#fff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        // Restart Text
+        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT * 0.75, 'Press R to Restart', {
+            fontSize: '24px',
+            fill: '#fff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        // Listen for 'R' key press to restart
+        this.input.keyboard.once('keydown-R', () => {
+            this.scene.start('GameplayScene'); // Restart the gameplay
+        });
+
+        console.log("GameOverScene created");
+        // Add funny animation/text later (Phase 4/5)
+    }
+}
+
+
 // --- Phaser Game Configuration ---
 const config = {
     type: Phaser.AUTO, // Automatically choose WebGL or Canvas
@@ -216,7 +339,8 @@ const config = {
             // debug: true // Set to true to see physics bodies and velocity vectors
         }
     },
-    scene: [GameplayScene] // Add our scene to the game
+    // Define scenes and the order they load. First scene is the starting one.
+    scene: [StartScene, GameplayScene, GameOverScene]
 };
 
 // --- Initialize Phaser Game ---
