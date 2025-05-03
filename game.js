@@ -4,6 +4,9 @@ const k = kaboom({
     background: [0, 0, 0], // Set background color to black (RGB: 0, 0, 0)
 });
 
+// Destructure component functions and constants we need from the context
+const { rect, color, pos, origin, area, move, cleanup, UP } = k;
+
 // Log the Kaboom context to inspect its contents
 console.log("Kaboom context:", k);
 
@@ -12,12 +15,12 @@ const PLAYER_SPEED = 200; // Pixels per second player moves horizontally
 const SCROLL_SPEED = 120; // Pixels per second obstacles move up
 
 // Add the player character
-const player = k.add([
-    k.rect(40, 40), // Use k.rect
-    k.color(255, 0, 0), // Use k.color
-    k.pos(k.width() / 2, k.height() - 60), // Use k.pos, k.width, k.height
-    k.origin('center'), // Use k.origin
-    k.area(), // Use k.area
+const player = k.add([ // k.add still needs prefix
+    rect(40, 40), // Use destructured component function
+    color(255, 0, 0), // Use destructured component function
+    pos(k.width() / 2, k.height() - 60), // Use destructured pos, but k.width/k.height still need prefix
+    origin('center'), // Use destructured component function
+    area(), // Use destructured component function
     "player"
 ]);
 
@@ -32,14 +35,14 @@ k.onKeyPress("right", () => { // Use k.onKeyPress
 
 // Function to spawn an obstacle
 function spawnObstacle() {
-    k.add([
-        k.rect(k.rand(20, 50), k.rand(20, 50)), // Use k.rect, k.rand
-        k.pos(k.rand(0, k.width()), k.height()), // Use k.pos, k.rand, k.width, k.height
-        k.origin('botleft'), // Use k.origin
-        k.color(0, 0, 255), // Use k.color
-        k.area(),           // Use k.area
-        k.move(k.UP, SCROLL_SPEED), // Use k.move, k.UP is a constant on k
-        k.cleanup(),        // Use k.cleanup
+    k.add([ // k.add still needs prefix
+        rect(k.rand(20, 50), k.rand(20, 50)), // Use destructured rect, k.rand needs prefix
+        pos(k.rand(0, k.width()), k.height()), // Use destructured pos, k.rand/width/height need prefix
+        origin('botleft'), // Use destructured component function
+        color(0, 0, 255), // Use destructured component function
+        area(),           // Use destructured component function
+        move(UP, SCROLL_SPEED), // Use destructured move and UP constant
+        cleanup(),        // Use destructured component function
         "obstacle"
     ]);
 }
