@@ -318,7 +318,6 @@ class GameplayScene extends Phaser.Scene {
 
 
         // --- Player Vertical Movement (Post-Jump) ---
-        // --- Player Vertical Movement (Post-Jump) ---
         // Only apply jump physics if the player has upward velocity or is above the ground line
         if (this.player.body.velocity.y < 0 || this.player.y < PLAYER_START_Y) {
             // Apply a downward acceleration to simulate gravity pulling them back
