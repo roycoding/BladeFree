@@ -15,6 +15,11 @@ class GameplayScene extends Phaser.Scene {
         this.cursors = null;        // To hold cursor key input object
         this.obstacles = null;      // To hold the obstacle group
         this.obstacleTimer = null;  // Timer event for spawning obstacles
+        this.score = 0;             // Player's current score
+        this.highScore = 0;         // Highest score achieved
+        this.scoreText = null;      // Text object for current score
+        this.highScoreText = null;  // Text object for high score
+        this.isGameOver = false;    // Flag to check if game is over
     }
 
     preload() {
@@ -71,7 +76,32 @@ class GameplayScene extends Phaser.Scene {
         // Add collider between player and obstacles
         this.physics.add.collider(this.player, this.obstacles, this.handleCollision, null, this);
 
-        console.log("Player, input, obstacles, and collisions created");
+        // --- Score and UI ---
+        // Load high score from local storage
+        this.highScore = localStorage.getItem('bladeFreeHighScore') || 0;
+
+        // Score Text (Top Right)
+        this.scoreText = this.add.text(GAME_WIDTH - 20, 20, 'Score: 0', {
+            fontSize: '24px',
+            fill: '#fff',
+            fontFamily: 'Arial', // Basic fallback font
+            align: 'right'
+        }).setOrigin(1, 0); // Anchor to top-right
+
+        // High Score Text (Top Left)
+        this.highScoreText = this.add.text(20, 20, `High Score: ${this.highScore}`, {
+            fontSize: '24px',
+            fill: '#fff',
+            fontFamily: 'Arial',
+            align: 'left'
+        }).setOrigin(0, 0); // Anchor to top-left
+
+        // Reset game over flag
+        this.isGameOver = false;
+        // Reset score
+        this.score = 0;
+
+        console.log("Player, input, obstacles, collisions, and UI created");
     }
 
     // --- Obstacle Spawning ---
@@ -110,9 +140,20 @@ class GameplayScene extends Phaser.Scene {
         player.setVelocity(0, 0);
 
         // Optional: Stop the colliding obstacle's movement
-        obstacle.setVelocity(0, 0);
+        // obstacle.setVelocity(0, 0); // Let's keep the obstacle moving for now
 
-        // In later phases, this will trigger the game over sequence
+        // Set game over flag
+        this.isGameOver = true;
+
+        // --- High Score Check ---
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem('bladeFreeHighScore', this.highScore);
+            this.highScoreText.setText(`High Score: ${this.highScore}`);
+            console.log(`New high score: ${this.highScore}`);
+        }
+
+        // In later phases, this will trigger the game over scene transition
     }
 
 
@@ -122,10 +163,27 @@ class GameplayScene extends Phaser.Scene {
             return; // Exit if player or cursors aren't ready
         }
 
-        // Stop horizontal movement initially each frame
-        this.player.setVelocityX(0);
+        // Only allow movement and score increase if the game is not over
+        if (!this.isGameOver) {
+            // Stop horizontal movement initially each frame
+            this.player.setVelocityX(0);
 
-        // Check for left/right arrow key presses
+            // Check for left/right arrow key presses
+            if (this.cursors.left.isDown) {
+                this.player.setVelocityX(-PLAYER_SPEED);
+            } else if (this.cursors.right.isDown) {
+                this.player.setVelocityX(PLAYER_SPEED);
+            }
+
+            // --- Score Increment ---
+            // Increment score based on time (e.g., 10 points per second)
+            // delta is in milliseconds, so divide by 100 to get points per second approx
+            this.score += delta / 100;
+            this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
+        }
+
+
+        // --- Scrolling (Placeholder) ---
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-PLAYER_SPEED);
         } else if (this.cursors.right.isDown) {
