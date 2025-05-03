@@ -75,16 +75,16 @@
     - [x] `handleGrindOverlapStart`: Enter grinding state (snap position, change animation, sparks). *(Snap position done)*
     - [x] `update` (while grinding): Add points based on duration.
     - [x] `handleGrindOverlapEnd`: Exit grinding state.
-- [ ] **Collectibles:**
-    - [ ] `preload`: Load collectible item assets (skates, wheels, etc.).
-    - [ ] `create`: Create `collectibles` group.
-    - [ ] Implement spawning logic for collectibles.
-    - [ ] `create`: Set up physics *overlap* check between player and `collectibles`.
-    - [ ] Create `handleCollect(player, item)` function.
-    - [ ] `handleCollect`: Add points to score.
-    - [ ] `handleCollect`: Play collection sound effect.
-    - [ ] `handleCollect`: Show temporary points pop-up text.
-    - [ ] `handleCollect`: Destroy the collected item sprite (`item.destroy()`).
+- [x] **Collectibles:**
+    - [x] `preload`: Load collectible item assets (skates, wheels, etc.). *(Placeholder done)*
+    - [x] `create`: Create `collectibles` group.
+    - [x] Implement spawning logic for collectibles.
+    - [x] `create`: Set up physics *overlap* check between player and `collectibles`.
+    - [x] Create `handleCollect(player, item)` function.
+    - [x] `handleCollect`: Add points to score.
+    - [ ] `handleCollect`: Play collection sound effect. *(Phase 5)*
+    - [ ] `handleCollect`: Show temporary points pop-up text. *(Phase 5)*
+    - [x] `handleCollect`: Destroy the collected item sprite (`item.destroy()`).
 - [x] **Game State Management:**
     - [x] Create `StartScene` class.
     - [x] Create `GameOverScene` class.
