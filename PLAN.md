@@ -107,11 +107,11 @@
 
 ## Phase 5: Audio & Polish
 
-- [ ] **Sound Integration:**
-    - [ ] `preload`: Load background music file(s).
-    - [ ] `preload`: Load sound effect files (jump, grind, collect, collide, UI click).
-    - [ ] `create` (`GameplayScene`): Play background music (`loop: true`).
-    - [ ] Trigger sound effects on corresponding actions (`this.sound.play(...)`).
+- [x] **Sound Integration:**
+    - [x] `preload`: Load background music file(s).
+    - [x] `preload`: Load sound effect files (jump, grind, collect, collide, UI click).
+    - [x] `create` (`GameplayScene`): Play background music (`loop: true`).
+    - [x] Trigger sound effects on corresponding actions (`this.sound.play(...)`).
 - [ ] **Graphics & Animation:**
     - [ ] Replace placeholders with final retro-style graphics (inspired by `roy_skate1.png`).
     - [ ] Create sprite sheets for player animations (skating, jumping, grinding, falling).
