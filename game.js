@@ -89,7 +89,8 @@ class GameplayScene extends Phaser.Scene {
         }).setOrigin(1, 0); // Anchor to top-right
 
         // High Score Text (Top Left)
-        this.highScoreText = this.add.text(20, 20, `High Score: ${this.highScore}`, {
+        // Ensure we display the loaded high score as an integer
+        this.highScoreText = this.add.text(20, 20, `High Score: ${Math.floor(this.highScore)}`, {
             fontSize: '24px',
             fill: '#fff',
             fontFamily: 'Arial',
@@ -146,9 +147,12 @@ class GameplayScene extends Phaser.Scene {
         this.isGameOver = true;
 
         // --- High Score Check ---
-        if (this.score > this.highScore) {
-            this.highScore = this.score;
+        // Compare floor of current score with existing high score
+        const finalScore = Math.floor(this.score);
+        if (finalScore > this.highScore) {
+            this.highScore = finalScore; // Save the floored score
             localStorage.setItem('bladeFreeHighScore', this.highScore);
+            // Update display with the new integer high score
             this.highScoreText.setText(`High Score: ${this.highScore}`);
             console.log(`New high score: ${this.highScore}`);
         }
@@ -165,14 +169,14 @@ class GameplayScene extends Phaser.Scene {
 
         // Only allow movement and score increase if the game is not over
         if (!this.isGameOver) {
-            // Stop horizontal movement initially each frame
-            this.player.setVelocityX(0);
-
-            // Check for left/right arrow key presses
+            // --- Player Horizontal Movement ---
             if (this.cursors.left.isDown) {
                 this.player.setVelocityX(-PLAYER_SPEED);
             } else if (this.cursors.right.isDown) {
                 this.player.setVelocityX(PLAYER_SPEED);
+            } else {
+                // No horizontal movement key pressed
+                this.player.setVelocityX(0);
             }
 
             // --- Score Increment ---
