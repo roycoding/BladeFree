@@ -4,11 +4,16 @@ const k = kaboom({
     background: [0, 0, 0], // Set background color to black (RGB: 0, 0, 0)
 });
 
+// Log the Kaboom context BEFORE destructuring
+console.log("Kaboom context (before destructuring):", k);
+
 // Destructure component functions and constants we need from the context
 const { rect, color, pos, origin, area, move, cleanup, UP } = k;
 
-// Log the Kaboom context to inspect its contents
-console.log("Kaboom context:", k);
+// Log the Kaboom context AFTER destructuring (for comparison, though likely same)
+console.log("Kaboom context (after destructuring):", k);
+// Log the destructured 'origin' function specifically
+console.log("Destructured origin:", origin);
 
 // Define game constants
 const PLAYER_SPEED = 200; // Pixels per second player moves horizontally
