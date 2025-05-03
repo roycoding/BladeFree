@@ -85,24 +85,24 @@
     - [ ] `handleCollect`: Play collection sound effect.
     - [ ] `handleCollect`: Show temporary points pop-up text.
     - [ ] `handleCollect`: Destroy the collected item sprite (`item.destroy()`).
-- [ ] **Game State Management:**
-    - [ ] Create `StartScene` class.
-    - [ ] Create `GameOverScene` class.
-    - [ ] Add scenes to Phaser game config.
-    - [ ] **`StartScene`:**
-        - [ ] Display "Press an arrow key to BladeFree" text.
-        - [ ] Listen for keyboard input (any arrow key).
-        - [ ] On input, transition to `GameplayScene` (`this.scene.start('GameplayScene')`).
-    - [ ] **`GameplayScene`:**
-        - [ ] `handleCollision`: Transition to `GameOverScene`, passing score (`this.scene.start('GameOverScene', { score: this.score })`).
-    - [ ] **`GameOverScene`:**
-        - [ ] `init(data)`: Receive score (`this.finalScore = data.score`).
-        - [ ] `create`: Display final score.
-        - [ ] `create`: Display high scores (load from `localStorage`).
+- [x] **Game State Management:**
+    - [x] Create `StartScene` class.
+    - [x] Create `GameOverScene` class.
+    - [x] Add scenes to Phaser game config.
+    - [x] **`StartScene`:**
+        - [x] Display "Press an arrow key to BladeFree" text.
+        - [x] Listen for keyboard input (any arrow key).
+        - [x] On input, transition to `GameplayScene` (`this.scene.start('GameplayScene')`).
+    - [x] **`GameplayScene`:**
+        - [x] `handleCollision`: Transition to `GameOverScene`, passing score (`this.scene.start('GameOverScene', { score: this.score })`).
+    - [x] **`GameOverScene`:**
+        - [x] `init(data)`: Receive score (`this.finalScore = data.score`).
+        - [x] `create`: Display final score.
+        - [x] `create`: Display high scores (load from `localStorage`).
         - [ ] `create`: Implement/play funny game over animation (dog drag).
-        - [ ] `create`: Display "Restart?" / "Quit?" options.
-        - [ ] `create`: Add input listeners for restart/quit.
-        - [ ] On Restart: `this.scene.start('GameplayScene')`.
+        - [x] `create`: Display "Restart?" / "Quit?" options.
+        - [x] `create`: Add input listeners for restart/quit.
+        - [x] On Restart: `this.scene.start('GameplayScene')`.
         - [ ] On Quit: Display "Later Blader 🤙" text.
 
 ## Phase 5: Audio & Polish
