@@ -4,6 +4,8 @@ const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
 const PLAYER_START_Y = GAME_HEIGHT - 100; // Start player near the bottom
 const PLAYER_SPEED = 350; // Horizontal speed in pixels per second
+const JUMP_VELOCITY = 350; // Vertical speed when jumping (pixels/sec)
+const JUMP_GRAVITY_PULL = 500; // Simulated gravity pulling player down after jump (pixels/sec^2)
 const SCROLL_SPEED = 180; // Speed obstacles move down screen (pixels/sec)
 const OBSTACLE_SPAWN_DELAY = 1500; // Milliseconds between obstacle spawns
 
@@ -280,8 +282,8 @@ class GameplayScene extends Phaser.Scene {
         console.log(`+${rampPoints} points for ramp!`);
 
         // Add jump logic here later (Phase 4/5)
-        // For now, maybe just give a small visual cue or sound placeholder
-        // player.setVelocityY(-200); // Temporary small upward boost? Needs gravity handling.
+        // Apply upward velocity for the jump
+        player.setVelocityY(-JUMP_VELOCITY);
 
         // Don't destroy the ramp, let it scroll off. It's marked as 'hit' now.
         // ramp.destroy();
@@ -314,9 +316,22 @@ class GameplayScene extends Phaser.Scene {
         this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
 
 
+        // --- Player Vertical Movement (Post-Jump) ---
+        // If player is above the normal line and moving up or stationary vertically, pull them down.
+        if (this.player.y < PLAYER_START_Y) {
+             // Apply a downward acceleration to simulate gravity pulling them back
+             this.player.body.velocity.y += JUMP_GRAVITY_PULL * (delta / 1000); // Adjust velocity based on delta time
+        }
+        // If player has fallen back to or below the start line after a jump, stop their vertical movement.
+        else if (this.player.y >= PLAYER_START_Y && this.player.body.velocity.y > 0) {
+             this.player.setVelocityY(0);
+             this.player.setY(PLAYER_START_Y); // Snap back exactly to the start line
+        }
+
+
         // --- Scrolling (Placeholder) ---
         // The world/obstacles will move upwards in later phases.
-        // The player's Y position remains fixed for now.
+        // The player's Y position remains fixed for now, unless jumping.
 
         // --- Obstacle & Ramp Cleanup ---
         // Check items in both groups and destroy them if they go off-screen below
