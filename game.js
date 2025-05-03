@@ -12,13 +12,13 @@ const PLAYER_SPEED = 200; // Pixels per second player moves horizontally
 const SCROLL_SPEED = 120; // Pixels per second obstacles move up
 
 // Add the player character
-const player = k.add([ // Use k.add
-    k.rect(40, 40), // Use k.rect
-    k.color(255, 0, 0), // Use k.color
-    k.pos(k.width() / 2, k.height() - 60), // Use k.pos, k.width, k.height
-    // k.origin('center'), // Temporarily comment out k.origin again
-    k.area(), // Use k.area
-    "player" // Tag it as "player"
+const player = k.add([
+    rect(40, 40), // Component functions used directly
+    color(255, 0, 0),
+    pos(k.width() / 2, k.height() - 60), // k.width/k.height are fine here
+    origin('center'), // Re-enable origin, without k. prefix
+    area(),
+    "player"
 ]);
 
 // Player movement
@@ -32,15 +32,15 @@ k.onKeyPress("right", () => { // Use k.onKeyPress
 
 // Function to spawn an obstacle
 function spawnObstacle() {
-    k.add([ // Use k.add
-        k.rect(k.rand(20, 50), k.rand(20, 50)), // Use k.rect, k.rand
-        k.pos(k.rand(0, k.width()), k.height()), // Use k.pos, k.rand, k.width, k.height
-        // k.origin('botleft'), // Temporarily remove origin from obstacles
-        k.color(0, 0, 255), // Use k.color
-        k.area(),           // Use k.area
-        k.move(k.UP, SCROLL_SPEED), // Use k.move, k.UP
-        k.cleanup(),        // Use k.cleanup
-        "obstacle"        // Tag it as an "obstacle"
+    k.add([
+        rect(k.rand(20, 50), k.rand(20, 50)), // k.rand is fine here
+        pos(k.rand(0, k.width()), k.height()), // k.rand, k.width, k.height are fine
+        origin('botleft'), // Re-enable origin, without k. prefix
+        color(0, 0, 255),
+        area(),
+        move(k.UP, SCROLL_SPEED), // k.UP is a constant on k
+        cleanup(),
+        "obstacle"
     ]);
 }
 
