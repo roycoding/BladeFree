@@ -494,8 +494,9 @@ class GameplayScene extends Phaser.Scene {
         }
 
         // Check for landing after a jump
-        if (this.isJumping && this.player.y >= PLAYER_START_Y) {
-            console.log(`Landed after jump. Snapping player Y from ${this.player.y} to ${PLAYER_START_Y}`);
+        // Condition: Player was jumping AND is now at/below ground level AND moving downwards (or stopped at ground)
+        if (this.isJumping && this.player.y >= PLAYER_START_Y && this.player.body.velocity.y >= 0) {
+            console.log(`Landed after jump. Snapping player Y from ${this.player.y} to ${PLAYER_START_Y}, VelocityY: ${this.player.body.velocity.y}`);
             this.player.setVelocityY(0);
             this.player.setY(PLAYER_START_Y); // Snap back exactly to the start line
             this.sound.play('land'); // Play landing sound
