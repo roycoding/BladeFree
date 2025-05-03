@@ -92,10 +92,12 @@ class GameplayScene extends Phaser.Scene {
         graphics.destroy();
 
         // --- Grindable Placeholder ---
-        // Create a simple grey rectangle placeholder for rails/ledges
+        // Create a simple grey rectangle placeholder for rails/ledges (vertically oriented)
         graphics = this.make.graphics({ fillStyle: { color: 0xaaaaaa } }); // Grey color
-        graphics.fillRect(0, 0, 250, 15); // 250 wide, 15 high rectangle
-        graphics.generateTexture('grindable_placeholder', 250, 15);
+        const grindableWidth = 15; // Thin rail
+        const grindableHeight = 250; // Long rail
+        graphics.fillRect(0, 0, grindableWidth, grindableHeight);
+        graphics.generateTexture('grindable_placeholder', grindableWidth, grindableHeight);
         graphics.destroy();
 
         console.log("Assets preloaded");
@@ -232,9 +234,9 @@ class GameplayScene extends Phaser.Scene {
         } else if (spawnType === 'grindable') {
             itemKey = 'grindable_placeholder';
             group = this.grindables;
-            // Ensure grindables don't spawn too close to the edge for their length
-            const grindableWidth = 250; // Match placeholder width
-            const safeSpawnX = Phaser.Math.Clamp(spawnX, grindableWidth / 2, GAME_WIDTH - grindableWidth / 2);
+            // Ensure grindables don't spawn too close to the edge
+            const grindableWidth = 15; // Match new placeholder width
+            const safeSpawnX = Phaser.Math.Clamp(spawnX, grindableWidth / 2 + spawnPadding, GAME_WIDTH - grindableWidth / 2 - spawnPadding); // Add padding
             spawnedItem = group.create(safeSpawnX, spawnY, itemKey);
             console.log(`Grindable spawned at (${safeSpawnX}, ${spawnY})`);
         } else { // 'obstacle'
