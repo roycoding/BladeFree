@@ -35,7 +35,7 @@ function spawnObstacle() {
     k.add([ // Use k.add
         k.rect(k.rand(20, 50), k.rand(20, 50)), // Use k.rect, k.rand
         k.pos(k.rand(0, k.width()), k.height()), // Use k.pos, k.rand, k.width, k.height
-        k.origin('botleft'), // Use k.origin
+        // k.origin('botleft'), // Temporarily remove origin from obstacles
         k.color(0, 0, 255), // Use k.color
         k.area(),           // Use k.area
         k.move(k.UP, SCROLL_SPEED), // Use k.move, k.UP
