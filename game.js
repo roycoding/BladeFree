@@ -59,7 +59,8 @@ class GameplayScene extends Phaser.Scene {
         this.obstacles = null;      // To hold the obstacle group
         this.ramps = null;          // To hold the ramp group
         this.grindables = null;     // To hold the grindable rails/ledges
-        this.obstacleTimer = null;  // Timer event for spawning obstacles/ramps/grindables
+        this.collectibles = null;   // To hold the collectible items
+        this.obstacleTimer = null;  // Timer event for spawning obstacles/ramps/grindables/collectibles
         this.score = 0;             // Player's current score
         this.isGrinding = false;    // Flag to track if player is currently grinding
         this.highScore = 0;         // Highest score achieved
@@ -100,6 +101,15 @@ class GameplayScene extends Phaser.Scene {
         graphics.generateTexture('grindable_placeholder', grindableWidth, grindableHeight);
         graphics.destroy();
 
+        // --- Collectible Placeholder ---
+        // Create a simple yellow circle placeholder for collectibles
+        graphics = this.make.graphics({ fillStyle: { color: 0xffff00 } }); // Yellow color
+        const collectibleRadius = 15;
+        graphics.fillCircle(collectibleRadius, collectibleRadius, collectibleRadius); // Draw circle
+        graphics.generateTexture('collectible_placeholder', collectibleRadius * 2, collectibleRadius * 2); // Texture size is diameter x diameter
+        graphics.destroy();
+
+
         console.log("Assets preloaded");
     }
 
@@ -139,7 +149,12 @@ class GameplayScene extends Phaser.Scene {
             allowGravity: false
         });
 
-        // Setup a timed event to spawn obstacles, ramps or grindables
+        // Create a physics group for collectibles
+        this.collectibles = this.physics.add.group({
+            allowGravity: false
+        });
+
+        // Setup a timed event to spawn obstacles, ramps, grindables or collectibles
         this.obstacleTimer = this.time.addEvent({
             delay: OBSTACLE_SPAWN_DELAY, // Reuse same timer, decide type in spawn function
             callback: this.spawnObstacle,
@@ -154,6 +169,8 @@ class GameplayScene extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.ramps, this.handleRampOverlap, null, this);
         // Add overlap check between player and grindables (triggers grind)
         this.physics.add.overlap(this.player, this.grindables, this.handleGrindOverlap, null, this);
+        // Add overlap check between player and collectibles (triggers collect)
+        this.physics.add.overlap(this.player, this.collectibles, this.handleCollect, null, this);
 
 
         // --- Score and UI ---
@@ -204,17 +221,19 @@ class GameplayScene extends Phaser.Scene {
         console.log("GameplayScene create/reset finished");
     }
 
-    // --- Obstacle/Ramp/Grindable Spawning ---
+    // --- Obstacle/Ramp/Grindable/Collectible Spawning ---
     spawnObstacle() {
-        // Decide what to spawn: 60% obstacle, 20% ramp, 20% grindable
+        // Decide what to spawn: 50% obstacle, 15% ramp, 15% grindable, 20% collectible
         const rand = Phaser.Math.Between(1, 100);
         let spawnType = 'obstacle'; // Default
-        if (rand <= 20) {
+        if (rand <= 15) { // 1-15
             spawnType = 'ramp';
-        } else if (rand <= 40) { // 21-40 range
+        } else if (rand <= 30) { // 16-30
             spawnType = 'grindable';
+        } else if (rand <= 50) { // 31-50
+             spawnType = 'collectible';
         }
-        // else: 41-100 remains 'obstacle'
+        // else: 51-100 remains 'obstacle'
 
         // Calculate a random horizontal position
         // Ensure it's not too close to the edges
@@ -239,6 +258,13 @@ class GameplayScene extends Phaser.Scene {
             const safeSpawnX = Phaser.Math.Clamp(spawnX, grindableWidth / 2 + spawnPadding, GAME_WIDTH - grindableWidth / 2 - spawnPadding); // Add padding
             spawnedItem = group.create(safeSpawnX, spawnY, itemKey);
             console.log(`Grindable spawned at (${safeSpawnX}, ${spawnY})`);
+        } else if (spawnType === 'collectible') {
+            itemKey = 'collectible_placeholder';
+            group = this.collectibles;
+            spawnedItem = group.create(spawnX, spawnY, itemKey);
+            // Make collectibles circular physics bodies
+            spawnedItem.body.setCircle(spawnedItem.width / 2);
+            console.log(`Collectible spawned at (${spawnX}, ${spawnY})`);
         } else { // 'obstacle'
             itemKey = 'obstacle_placeholder';
             group = this.obstacles;
@@ -322,6 +348,22 @@ class GameplayScene extends Phaser.Scene {
 
         // Don't destroy the ramp, let it scroll off. It's marked as 'hit' now.
         // ramp.destroy();
+    }
+
+    // --- Collectible Handling ---
+    handleCollect(player, collectible) {
+        console.log("Collectible collected!");
+
+        // Award points
+        const collectiblePoints = 25; // Example points
+        this.score += collectiblePoints;
+        this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
+        console.log(`+${collectiblePoints} points for collectible!`);
+
+        // Add sound/visual effect later (Phase 5)
+
+        // Destroy the collectible
+        collectible.destroy();
     }
 
     // --- Grind Overlap Handling ---
@@ -435,9 +477,9 @@ class GameplayScene extends Phaser.Scene {
         // The world/obstacles will move upwards in later phases.
         // The player's Y position remains fixed for now, unless jumping.
 
-        // --- Obstacle, Ramp & Grindable Cleanup ---
+        // --- Obstacle, Ramp, Grindable & Collectible Cleanup ---
         // Check items in all groups and destroy them if they go off-screen below
-        [this.obstacles, this.ramps, this.grindables].forEach(group => {
+        [this.obstacles, this.ramps, this.grindables, this.collectibles].forEach(group => {
             group.children.each(item => {
                 // Check if item exists and has a body (and isn't already marked for destruction)
                 if (item && item.body && item.y > GAME_HEIGHT + item.height) {
