@@ -413,9 +413,9 @@ class GameplayScene extends Phaser.Scene {
 
 
         // --- Player Vertical Movement (Post-Jump / Post-Grind) ---
-        // Only apply jump physics if the player has upward velocity or is above the ground line
-        if (this.player.body.velocity.y < 0 || this.player.y < PLAYER_START_Y) {
-            // Apply a downward acceleration to simulate gravity pulling them back
+        // Only apply jump physics if the player is not grinding and has upward velocity or is above the ground line
+        if (!this.isGrinding && (this.player.body.velocity.y < 0 || this.player.y < PLAYER_START_Y)) {
+             // Apply a downward acceleration to simulate gravity pulling them back
             // console.log(`Applying gravity pull. Before VelY: ${this.player.body.velocity.y}, PlayerY: ${this.player.y}`);
             this.player.body.velocity.y += JUMP_GRAVITY_PULL * (delta / 1000); // Adjust velocity based on delta time
             // console.log(`Applying gravity pull. After VelY: ${this.player.body.velocity.y}, PlayerY: ${this.player.y}`);
