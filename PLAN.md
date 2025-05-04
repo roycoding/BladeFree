@@ -118,7 +118,7 @@
     - [ ] Use Phaser's animation manager (`this.anims.create`) to define animations.
     - [ ] Play correct player animation based on state.
     - [ ] Add particle effects (grind sparks, jump poof).
-    - [ ] Implement point pop-up visuals.
+    - [x] Implement point pop-up visuals.
 - [ ] **Mobile Controls:**
     - [ ] `create`: Add touch input listeners (`this.input.on('pointerdown', ...)`).
     - [ ] Implement logic to detect touch on left/right screen halves.

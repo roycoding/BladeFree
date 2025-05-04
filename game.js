@@ -149,6 +149,27 @@ class GameplayScene extends Phaser.Scene {
         // Setup cursor keys for input
         this.cursors = this.input.keyboard.createCursorKeys();
 
+        // --- Mobile Touch Input ---
+        this.input.on('pointerdown', (pointer) => {
+            // Check if touch is on left or right half of the screen
+            if (pointer.x < GAME_WIDTH / 2) {
+                // Touch on left half - simulate left key press
+                this.player.setVelocityX(-PLAYER_SPEED);
+            } else {
+                // Touch on right half - simulate right key press
+                this.player.setVelocityX(PLAYER_SPEED);
+            }
+        });
+
+        // Stop movement when touch is released
+        this.input.on('pointerup', () => {
+            // Only stop if not controlled by keyboard (prevents conflict)
+            if (!this.cursors.left.isDown && !this.cursors.right.isDown) {
+                 this.player.setVelocityX(0);
+            }
+        });
+
+
         // --- Obstacles ---
         // Create a physics group for obstacles
         this.obstacles = this.physics.add.group({
@@ -479,14 +500,19 @@ class GameplayScene extends Phaser.Scene {
         // Game logic (movement, score) now runs continuously while this scene is active.
         // Collision handling transitions away from this scene.
 
-        // --- Player Horizontal Movement ---
+        // --- Player Horizontal Movement (Keyboard) ---
+        // Keyboard input overrides touch input if both are active
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-PLAYER_SPEED);
         } else if (this.cursors.right.isDown) {
             this.player.setVelocityX(PLAYER_SPEED);
         } else {
-            // No horizontal movement key pressed
-            this.player.setVelocityX(0);
+            // If neither keyboard key is down, check if touch is still active
+            // (The pointerup listener should handle stopping, but this is a fallback)
+            if (!this.input.activePointer.isDown) {
+                 this.player.setVelocityX(0);
+            }
+            // If touch IS down, the pointerdown listener should be setting velocity
         }
 
         // --- Score Increment ---
