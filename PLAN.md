@@ -119,11 +119,11 @@
     - [ ] Play correct player animation based on state.
     - [ ] Add particle effects (grind sparks, jump poof).
     - [x] Implement point pop-up visuals.
-- [ ] **Mobile Controls:**
-    - [ ] `create`: Add touch input listeners (`this.input.on('pointerdown', ...)`).
-    - [ ] Implement logic to detect touch on left/right screen halves.
-    - [ ] Trigger player movement based on touch location.
-    - [ ] Handle touch end (`pointerup`) to stop movement.
+- [x] **Mobile Controls:**
+    - [x] `create`: Add touch input listeners (`this.input.on('pointerdown', ...)`).
+    - [x] Implement logic to detect touch on left/right screen halves.
+    - [x] Trigger player movement based on touch location.
+    - [x] Handle touch end (`pointerup`) to stop movement.
 
 ## Phase 6: Testing & Balancing
 
