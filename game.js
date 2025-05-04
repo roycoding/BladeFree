@@ -380,6 +380,9 @@ class GameplayScene extends Phaser.Scene {
 
         // Don't destroy the ramp, let it scroll off. It's marked as 'hit' now.
         // ramp.destroy();
+
+        // Show points pop-up
+        this.showPointsPopup(player.x, player.y - 30, rampPoints);
     }
 
     // --- Collectible Handling ---
@@ -397,6 +400,35 @@ class GameplayScene extends Phaser.Scene {
 
         // Destroy the collectible
         collectible.destroy();
+
+        // Show points pop-up
+        this.showPointsPopup(player.x, player.y, collectiblePoints);
+    }
+
+    // --- Show Points Pop-up ---
+    showPointsPopup(x, y, points) {
+        const pointsText = this.add.text(x, y, `+${points}`, {
+            fontSize: '20px',
+            fill: '#ffff00', // Yellow for points
+            fontFamily: 'Arial',
+            stroke: '#000000', // Black stroke for visibility
+            strokeThickness: 4
+        }).setOrigin(0.5);
+
+        // Make sure popup is rendered on top
+        pointsText.setDepth(2); // Higher than player (depth 1)
+
+        // Create a tween to animate the text
+        this.tweens.add({
+            targets: pointsText,
+            y: y - 50, // Move up
+            alpha: 0, // Fade out
+            duration: 800, // Duration in milliseconds
+            ease: 'Power1',
+            onComplete: () => {
+                pointsText.destroy(); // Remove text object when tween finishes
+            }
+        });
     }
 
     // --- Grind Overlap Handling ---
