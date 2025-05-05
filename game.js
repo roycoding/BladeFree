@@ -419,9 +419,6 @@ class GameplayScene extends Phaser.Scene {
             this.scene.start('GameOverScene', { score: finalScore });
         }, [], this);
     }
-        console.log(`Transitioning to GameOverScene with score: ${finalScore}`);
-        this.scene.start('GameOverScene', { score: finalScore });
-    }
 
     // --- Ramp Overlap Handling ---
     handleRampOverlap(player, ramp) {
