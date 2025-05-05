@@ -269,9 +269,14 @@ class GameplayScene extends Phaser.Scene {
         // --- Frame Verification ---
         // Display all frames with indices for debugging
         console.log("Adding frame verification display");
-        for (let i = 0; i < 12; i++) {
-            const testSprite = this.add.sprite(50 + (i * 40), 50, 'skater', i);
-            this.add.text(50 + (i * 40), 80, `${i}`, { fontSize: '12px', fill: '#fff' }).setOrigin(0.5);
+        // Show two rows of frames for better visibility
+        for (let i = 0; i < 8; i++) {
+            const testSprite = this.add.sprite(50 + (i * 60), 50, 'skater', i);
+            this.add.text(50 + (i * 60), 80, `${i}`, { fontSize: '16px', fill: '#fff' }).setOrigin(0.5);
+        }
+        for (let i = 8; i < 16; i++) {
+            const testSprite = this.add.sprite(50 + ((i-8) * 60), 120, 'skater', i);
+            this.add.text(50 + ((i-8) * 60), 150, `${i}`, { fontSize: '16px', fill: '#fff' }).setOrigin(0.5);
         }
 
         // --- Create Player Animations ---
@@ -284,27 +289,27 @@ class GameplayScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'jump-airborne',
-            frames: [{ key: 'skater', frame: 5 }], // Revert to simple frame definition
+            frames: [{ key: 'skater', frame: 1 }], // Adjusted from 5 to 1
             frameRate: 20
         });
 
         this.anims.create({
             key: 'jump-landing',
-            frames: [{ key: 'skater', frame: 6 }], // Single frame for landing
+            frames: [{ key: 'skater', frame: 2 }], // Adjusted from 6 to 2
             frameRate: 10, // Frame rate doesn't matter much for single frame
             repeat: 0 // Play only once
         });
 
         this.anims.create({
             key: 'grind',
-            frames: [{ key: 'skater', frame: 8 }], // Revert to simple frame definition
+            frames: [{ key: 'skater', frame: 4 }], // Adjusted from 8 to 4
             frameRate: 20
         });
 
         this.anims.create({
             key: 'fall',
-            // Use frames 7, 10, 11 for collision sequence
-            frames: this.anims.generateFrameNumbers('skater', { frames: [7, 10, 11] }),
+            // Adjusted from 7, 10, 11 to 3, 6, 7
+            frames: this.anims.generateFrameNumbers('skater', { frames: [3, 6, 7] }),
             frameRate: 8,
             repeat: 0 // Play once
         });
