@@ -69,6 +69,7 @@ class GameplayScene extends Phaser.Scene {
         this.score = 0;             // Player's current score
         this.isGrinding = false;    // Flag to track if player is currently grinding
         this.isJumping = false;     // Flag to track if player is airborne from a jump
+        this.isFalling = false;     // Flag to track if player is in collision state
         this.highScore = 0;         // Highest score achieved
         this.scoreText = null;      // Text object for current score
         this.highScoreText = null;  // Text object for high score
@@ -238,6 +239,7 @@ class GameplayScene extends Phaser.Scene {
         // Reset player appearance and state if restarting
         this.player.setAlpha(1.0); // Make player fully visible
         this.player.setVelocity(0, 0); // Ensure player starts stationary
+        this.isFalling = false; // Reset falling state on restart
 
         // Ensure obstacle timer is running if restarting
         if (this.obstacleTimer) {
@@ -268,7 +270,7 @@ class GameplayScene extends Phaser.Scene {
         this.anims.create({
             key: 'skate-cycle',
             frames: this.anims.generateFrameNumbers('skater', { start: 0, end: 3 }),
-            frameRate: 6, // Slower frame rate for skating
+            frameRate: 4, // Even slower frame rate for skating/gliding
             repeat: -1 // Loop forever
         });
 
@@ -412,6 +414,7 @@ class GameplayScene extends Phaser.Scene {
         this.sound.play('game_over'); // Play game over sound effect
 
         // Play fall animation and stop player physics interaction
+        this.isFalling = true; // Set falling flag
         player.play('fall');
         player.body.enable = false; // Disable physics body to stop further checks
 
@@ -586,17 +589,25 @@ class GameplayScene extends Phaser.Scene {
         }
 
         // --- Player Animation Control ---
-        if (this.isGrinding) {
+        // Prioritize falling animation
+        if (this.isFalling) {
+            // console.log("Animation Check: isFalling=true, playing 'fall'");
+            // Animation should already be playing from handleCollision, do nothing here
+            // Or ensure it keeps playing: if (this.player.anims.currentAnim?.key !== 'fall') this.player.play('fall');
+        } else if (this.isGrinding) {
+            // console.log("Animation Check: isGrinding=true, playing 'grind'");
             this.player.play('grind', true); // Play grind animation
         } else if (this.isJumping) {
-            // Decide airborne animation based on velocity? For now, just one.
-            // Could check player.body.velocity.y < 0 for rising, > 0 for falling
+            // console.log("Animation Check: isJumping=true, playing 'jump-airborne'");
              this.player.play('jump-airborne', true); // Play airborne animation
         } else {
-            // On the ground and not grinding
+            // On the ground and not grinding or falling
             // Check if landing animation is playing, if so let it finish
             if (this.player.anims.currentAnim?.key !== 'jump-landing') {
+                // console.log("Animation Check: On ground, not landing, playing 'skate-cycle'");
                  this.player.play('skate-cycle', true); // Default to skating cycle
+            } else {
+                // console.log("Animation Check: On ground, letting 'jump-landing' finish");
             }
         }
 
