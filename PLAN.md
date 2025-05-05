@@ -64,7 +64,7 @@
     - [x] Create `handleRampOverlap(player, ramp)` function.
     - [x] `handleRampOverlap`: Trigger jump state (velocity change, animation). *(Velocity change done)*
     - [x] `handleRampOverlap`: Add points for the jump.
-    - [ ] `handleRampOverlap`: Play jump sound/visual effect. *(Phase 5)*
+    - [x] `handleRampOverlap`: Play jump sound/visual effect.
 - [x] **Rails/Ledges & Grinding:**
     - [x] `preload`: Load rail/ledge asset. *(Placeholder done)*
     - [x] `create`: Create `grindables` group.
@@ -82,8 +82,8 @@
     - [x] `create`: Set up physics *overlap* check between player and `collectibles`.
     - [x] Create `handleCollect(player, item)` function.
     - [x] `handleCollect`: Add points to score.
-    - [ ] `handleCollect`: Play collection sound effect. *(Phase 5)*
-    - [ ] `handleCollect`: Show temporary points pop-up text. *(Phase 5)*
+    - [x] `handleCollect`: Play collection sound effect.
+    - [x] `handleCollect`: Show temporary points pop-up text.
     - [x] `handleCollect`: Destroy the collected item sprite (`item.destroy()`).
 - [x] **Game State Management:**
     - [x] Create `StartScene` class.
@@ -114,9 +114,9 @@
     - [x] Trigger sound effects on corresponding actions (`this.sound.play(...)`).
 - [ ] **Graphics & Animation:**
     - [ ] Replace placeholders with final retro-style graphics (inspired by `roy_skate1.png`).
-    - [ ] Create sprite sheets for player animations (skating, jumping, grinding, falling).
-    - [ ] Use Phaser's animation manager (`this.anims.create`) to define animations.
-    - [ ] Play correct player animation based on state.
+    - [x] Create sprite sheets for player animations (skating, jumping, grinding, falling).
+    - [x] Use Phaser's animation manager (`this.anims.create`) to define animations.
+    - [x] Play correct player animation based on state.
     - [ ] Add particle effects (grind sparks, jump poof).
     - [x] Implement point pop-up visuals.
 - [x] **Mobile Controls:**
