@@ -265,6 +265,14 @@ class GameplayScene extends Phaser.Scene {
         this.sound.stopByKey('music');
         // Play music looping, adjust volume as needed
         this.sound.play('music', { loop: true, volume: 0.5 });
+        
+        // --- Frame Verification ---
+        // Display all frames with indices for debugging
+        console.log("Adding frame verification display");
+        for (let i = 0; i < 12; i++) {
+            const testSprite = this.add.sprite(50 + (i * 40), 50, 'skater', i);
+            this.add.text(50 + (i * 40), 80, `${i}`, { fontSize: '12px', fill: '#fff' }).setOrigin(0.5);
+        }
 
         // --- Create Player Animations ---
         this.anims.create({
@@ -592,7 +600,10 @@ class GameplayScene extends Phaser.Scene {
         }
 
         // --- Player Animation Control ---
-        // --- Player Animation Control ---
+        // Log animation states for debugging
+        console.log(`Animation states - Falling: ${this.isFalling}, Grinding: ${this.isGrinding}, Jumping: ${this.isJumping}`);
+        console.log(`Current animation: ${this.player.anims.currentAnim?.key}, Frame: ${this.player.anims.currentFrame?.index}`);
+        
         // Set animation based on state priority: falling > grinding > jumping > landing > skating
         if (this.isFalling) {
             // Fall animation is started in handleCollision. Ensure it continues if needed.
