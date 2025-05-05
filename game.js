@@ -75,7 +75,7 @@ class GameplayScene extends Phaser.Scene {
 
     preload() {
         // --- Player Spritesheet ---
-        this.load.spritesheet('skater', 'assets/graphics/skate.png', {
+        this.load.spritesheet('skater', 'assets/graphics/skater.png', {
             frameWidth: 32,
             frameHeight: 48
         });
