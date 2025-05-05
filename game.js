@@ -44,21 +44,14 @@ class StartScene extends Phaser.Scene {
             // Randomly choose between circle and rectangle
             if (Phaser.Math.Between(0, 1) === 0) {
                 // Circle
-                patch.fillCircle(0, 0, size / 2);
+                patch.fillCircle(x, y, size / 2);
             } else {
                 // Rectangle with rounded corners
-                patch.fillRoundedRect(-size/2, -size/2, size, size, 10);
+                patch.fillRect(x - size/2, y - size/2, size, size);
             }
             
-            // Convert to sprite texture
-            const texture = patch.createGeometryMask();
-            const sprite = this.add.sprite(x, y, texture.bitmapMask.texture);
-            
             // Set depth to be below player and other game elements
-            sprite.setDepth(-1);
-            
-            // Clean up the graphics object
-            patch.destroy();
+            patch.setDepth(-1);
         }
     }
 
@@ -573,21 +566,14 @@ class GameplayScene extends Phaser.Scene {
             // Randomly choose between circle and rectangle
             if (Phaser.Math.Between(0, 1) === 0) {
                 // Circle
-                patch.fillCircle(0, 0, size / 2);
+                patch.fillCircle(x, y, size / 2);
             } else {
                 // Rectangle with rounded corners
-                patch.fillRoundedRect(-size/2, -size/2, size, size, 10);
+                patch.fillRect(x - size/2, y - size/2, size, size);
             }
             
-            // Convert to sprite texture
-            const texture = patch.createGeometryMask();
-            const sprite = this.add.sprite(x, y, texture.bitmapMask.texture);
-            
             // Set depth to be below player and other game elements
-            sprite.setDepth(-1);
-            
-            // Clean up the graphics object
-            patch.destroy();
+            patch.setDepth(-1);
         }
     }
 
@@ -835,21 +821,14 @@ class GameOverScene extends Phaser.Scene {
             // Randomly choose between circle and rectangle
             if (Phaser.Math.Between(0, 1) === 0) {
                 // Circle
-                patch.fillCircle(0, 0, size / 2);
+                patch.fillCircle(x, y, size / 2);
             } else {
                 // Rectangle with rounded corners
-                patch.fillRoundedRect(-size/2, -size/2, size, size, 10);
+                patch.fillRect(x - size/2, y - size/2, size, size);
             }
             
-            // Convert to sprite texture
-            const texture = patch.createGeometryMask();
-            const sprite = this.add.sprite(x, y, texture.bitmapMask.texture);
-            
             // Set depth to be below player and other game elements
-            sprite.setDepth(-1);
-            
-            // Clean up the graphics object
-            patch.destroy();
+            patch.setDepth(-1);
         }
     }
 
