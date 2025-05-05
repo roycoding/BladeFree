@@ -449,6 +449,7 @@ class GameplayScene extends Phaser.Scene {
 
         // Add jump logic here later (Phase 4/5)
         // Apply upward velocity for the jump
+        this.isGrinding = false; // Ensure not grinding when jumping
         player.setVelocityY(-JUMP_VELOCITY);
         this.isJumping = true; // Set jumping flag
         // Play airborne animation immediately (takeoff is implicit)
@@ -515,6 +516,7 @@ class GameplayScene extends Phaser.Scene {
 
         // If not already grinding, start the grind
         if (!this.isGrinding) {
+            this.isJumping = false; // Ensure not jumping when grinding
             this.isGrinding = true;
             console.log("Grind started!");
 
@@ -590,25 +592,30 @@ class GameplayScene extends Phaser.Scene {
         }
 
         // --- Player Animation Control ---
-        // Prioritize falling animation
+        // --- Player Animation Control ---
+        // Set animation based on state priority: falling > grinding > jumping > landing > skating
         if (this.isFalling) {
-            // The 'fall' animation is started in handleCollision and should play once.
-            // No need to restart it here unless it gets interrupted.
+            // Fall animation is started in handleCollision. Ensure it continues if needed.
              if (this.player.anims.currentAnim?.key !== 'fall') {
                  console.log("WARN: Fall animation was interrupted, restarting.");
-                 this.player.play('fall'); // Should ideally not be needed
+                 this.player.play('fall');
              }
-        } else if (this.isGrinding) {
-            console.log("Attempting to play: grind"); // LOG
-            this.player.play('grind', true); // Play grind animation (force switch)
-        } else if (this.isJumping) {
-            console.log("Attempting to play: jump-airborne"); // LOG
-             this.player.play('jump-airborne', true); // Play airborne animation (force switch)
+        } else if (this.isGrinding) { // Check grinding next
+            console.log("Attempting to play: grind");
+            this.player.play('grind', true);
+        } else if (this.isJumping) { // Check jumping after grinding
+            console.log("Attempting to play: jump-airborne");
+             this.player.play('jump-airborne', true);
         } else {
-            // On the ground and not grinding or falling
-            // If on ground and no other state active, play skate cycle
-            console.log("Attempting to play: skate-cycle"); // LOG
-            this.player.play('skate-cycle', true); // Default to skating cycle
+            // On the ground, not falling or grinding or jumping
+            // Check if landing animation is still playing
+            if (this.player.anims.currentAnim?.key === 'jump-landing' && this.player.anims.isPlaying) {
+                 console.log("Letting jump-landing finish");
+            } else {
+                // Otherwise, play skate cycle
+                console.log("Attempting to play: skate-cycle");
+                this.player.play('skate-cycle', true);
+            }
         }
 
         // --- Score Increment ---
