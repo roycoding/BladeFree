@@ -270,7 +270,7 @@ class GameplayScene extends Phaser.Scene {
         this.anims.create({
             key: 'skate-cycle',
             frames: this.anims.generateFrameNumbers('skater', { start: 0, end: 3 }),
-            frameRate: 4, // Even slower frame rate for skating/gliding
+            frameRate: 3, // Very slow frame rate for skating/gliding
             repeat: -1 // Loop forever
         });
 
@@ -303,12 +303,12 @@ class GameplayScene extends Phaser.Scene {
         // Set initial animation
         this.player.play('skate-cycle', true); // Start playing the skate cycle
 
-        // Optional: Listen for animation complete to transition after landing
-        this.player.on('animationcomplete-jump-landing', () => {
-             if (!this.isGrinding && !this.isJumping) { // Check state before switching
-                 this.player.play('skate-cycle', true);
-             }
-        }, this);
+        // Removed animationcomplete listener for jump-landing to simplify state logic
+        // this.player.on('animationcomplete-jump-landing', () => {
+        //      if (!this.isGrinding && !this.isJumping) { // Check state before switching
+        //          this.player.play('skate-cycle', true);
+        //      }
+        // }, this);
 
 
         console.log("GameplayScene create/reset finished");
@@ -591,23 +591,27 @@ class GameplayScene extends Phaser.Scene {
         // --- Player Animation Control ---
         // Prioritize falling animation
         if (this.isFalling) {
-            // console.log("Animation Check: isFalling=true, playing 'fall'");
-            // Animation should already be playing from handleCollision, do nothing here
-            // Or ensure it keeps playing: if (this.player.anims.currentAnim?.key !== 'fall') this.player.play('fall');
+            // The 'fall' animation is started in handleCollision and should play once.
+            // No need to restart it here unless it gets interrupted.
+             if (this.player.anims.currentAnim?.key !== 'fall') {
+                 console.log("WARN: Fall animation was interrupted, restarting.");
+                 this.player.play('fall'); // Should ideally not be needed
+             }
         } else if (this.isGrinding) {
-            // console.log("Animation Check: isGrinding=true, playing 'grind'");
+            console.log("Attempting to play: grind"); // LOG
             this.player.play('grind', true); // Play grind animation
         } else if (this.isJumping) {
-            // console.log("Animation Check: isJumping=true, playing 'jump-airborne'");
+            console.log("Attempting to play: jump-airborne"); // LOG
              this.player.play('jump-airborne', true); // Play airborne animation
         } else {
             // On the ground and not grinding or falling
             // Check if landing animation is playing, if so let it finish
-            if (this.player.anims.currentAnim?.key !== 'jump-landing') {
-                // console.log("Animation Check: On ground, not landing, playing 'skate-cycle'");
-                 this.player.play('skate-cycle', true); // Default to skating cycle
+            if (this.player.anims.currentAnim?.key === 'jump-landing') {
+                 console.log("Letting jump-landing finish"); // LOG
+                 // Let it finish, it should transition back via its own logic or next frame
             } else {
-                // console.log("Animation Check: On ground, letting 'jump-landing' finish");
+                 console.log("Attempting to play: skate-cycle"); // LOG
+                 this.player.play('skate-cycle', true); // Default to skating cycle
             }
         }
 
