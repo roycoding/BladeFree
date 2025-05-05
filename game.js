@@ -289,27 +289,27 @@ class GameplayScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'jump-airborne',
-            frames: [{ key: 'skater', frame: 1 }], // Adjusted from 5 to 1
+            frames: [{ key: 'skater', frame: 9 }], // Use frame 9 (visually frame 5)
             frameRate: 20
         });
 
         this.anims.create({
             key: 'jump-landing',
-            frames: [{ key: 'skater', frame: 2 }], // Adjusted from 6 to 2
-            frameRate: 10, // Frame rate doesn't matter much for single frame
+            frames: [{ key: 'skater', frame: 10 }], // Use frame 10 (visually frame 6)
+            frameRate: 10,
             repeat: 0 // Play only once
         });
 
         this.anims.create({
             key: 'grind',
-            frames: [{ key: 'skater', frame: 4 }], // Adjusted from 8 to 4
+            frames: [{ key: 'skater', frame: 8 }], // Use frame 8 (visually frame 4)
             frameRate: 20
         });
 
         this.anims.create({
             key: 'fall',
-            // Adjusted from 7, 10, 11 to 3, 6, 7
-            frames: this.anims.generateFrameNumbers('skater', { frames: [3, 6, 7] }),
+            // Use frames that visually represent the fall sequence
+            frames: this.anims.generateFrameNumbers('skater', { frames: [11, 2, 3] }),
             frameRate: 8,
             repeat: 0 // Play once
         });
@@ -317,12 +317,14 @@ class GameplayScene extends Phaser.Scene {
         // Set initial animation
         this.player.play('skate-cycle', true); // Start playing the skate cycle
 
-        // Removed animationcomplete listener for jump-landing to simplify state logic
-        // this.player.on('animationcomplete-jump-landing', () => {
-        //      if (!this.isGrinding && !this.isJumping) { // Check state before switching
-        //          this.player.play('skate-cycle', true);
-        //      }
-        // }, this);
+        // Add animationcomplete listener for jump-landing
+        this.player.on('animationcomplete-jump-landing', () => {
+            console.log("Jump landing animation complete");
+            if (!this.isGrinding && !this.isJumping && !this.isFalling) {
+                console.log("Transitioning from landing to skate-cycle");
+                this.player.play('skate-cycle', true);
+            }
+        }, this);
 
 
         console.log("GameplayScene create/reset finished");
@@ -612,26 +614,30 @@ class GameplayScene extends Phaser.Scene {
         // Set animation based on state priority: falling > grinding > jumping > landing > skating
         if (this.isFalling) {
             // Fall animation is started in handleCollision. Ensure it continues if needed.
-             if (this.player.anims.currentAnim?.key !== 'fall') {
-                 console.log("WARN: Fall animation was interrupted, restarting.");
-                 this.player.play('fall');
-             }
+            if (this.player.anims.currentAnim?.key !== 'fall') {
+                console.log("WARN: Fall animation was interrupted, restarting.");
+                this.player.play('fall');
+            }
         } else if (this.isGrinding) { // Check grinding next
-            console.log("Attempting to play: grind");
-            // this.player.anims.stop(); // Stop previous animation - Removed
+            console.log("Setting grind animation");
+            this.player.anims.stop(); // Explicitly stop previous animation
             this.player.play('grind', true);
+            // Verify the frame was set correctly
+            console.log(`After grind play, frame is: ${this.player.frame.name}`);
         } else if (this.isJumping) { // Check jumping after grinding
-            console.log("Attempting to play: jump-airborne");
-            // this.player.anims.stop(); // Stop previous animation - Removed
-             this.player.play('jump-airborne', true);
+            console.log("Setting jump-airborne animation");
+            this.player.anims.stop(); // Explicitly stop previous animation
+            this.player.play('jump-airborne', true);
+            // Verify the frame was set correctly
+            console.log(`After jump play, frame is: ${this.player.frame.name}`);
         } else {
             // On the ground, not falling or grinding or jumping
             // Check if landing animation is still playing
             if (this.player.anims.currentAnim?.key === 'jump-landing' && this.player.anims.isPlaying) {
-                 console.log("Letting jump-landing finish");
+                console.log("Letting jump-landing finish");
             } else {
                 // Otherwise, play skate cycle
-                console.log("Attempting to play: skate-cycle");
+                console.log("Playing skate-cycle");
                 this.player.play('skate-cycle', true);
             }
         }
