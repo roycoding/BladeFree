@@ -599,10 +599,10 @@ class GameplayScene extends Phaser.Scene {
              }
         } else if (this.isGrinding) {
             console.log("Attempting to play: grind"); // LOG
-            this.player.play('grind', true); // Play grind animation
+            this.player.play('grind'); // Play grind animation (removed true)
         } else if (this.isJumping) {
             console.log("Attempting to play: jump-airborne"); // LOG
-             this.player.play('jump-airborne', true); // Play airborne animation
+             this.player.play('jump-airborne'); // Play airborne animation (removed true)
         } else {
             // On the ground and not grinding or falling
             // Check if landing animation is playing, if so let it finish
@@ -611,7 +611,10 @@ class GameplayScene extends Phaser.Scene {
                  // Let it finish, it should transition back via its own logic or next frame
             } else {
                  console.log("Attempting to play: skate-cycle"); // LOG
-                 this.player.play('skate-cycle', true); // Default to skating cycle
+                 // Ensure skate-cycle loops correctly
+                 if (this.player.anims.currentAnim?.key !== 'skate-cycle') {
+                    this.player.play('skate-cycle', true);
+                 }
             }
         }
 
