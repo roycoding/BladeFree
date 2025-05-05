@@ -42,11 +42,13 @@ class StartScene extends Phaser.Scene {
             this.scene.start('GameplayScene');
         };
 
-        // Listen for any arrow key press
-        this.input.keyboard.once('keydown-LEFT', startGame);
-        this.input.keyboard.once('keydown-RIGHT', startGame);
-        this.input.keyboard.once('keydown-UP', startGame); // Also allow Up/Down if desired
-        this.input.keyboard.once('keydown-DOWN', startGame);
+        // Listen for ANY key press to start (for debugging)
+        this.input.keyboard.once('keydown', startGame);
+        // this.input.keyboard.once('keydown-LEFT', startGame);
+        // this.input.keyboard.once('keydown-RIGHT', startGame);
+        // this.input.keyboard.once('keydown-UP', startGame); // Also allow Up/Down if desired
+        // this.input.keyboard.once('keydown-DOWN', startGame);
+
 
         console.log("StartScene created");
     }
