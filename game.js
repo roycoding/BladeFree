@@ -601,13 +601,13 @@ class GameplayScene extends Phaser.Scene {
                  this.player.play('fall');
              }
         } else if (this.isGrinding) { // Check grinding next
-            console.log("Attempting to setFrame: 8 (grind)"); // DIAGNOSTIC
-            this.player.setFrame(8); // Directly set grind frame
-            // this.player.play('grind', true);
+            console.log("Attempting to play: grind");
+            this.player.anims.stop(); // Stop previous animation
+            this.player.play('grind', true);
         } else if (this.isJumping) { // Check jumping after grinding
-            console.log("Attempting to setFrame: 5 (jump-airborne)"); // DIAGNOSTIC
-            this.player.setFrame(5); // Directly set airborne frame
-             // this.player.play('jump-airborne', true);
+            console.log("Attempting to play: jump-airborne");
+            this.player.anims.stop(); // Stop previous animation
+             this.player.play('jump-airborne', true);
         } else {
             // On the ground, not falling or grinding or jumping
             // Check if landing animation is still playing
