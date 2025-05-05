@@ -22,6 +22,9 @@ class StartScene extends Phaser.Scene {
     }
 
     create() {
+        // Set the background color to a cement-like gray
+        this.cameras.main.setBackgroundColor('#8c8c8c');
+        
         // Add title text
         this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 3, 'BladeFree', {
             fontSize: '64px',
@@ -132,6 +135,9 @@ class GameplayScene extends Phaser.Scene {
 
     create() {
         console.log("GameplayScene create started");
+        
+        // Set the background color to a cement-like gray
+        this.cameras.main.setBackgroundColor('#8c8c8c');
 
         // Add the player sprite using the loaded spritesheet
         // Positioned horizontally centered, vertically at PLAYER_START_Y
@@ -716,6 +722,9 @@ class GameOverScene extends Phaser.Scene {
     }
 
     create() {
+        // Set the background color to a cement-like gray
+        this.cameras.main.setBackgroundColor('#8c8c8c');
+        
         // Load high score
         this.highScore = localStorage.getItem('bladeFreeHighScore') || 0;
 
