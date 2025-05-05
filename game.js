@@ -276,7 +276,8 @@ class GameplayScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'jump-airborne',
-            frames: [{ key: 'skater', frame: 5 }], // Single frame for airborne
+            // Define using generateFrameNumbers even for a single frame
+            frames: this.anims.generateFrameNumbers('skater', { start: 5, end: 5 }),
             frameRate: 20
         });
 
@@ -289,7 +290,8 @@ class GameplayScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'grind',
-            frames: [{ key: 'skater', frame: 8 }], // Single frame for grinding
+            // Define using generateFrameNumbers even for a single frame
+            frames: this.anims.generateFrameNumbers('skater', { start: 8, end: 8 }),
             frameRate: 20
         });
 
