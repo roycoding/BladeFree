@@ -266,18 +266,6 @@ class GameplayScene extends Phaser.Scene {
         // Play music looping, adjust volume as needed
         this.sound.play('music', { loop: true, volume: 0.5 });
         
-        // --- Frame Verification ---
-        // Display all frames with indices for debugging
-        console.log("Adding frame verification display");
-        // Show two rows of frames for better visibility
-        for (let i = 0; i < 8; i++) {
-            const testSprite = this.add.sprite(50 + (i * 60), 50, 'skater', i);
-            this.add.text(50 + (i * 60), 80, `${i}`, { fontSize: '16px', fill: '#fff' }).setOrigin(0.5);
-        }
-        for (let i = 8; i < 16; i++) {
-            const testSprite = this.add.sprite(50 + ((i-8) * 60), 120, 'skater', i);
-            this.add.text(50 + ((i-8) * 60), 150, `${i}`, { fontSize: '16px', fill: '#fff' }).setOrigin(0.5);
-        }
 
         // --- Create Player Animations ---
         this.anims.create({
@@ -607,10 +595,6 @@ class GameplayScene extends Phaser.Scene {
         }
 
         // --- Player Animation Control ---
-        // Log animation states for debugging
-        console.log(`Animation states - Falling: ${this.isFalling}, Grinding: ${this.isGrinding}, Jumping: ${this.isJumping}`);
-        console.log(`Current animation: ${this.player.anims.currentAnim?.key}, Frame: ${this.player.anims.currentFrame?.index}`);
-        
         // Set animation based on state priority: falling > grinding > jumping > landing > skating
         if (this.isFalling) {
             // Fall animation is started in handleCollision. Ensure it continues if needed.
@@ -619,25 +603,21 @@ class GameplayScene extends Phaser.Scene {
                 this.player.play('fall');
             }
         } else if (this.isGrinding) { // Check grinding next
-            console.log("Setting grind animation");
             this.player.anims.stop(); // Explicitly stop previous animation
-            // Try direct frame setting instead of animation
+            // Direct frame setting for grinding
             this.player.setTexture('skater', 16); // Directly set to frame 16 for grinding
-            console.log(`After direct frame set for grind, frame is: ${this.player.frame.name}`);
         } else if (this.isJumping) { // Check jumping after grinding
-            console.log("Setting jump-airborne animation");
             this.player.anims.stop(); // Explicitly stop previous animation
-            // Try direct frame setting for consistency with grind approach
+            // Direct frame setting for jumping
             this.player.setTexture('skater', 9); // Directly set to frame 9 for jumping
-            console.log(`After direct frame set for jump, frame is: ${this.player.frame.name}`);
         } else {
             // On the ground, not falling or grinding or jumping
             // Check if landing animation is still playing
             if (this.player.anims.currentAnim?.key === 'jump-landing' && this.player.anims.isPlaying) {
-                console.log("Letting jump-landing finish");
+                // Letting jump-landing animation finish
             } else {
                 // Otherwise, play skate cycle
-                console.log("Playing skate-cycle");
+                // Play skating animation
                 this.player.play('skate-cycle', true);
             }
         }
@@ -647,7 +627,7 @@ class GameplayScene extends Phaser.Scene {
             // Award points faster while grinding (e.g., 30 points per second)
             const grindPointsPerSecond = 30;
             this.score += (grindPointsPerSecond * delta) / 1000;
-            console.log("Adding grind points..."); // Debug log
+            // Adding points while grinding
         } else {
             // Normal score increment based on time (e.g., 10 points per second)
             const normalPointsPerSecond = 10;
