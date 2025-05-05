@@ -84,7 +84,7 @@ class GameplayScene extends Phaser.Scene {
 
         // --- Obstacle Placeholder ---
         // Create a simple red square placeholder for obstacles
-        graphics = this.make.graphics({ fillStyle: { color: 0xff0000 } }); // Red color
+        let graphics = this.make.graphics({ fillStyle: { color: 0xff0000 } }); // Red color
         graphics.fillRect(0, 0, 40, 40); // 40x40 square
         graphics.generateTexture('obstacle_placeholder', 40, 40);
         graphics.destroy();
