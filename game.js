@@ -268,7 +268,7 @@ class GameplayScene extends Phaser.Scene {
         this.anims.create({
             key: 'skate-cycle',
             frames: this.anims.generateFrameNumbers('skater', { start: 0, end: 3 }),
-            frameRate: 10, // Adjust frame rate as needed
+            frameRate: 6, // Slower frame rate for skating
             repeat: -1 // Loop forever
         });
 
@@ -380,8 +380,8 @@ class GameplayScene extends Phaser.Scene {
     handleCollision(player, obstacle) {
         console.log("Collision detected!");
 
-        // Simple feedback: make player semi-transparent and stop obstacle spawning
-        player.setAlpha(0.5); // Make player semi-transparent
+        // Stop obstacle spawning
+        // player.setAlpha(0.5); // Remove transparency, rely on animation
         this.obstacleTimer.paused = true; // Stop spawning new obstacles
 
         // Optional: Stop the player's movement
