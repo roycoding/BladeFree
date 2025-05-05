@@ -283,7 +283,8 @@ class GameplayScene extends Phaser.Scene {
         this.anims.create({
             key: 'jump-landing',
             frames: [{ key: 'skater', frame: 6 }], // Single frame for landing
-            frameRate: 20
+            frameRate: 10, // Frame rate doesn't matter much for single frame
+            repeat: 0 // Play only once
         });
 
         this.anims.create({
@@ -599,23 +600,15 @@ class GameplayScene extends Phaser.Scene {
              }
         } else if (this.isGrinding) {
             console.log("Attempting to play: grind"); // LOG
-            this.player.play('grind'); // Play grind animation (removed true)
+            this.player.play('grind', true); // Play grind animation (force switch)
         } else if (this.isJumping) {
             console.log("Attempting to play: jump-airborne"); // LOG
-             this.player.play('jump-airborne'); // Play airborne animation (removed true)
+             this.player.play('jump-airborne', true); // Play airborne animation (force switch)
         } else {
             // On the ground and not grinding or falling
-            // Check if landing animation is playing, if so let it finish
-            if (this.player.anims.currentAnim?.key === 'jump-landing') {
-                 console.log("Letting jump-landing finish"); // LOG
-                 // Let it finish, it should transition back via its own logic or next frame
-            } else {
-                 console.log("Attempting to play: skate-cycle"); // LOG
-                 // Ensure skate-cycle loops correctly
-                 if (this.player.anims.currentAnim?.key !== 'skate-cycle') {
-                    this.player.play('skate-cycle', true);
-                 }
-            }
+            // If on ground and no other state active, play skate cycle
+            console.log("Attempting to play: skate-cycle"); // LOG
+            this.player.play('skate-cycle', true); // Default to skating cycle
         }
 
         // --- Score Increment ---
