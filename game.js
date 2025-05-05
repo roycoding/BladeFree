@@ -602,11 +602,11 @@ class GameplayScene extends Phaser.Scene {
              }
         } else if (this.isGrinding) { // Check grinding next
             console.log("Attempting to play: grind");
-            this.player.anims.stop(); // Stop previous animation
+            // this.player.anims.stop(); // Stop previous animation - Removed
             this.player.play('grind', true);
         } else if (this.isJumping) { // Check jumping after grinding
             console.log("Attempting to play: jump-airborne");
-            this.player.anims.stop(); // Stop previous animation
+            // this.player.anims.stop(); // Stop previous animation - Removed
              this.player.play('jump-airborne', true);
         } else {
             // On the ground, not falling or grinding or jumping
