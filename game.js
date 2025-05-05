@@ -302,7 +302,7 @@ class GameplayScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'grind',
-            frames: [{ key: 'skater', frame: 8 }], // Use frame 8 (visually frame 4)
+            frames: [{ key: 'skater', frame: 9 }], // Change from frame 8 to frame 9 (visually frame 5)
             frameRate: 20
         });
 
@@ -621,15 +621,15 @@ class GameplayScene extends Phaser.Scene {
         } else if (this.isGrinding) { // Check grinding next
             console.log("Setting grind animation");
             this.player.anims.stop(); // Explicitly stop previous animation
-            this.player.play('grind', true);
-            // Verify the frame was set correctly
-            console.log(`After grind play, frame is: ${this.player.frame.name}`);
+            // Try direct frame setting instead of animation
+            this.player.setTexture('skater', 9); // Directly set to frame 9 (visually frame 5)
+            console.log(`After direct frame set for grind, frame is: ${this.player.frame.name}`);
         } else if (this.isJumping) { // Check jumping after grinding
             console.log("Setting jump-airborne animation");
             this.player.anims.stop(); // Explicitly stop previous animation
-            this.player.play('jump-airborne', true);
-            // Verify the frame was set correctly
-            console.log(`After jump play, frame is: ${this.player.frame.name}`);
+            // Try direct frame setting for consistency with grind approach
+            this.player.setTexture('skater', 9); // Directly set to frame 9 (visually frame 5)
+            console.log(`After direct frame set for jump, frame is: ${this.player.frame.name}`);
         } else {
             // On the ground, not falling or grinding or jumping
             // Check if landing animation is still playing
