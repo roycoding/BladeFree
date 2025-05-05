@@ -41,30 +41,26 @@ Create a web browser-based game called "BladeFree," inspired by SkiFree's freest
     *   **Mobile Controls:** Basic touch input (tap left/right half) implemented for player movement.
     *   **Graphics & Animation (Started):** Player placeholder replaced with a sprite sheet (`assets/graphics/skater.png`, 32x48 frames). Animations defined in `GameplayScene.create` for `skate-cycle`, `jump-airborne`, `jump-landing`, `grind`, and `fall`.
 
-## Current Issue: Player Animation State Problems
+## Animation Issues Fixed
 
-Despite implementing the player sprite sheet and defining animations, there are persistent issues with displaying the correct animation frame during specific states:
+The player animation issues have been resolved. The problem was related to incorrect frame mapping in the sprite sheet:
 
-1.  **Jump Airborne Animation:** When the player hits a ramp and the `isJumping` state becomes true, the player sprite often disappears completely instead of displaying the intended airborne frame (frame 5). Console logs confirm that the code logic correctly identifies the `isJumping` state and attempts to play the `jump-airborne` animation.
-2.  **Grind Animation:** When the player overlaps a rail and the `isGrinding` state becomes true, the player sprite displays the wrong frame (visually appears to be frame 5, the airborne pose) instead of the intended grind pose (frame 8). Console logs confirm the `isGrinding` state is active and the code attempts to play the `grind` animation.
+1. **Sprite Sheet Layout Discovery:** We found that the sprite sheet has 8 frames per row (even though only 4 are visible), meaning the frame indices work differently than initially expected.
 
-**Working Animations:**
+2. **Correct Frame Mapping:**
+   - Skating cycle: frames 0-3
+   - Jump takeoff: frame 8
+   - Jump airborne: frame 9
+   - Jump landing: frame 10
+   - Collision 1: frame 11
+   - Grind pose: frame 16
+   - Grab trick: frame 17
+   - Collision 2: frame 18
+   - Collision 3: frame 19
 
-*   The default `skate-cycle` animation (frames 0-3) plays correctly when the player is on the ground.
-*   The `fall` animation (frames 7, 10, 11) plays correctly when the player collides with an obstacle.
-*   The `jump-landing` animation (frame 6) seems to play briefly upon landing.
+3. **Solution Implemented:**
+   - Updated animation definitions to use the correct frame indices
+   - Modified direct frame setting in the update loop to use frames 9 and 16 for jumping and grinding respectively
+   - Added debug frame display to verify correct frame indices
 
-**Troubleshooting Steps Taken (Without Success):**
-
-*   Verified sprite sheet layout and frame indexing (zero-based).
-*   Confirmed correct frames exist visually in the PNG.
-*   Adjusted animation frame rates.
-*   Tried defining single-frame animations using both `{ key: 'skater', frame: N }` and `generateFrameNumbers({ start: N, end: N })`.
-*   Used `player.setFrame(N)` directly instead of `player.play('anim_key')` - this also failed to show the correct frame visually, even though logs indicated the correct frame index was being requested.
-*   Added explicit `player.anims.stop()` before `play()` calls.
-*   Removed explicit `stop()` calls.
-*   Ensured state flags (`isJumping`, `isGrinding`) are mutually exclusive when set.
-*   Adjusted the priority order of animation checks in the `update` loop.
-*   Ensured the `jump-landing` animation has `repeat: 0`.
-
-The core problem seems to be that even when the state logic correctly identifies the jump or grind state and attempts to play the corresponding single-frame animation (or set the corresponding frame directly), the visual result is incorrect (invisible or wrong frame). The multi-frame animations (`skate-cycle`, `fall`) work as expected.
+All animations now display correctly during gameplay, with the skater showing the appropriate pose for each state (skating, jumping, grinding, falling).
