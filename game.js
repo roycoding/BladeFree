@@ -15,6 +15,52 @@ class StartScene extends Phaser.Scene {
     constructor() {
         super('StartScene');
     }
+    
+    // Create cement textures for background
+    createCementTextures() {
+        // Create 10-15 random cement patches with varying shades and sizes
+        const numPatches = Phaser.Math.Between(10, 15);
+        
+        for (let i = 0; i < numPatches; i++) {
+            // Random position within the game area
+            const x = Phaser.Math.Between(0, GAME_WIDTH);
+            const y = Phaser.Math.Between(0, GAME_HEIGHT);
+            
+            // Random size between 50 and 150 pixels
+            const size = Phaser.Math.Between(50, 150);
+            
+            // Random shade of gray (slightly lighter or darker than base)
+            const shade = Phaser.Math.Between(-20, 20);
+            const baseColor = 0x8c8c8c;
+            const r = Math.min(255, Math.max(0, ((baseColor >> 16) & 0xFF) + shade));
+            const g = Math.min(255, Math.max(0, ((baseColor >> 8) & 0xFF) + shade));
+            const b = Math.min(255, Math.max(0, (baseColor & 0xFF) + shade));
+            const color = (r << 16) | (g << 8) | b;
+            
+            // Create a graphics object for the patch
+            const patch = this.add.graphics();
+            patch.fillStyle(color, 0.6); // Semi-transparent
+            
+            // Randomly choose between circle and rectangle
+            if (Phaser.Math.Between(0, 1) === 0) {
+                // Circle
+                patch.fillCircle(0, 0, size / 2);
+            } else {
+                // Rectangle with rounded corners
+                patch.fillRoundedRect(-size/2, -size/2, size, size, 10);
+            }
+            
+            // Convert to sprite texture
+            const texture = patch.createGeometryMask();
+            const sprite = this.add.sprite(x, y, texture.bitmapMask.texture);
+            
+            // Set depth to be below player and other game elements
+            sprite.setDepth(-1);
+            
+            // Clean up the graphics object
+            patch.destroy();
+        }
+    }
 
     preload() {
         // Load UI confirmation sound
@@ -24,6 +70,9 @@ class StartScene extends Phaser.Scene {
     create() {
         // Set the background color to a cement-like gray
         this.cameras.main.setBackgroundColor('#8c8c8c');
+        
+        // Create random cement texture patches
+        this.createCementTextures();
         
         // Add title text
         this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 3, 'BladeFree', {
@@ -138,6 +187,9 @@ class GameplayScene extends Phaser.Scene {
         
         // Set the background color to a cement-like gray
         this.cameras.main.setBackgroundColor('#8c8c8c');
+        
+        // Create random cement texture patches
+        this.createCementTextures();
 
         // Add the player sprite using the loaded spritesheet
         // Positioned horizontally centered, vertically at PLAYER_START_Y
@@ -493,6 +545,52 @@ class GameplayScene extends Phaser.Scene {
         this.showPointsPopup(player.x, player.y, collectiblePoints);
     }
 
+    // --- Create Cement Textures ---
+    createCementTextures() {
+        // Create 15-25 random cement patches with varying shades and sizes
+        const numPatches = Phaser.Math.Between(15, 25);
+        
+        for (let i = 0; i < numPatches; i++) {
+            // Random position within the game area
+            const x = Phaser.Math.Between(0, GAME_WIDTH);
+            const y = Phaser.Math.Between(0, GAME_HEIGHT);
+            
+            // Random size between 50 and 150 pixels
+            const size = Phaser.Math.Between(50, 150);
+            
+            // Random shade of gray (slightly lighter or darker than base)
+            const shade = Phaser.Math.Between(-20, 20);
+            const baseColor = 0x8c8c8c;
+            const r = Math.min(255, Math.max(0, ((baseColor >> 16) & 0xFF) + shade));
+            const g = Math.min(255, Math.max(0, ((baseColor >> 8) & 0xFF) + shade));
+            const b = Math.min(255, Math.max(0, (baseColor & 0xFF) + shade));
+            const color = (r << 16) | (g << 8) | b;
+            
+            // Create a graphics object for the patch
+            const patch = this.add.graphics();
+            patch.fillStyle(color, 0.6); // Semi-transparent
+            
+            // Randomly choose between circle and rectangle
+            if (Phaser.Math.Between(0, 1) === 0) {
+                // Circle
+                patch.fillCircle(0, 0, size / 2);
+            } else {
+                // Rectangle with rounded corners
+                patch.fillRoundedRect(-size/2, -size/2, size, size, 10);
+            }
+            
+            // Convert to sprite texture
+            const texture = patch.createGeometryMask();
+            const sprite = this.add.sprite(x, y, texture.bitmapMask.texture);
+            
+            // Set depth to be below player and other game elements
+            sprite.setDepth(-1);
+            
+            // Clean up the graphics object
+            patch.destroy();
+        }
+    }
+
     // --- Show Points Pop-up ---
     showPointsPopup(x, y, points) {
         const pointsText = this.add.text(x, y, `+${points}`, {
@@ -708,6 +806,52 @@ class GameOverScene extends Phaser.Scene {
         this.finalScore = 0;
         this.highScore = 0;
     }
+    
+    // Create cement textures for background
+    createCementTextures() {
+        // Create 10-15 random cement patches with varying shades and sizes
+        const numPatches = Phaser.Math.Between(10, 15);
+        
+        for (let i = 0; i < numPatches; i++) {
+            // Random position within the game area
+            const x = Phaser.Math.Between(0, GAME_WIDTH);
+            const y = Phaser.Math.Between(0, GAME_HEIGHT);
+            
+            // Random size between 50 and 150 pixels
+            const size = Phaser.Math.Between(50, 150);
+            
+            // Random shade of gray (slightly lighter or darker than base)
+            const shade = Phaser.Math.Between(-20, 20);
+            const baseColor = 0x8c8c8c;
+            const r = Math.min(255, Math.max(0, ((baseColor >> 16) & 0xFF) + shade));
+            const g = Math.min(255, Math.max(0, ((baseColor >> 8) & 0xFF) + shade));
+            const b = Math.min(255, Math.max(0, (baseColor & 0xFF) + shade));
+            const color = (r << 16) | (g << 8) | b;
+            
+            // Create a graphics object for the patch
+            const patch = this.add.graphics();
+            patch.fillStyle(color, 0.6); // Semi-transparent
+            
+            // Randomly choose between circle and rectangle
+            if (Phaser.Math.Between(0, 1) === 0) {
+                // Circle
+                patch.fillCircle(0, 0, size / 2);
+            } else {
+                // Rectangle with rounded corners
+                patch.fillRoundedRect(-size/2, -size/2, size, size, 10);
+            }
+            
+            // Convert to sprite texture
+            const texture = patch.createGeometryMask();
+            const sprite = this.add.sprite(x, y, texture.bitmapMask.texture);
+            
+            // Set depth to be below player and other game elements
+            sprite.setDepth(-1);
+            
+            // Clean up the graphics object
+            patch.destroy();
+        }
+    }
 
     preload() {
         // Load UI confirmation sound if needed for restart button
@@ -724,6 +868,9 @@ class GameOverScene extends Phaser.Scene {
     create() {
         // Set the background color to a cement-like gray
         this.cameras.main.setBackgroundColor('#8c8c8c');
+        
+        // Create random cement texture patches
+        this.createCementTextures();
         
         // Load high score
         this.highScore = localStorage.getItem('bladeFreeHighScore') || 0;
