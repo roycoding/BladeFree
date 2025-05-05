@@ -289,20 +289,20 @@ class GameplayScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'jump-airborne',
-            frames: [{ key: 'skater', frame: 9 }], // Use frame 9 (visually frame 5)
+            frames: [{ key: 'skater', frame: 5 }], // Use frame 5 (airborne pose)
             frameRate: 20
         });
 
         this.anims.create({
             key: 'jump-landing',
-            frames: [{ key: 'skater', frame: 10 }], // Use frame 10 (visually frame 6)
+            frames: [{ key: 'skater', frame: 6 }], // Use frame 6 (landing pose)
             frameRate: 10,
             repeat: 0 // Play only once
         });
 
         this.anims.create({
             key: 'grind',
-            frames: [{ key: 'skater', frame: 9 }], // Change from frame 8 to frame 9 (visually frame 5)
+            frames: [{ key: 'skater', frame: 16 }], // Use frame 16 for grinding pose
             frameRate: 20
         });
 
@@ -622,13 +622,13 @@ class GameplayScene extends Phaser.Scene {
             console.log("Setting grind animation");
             this.player.anims.stop(); // Explicitly stop previous animation
             // Try direct frame setting instead of animation
-            this.player.setTexture('skater', 9); // Directly set to frame 9 (visually frame 5)
+            this.player.setTexture('skater', 16); // Directly set to frame 16 for grinding
             console.log(`After direct frame set for grind, frame is: ${this.player.frame.name}`);
         } else if (this.isJumping) { // Check jumping after grinding
             console.log("Setting jump-airborne animation");
             this.player.anims.stop(); // Explicitly stop previous animation
             // Try direct frame setting for consistency with grind approach
-            this.player.setTexture('skater', 9); // Directly set to frame 9 (visually frame 5)
+            this.player.setTexture('skater', 5); // Directly set to frame 5 for jumping
             console.log(`After direct frame set for jump, frame is: ${this.player.frame.name}`);
         } else {
             // On the ground, not falling or grinding or jumping
