@@ -74,13 +74,11 @@ class GameplayScene extends Phaser.Scene {
     }
 
     preload() {
-        // --- Player Placeholder ---
-        // Create a simple placeholder graphic for the skater
-        // We'll draw a 32x48 green rectangle texture
-        let graphics = this.make.graphics({ fillStyle: { color: 0x00ff00 } }); // Green color
-        graphics.fillRect(0, 0, 32, 48);
-        graphics.generateTexture('skater_placeholder', 32, 48);
-        graphics.destroy();
+        // --- Player Spritesheet ---
+        this.load.spritesheet('skater', 'assets/graphics/skate.png', {
+            frameWidth: 32,
+            frameHeight: 48
+        });
 
         // --- Obstacle Placeholder ---
         // Create a simple red square placeholder for obstacles
@@ -132,9 +130,9 @@ class GameplayScene extends Phaser.Scene {
     create() {
         console.log("GameplayScene create started");
 
-        // Add the player sprite using the placeholder texture
+        // Add the player sprite using the loaded spritesheet
         // Positioned horizontally centered, vertically at PLAYER_START_Y
-        this.player = this.physics.add.sprite(GAME_WIDTH / 2, PLAYER_START_Y, 'skater_placeholder');
+        this.player = this.physics.add.sprite(GAME_WIDTH / 2, PLAYER_START_Y, 'skater'); // Use 'skater' key
 
         // Enable physics collision with the world bounds (edges of the screen)
         this.player.setCollideWorldBounds(true);
@@ -264,6 +262,51 @@ class GameplayScene extends Phaser.Scene {
         // Play music looping, adjust volume as needed
         this.sound.play('music', { loop: true, volume: 0.5 });
 
+        // --- Create Player Animations ---
+        this.anims.create({
+            key: 'skate-cycle',
+            frames: this.anims.generateFrameNumbers('skater', { start: 0, end: 3 }),
+            frameRate: 10, // Adjust frame rate as needed
+            repeat: -1 // Loop forever
+        });
+
+        this.anims.create({
+            key: 'jump-airborne',
+            frames: [{ key: 'skater', frame: 5 }], // Single frame for airborne
+            frameRate: 20
+        });
+
+        this.anims.create({
+            key: 'jump-landing',
+            frames: [{ key: 'skater', frame: 6 }], // Single frame for landing
+            frameRate: 20
+        });
+
+        this.anims.create({
+            key: 'grind',
+            frames: [{ key: 'skater', frame: 8 }], // Single frame for grinding
+            frameRate: 20
+        });
+
+        this.anims.create({
+            key: 'fall',
+            // Use frames 7, 10, 11 for collision sequence
+            frames: this.anims.generateFrameNumbers('skater', { frames: [7, 10, 11] }),
+            frameRate: 8,
+            repeat: 0 // Play once
+        });
+
+        // Set initial animation
+        this.player.play('skate-cycle', true); // Start playing the skate cycle
+
+        // Optional: Listen for animation complete to transition after landing
+        this.player.on('animationcomplete-jump-landing', () => {
+             if (!this.isGrinding && !this.isJumping) { // Check state before switching
+                 this.player.play('skate-cycle', true);
+             }
+        }, this);
+
+
         console.log("GameplayScene create/reset finished");
     }
 
@@ -366,7 +409,16 @@ class GameplayScene extends Phaser.Scene {
         this.sound.play('collide');
         this.sound.play('game_over'); // Play game over sound effect
 
-        // Transition to GameOverScene, passing the final score
+        // Play fall animation and stop player physics interaction
+        player.play('fall');
+        player.body.enable = false; // Disable physics body to stop further checks
+
+        // Transition to GameOverScene slightly delayed to show fall anim
+        this.time.delayedCall(500, () => { // Delay 500ms
+            console.log(`Transitioning to GameOverScene with score: ${finalScore}`);
+            this.scene.start('GameOverScene', { score: finalScore });
+        }, [], this);
+    }
         console.log(`Transitioning to GameOverScene with score: ${finalScore}`);
         this.scene.start('GameOverScene', { score: finalScore });
     }
@@ -396,6 +448,8 @@ class GameplayScene extends Phaser.Scene {
         // Apply upward velocity for the jump
         player.setVelocityY(-JUMP_VELOCITY);
         this.isJumping = true; // Set jumping flag
+        // Play airborne animation immediately (takeoff is implicit)
+        player.play('jump-airborne', true);
         console.log(`Jump initiated! VelocityY: ${player.body.velocity.y}, PlayerY: ${player.y}`);
         this.sound.play('jump'); // Play jump sound
 
@@ -502,17 +556,49 @@ class GameplayScene extends Phaser.Scene {
 
         // --- Player Horizontal Movement (Keyboard) ---
         // Keyboard input overrides touch input if both are active
+        let movingHorizontally = false;
         if (this.cursors.left.isDown) {
+            movingHorizontally = true;
             this.player.setVelocityX(-PLAYER_SPEED);
         } else if (this.cursors.right.isDown) {
+            movingHorizontally = true;
             this.player.setVelocityX(PLAYER_SPEED);
         } else {
-            // If neither keyboard key is down, check if touch is still active
-            // (The pointerup listener should handle stopping, but this is a fallback)
-            if (!this.input.activePointer.isDown) {
+            // Check touch input if keyboard isn't used
+            if (this.input.activePointer.isDown) {
+                 if (this.input.activePointer.x < GAME_WIDTH / 2) {
+                     this.player.setVelocityX(-PLAYER_SPEED);
+                     movingHorizontally = true;
+                 } else {
+                     this.player.setVelocityX(PLAYER_SPEED);
+                     movingHorizontally = true;
+                 }
+            } else {
+                 // No input active
                  this.player.setVelocityX(0);
+                 movingHorizontally = false;
             }
-            // If touch IS down, the pointerdown listener should be setting velocity
+
+            // If neither keyboard key is down, check if touch is still active
+            // This check might be redundant now with the logic above
+            // if (!this.input.activePointer.isDown) {
+            //      this.player.setVelocityX(0);
+            // }
+        }
+
+        // --- Player Animation Control ---
+        if (this.isGrinding) {
+            this.player.play('grind', true); // Play grind animation
+        } else if (this.isJumping) {
+            // Decide airborne animation based on velocity? For now, just one.
+            // Could check player.body.velocity.y < 0 for rising, > 0 for falling
+             this.player.play('jump-airborne', true); // Play airborne animation
+        } else {
+            // On the ground and not grinding
+            // Check if landing animation is playing, if so let it finish
+            if (this.player.anims.currentAnim?.key !== 'jump-landing') {
+                 this.player.play('skate-cycle', true); // Default to skating cycle
+            }
         }
 
         // --- Score Increment ---
@@ -559,6 +645,8 @@ class GameplayScene extends Phaser.Scene {
             this.player.setY(PLAYER_START_Y); // Snap back exactly to the start line
             this.sound.play('land'); // Play landing sound
             this.isJumping = false; // Reset jumping flag
+            // Play landing animation (will transition back to skate in animationcomplete listener)
+            this.player.play('jump-landing', true);
         }
         // Ensure player doesn't get stuck slightly below the line if not jumping/grinding
         else if (!this.isJumping && !this.isGrinding && this.player.y > PLAYER_START_Y) {
