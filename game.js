@@ -104,7 +104,7 @@ class GameplayScene extends Phaser.Scene {
 
         // --- Ramp Placeholder ---
         // Create a simple blue rectangle placeholder for ramps
-        graphics = this.make.graphics({ fillStyle: { color: 0x0000ff } }); // Blue color
+        let graphics = this.make.graphics({ fillStyle: { color: 0x0000ff } }); // Blue color
         graphics.fillRect(0, 0, 80, 20); // 80 wide, 20 high rectangle
         graphics.generateTexture('ramp_placeholder', 80, 20);
         graphics.destroy();
