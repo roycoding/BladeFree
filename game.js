@@ -316,6 +316,33 @@ class GameplayScene extends Phaser.Scene {
             }
         }, this);
 
+        // --- DEBUG: Display all frames ---
+        const startX = 50;
+        const startY = 100;
+        const spacingX = 40;
+        const spacingY = 70;
+        const framesPerRow = 10;
+        const frameWidth = 32;
+        const frameHeight = 48;
+
+        for (let i = 0; i < 32; i++) { // Assuming 32 frames total (0-31)
+            const row = Math.floor(i / framesPerRow);
+            const col = i % framesPerRow;
+            const x = startX + col * spacingX;
+            const y = startY + row * spacingY;
+
+            // Display the sprite frame
+            this.add.sprite(x, y, 'skater', i).setOrigin(0.5);
+
+            // Display the frame number underneath
+            this.add.text(x, y + frameHeight / 2 + 10, `${i}`, {
+                fontSize: '12px',
+                fill: '#fff',
+                fontFamily: 'Arial'
+            }).setOrigin(0.5);
+        }
+        // --- END DEBUG ---
+
 
         console.log("GameplayScene create/reset finished");
     }
