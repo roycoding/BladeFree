@@ -86,7 +86,7 @@ class GameplayScene extends Phaser.Scene {
             27: { name: 'Helmet', points: 50 }, // Helmet worth more
             28: { name: 'Bearings', points: 25 },
             29: { name: 'Knee Pads', points: 25 },
-            30: { name: 'VHS Tape', points: 25 },
+            30: { name: 'New Skate Video', points: 25 },
             31: { name: 'Baggie Jeans', points: 25 }
         };
     }

@@ -44,7 +44,7 @@ Create a web browser-based game called "BladeFree," inspired by SkiFree's freest
 ## Recent Changes (2025-05-05)
 
 *   Replaced yellow circle collectible placeholders with frames 24-31 from `skater.png`.
-*   Defined names and point values for each collectible item (Helmet = 50 points).
+*   Defined names (e.g., "New Skate Video") and point values for each collectible item (Helmet = 50 points).
 *   Updated points pop-up to display the collected item's name.
 *   Replaced red square obstacle placeholders with frames 32-36 from `skater.png`.
 *   Fixed a `ReferenceError: assignment to undeclared variable graphics` in `GameplayScene.preload`.
