@@ -77,6 +77,18 @@ class GameplayScene extends Phaser.Scene {
         this.scoreText = null;      // Text object for current score
         this.highScoreText = null;  // Text object for high score
         // this.isGameOver = false; // No longer needed, scene state handles this
+
+        // Mapping for collectible items
+        this.collectibleData = {
+            24: { name: 'Skates', points: 25 },
+            25: { name: 'Wheels', points: 25 },
+            26: { name: 'Wax', points: 25 },
+            27: { name: 'Helmet', points: 50 }, // Helmet worth more
+            28: { name: 'Bearings', points: 25 },
+            29: { name: 'Knee Pads', points: 25 },
+            30: { name: 'VHS Tape', points: 25 },
+            31: { name: 'Baggie Jeans', points: 25 }
+        };
     }
 
     preload() {
@@ -501,31 +513,49 @@ class GameplayScene extends Phaser.Scene {
 
     // --- Collectible Handling ---
     handleCollect(player, collectible) {
-        console.log("Collectible collected!");
+        const frameIndex = collectible.frame.name; // Get the frame index (which is the name property)
+        const itemData = this.collectibleData[frameIndex];
+
+        if (!itemData) {
+            console.warn(`Collected item with unknown frame index: ${frameIndex}`);
+            collectible.destroy();
+            return;
+        }
+
+        const itemName = itemData.name;
+        const collectiblePoints = itemData.points;
+
+        console.log(`${itemName} collected!`);
 
         // Award points
-        const collectiblePoints = 25; // Example points
         this.score += collectiblePoints;
         this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
-        console.log(`+${collectiblePoints} points for collectible!`);
+        console.log(`+${collectiblePoints} points for ${itemName}!`);
 
-        // Add sound/visual effect later (Phase 5)
-        this.sound.play('collect'); // Play collect sound
+        // Play collect sound
+        this.sound.play('collect');
 
         // Destroy the collectible
         collectible.destroy();
 
-        // Show points pop-up
-        this.showPointsPopup(player.x, player.y, collectiblePoints);
+        // Show points pop-up with item name
+        this.showPointsPopup(player.x, player.y, collectiblePoints, itemName);
     }
 
 
     // --- Show Points Pop-up ---
-    showPointsPopup(x, y, points) {
-        const pointsText = this.add.text(x, y, `+${points}`, {
-            fontSize: '20px',
+    showPointsPopup(x, y, points, itemName = null) { // Add itemName parameter
+        // Construct the text string
+        let popupText = `+${points}`;
+        if (itemName) {
+            popupText = `${itemName}\n+${points}`; // Add item name on a new line
+        }
+
+        const pointsText = this.add.text(x, y, popupText, {
+            fontSize: '18px', // Slightly smaller to fit name
             fill: '#ffff00', // Yellow for points
             fontFamily: 'Arial',
+            align: 'center', // Center align if multiple lines
             stroke: '#000000', // Black stroke for visibility
             strokeThickness: 4
         }).setOrigin(0.5);
