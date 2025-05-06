@@ -383,7 +383,11 @@ class GameplayScene extends Phaser.Scene {
             const obstacleFrames = [32, 33, 34, 35, 36];
             const randomFrame = Phaser.Utils.Array.GetRandom(obstacleFrames);
             spawnedItem = group.create(spawnX, spawnY, itemKey, randomFrame); // Create with specific frame
-            console.log(`Obstacle (frame ${randomFrame}) spawned at (${spawnX}, ${spawnY})`);
+            // Randomly flip the obstacle horizontally
+            if (Phaser.Math.Between(0, 1) === 0) {
+                spawnedItem.setFlipX(true);
+            }
+            console.log(`Obstacle (frame ${randomFrame}, flipX: ${spawnedItem.flipX}) spawned at (${spawnX}, ${spawnY})`);
         }
 
 
