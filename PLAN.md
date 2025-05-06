@@ -113,7 +113,7 @@
     - [x] `create` (`GameplayScene`): Play background music (`loop: true`).
     - [x] Trigger sound effects on corresponding actions (`this.sound.play(...)`).
 - [ ] **Graphics & Animation:**
-    - [ ] Replace placeholders with final retro-style graphics (inspired by `roy_skate1.png`).
+    - [x] Replace placeholders with final retro-style graphics (inspired by `roy_skate1.png`). *(Obstacles and Collectibles done)*
     - [x] Create sprite sheets for player animations (skating, jumping, grinding, falling).
     - [x] Use Phaser's animation manager (`this.anims.create`) to define animations.
     - [x] Play correct player animation based on state.

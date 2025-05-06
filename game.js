@@ -99,11 +99,8 @@ class GameplayScene extends Phaser.Scene {
         });
 
         // --- Obstacle Placeholder ---
-        // Create a simple red square placeholder for obstacles
-        let graphics = this.make.graphics({ fillStyle: { color: 0xff0000 } }); // Red color
-        graphics.fillRect(0, 0, 40, 40); // 40x40 square
-        graphics.generateTexture('obstacle_placeholder', 40, 40);
-        graphics.destroy();
+        // Obstacles will now use frames from the 'skater' spritesheet.
+        // No separate placeholder texture needed.
 
         // --- Ramp Placeholder ---
         // Create a simple blue rectangle placeholder for ramps
@@ -380,10 +377,13 @@ class GameplayScene extends Phaser.Scene {
             spawnedItem.body.setCircle(spawnedItem.width / 2);
             console.log(`Collectible (frame ${randomFrame}) spawned at (${spawnX}, ${spawnY})`);
         } else { // 'obstacle'
-            itemKey = 'obstacle_placeholder';
+            itemKey = 'skater'; // Use the main spritesheet
             group = this.obstacles;
-            spawnedItem = group.create(spawnX, spawnY, itemKey);
-            console.log(`Obstacle spawned at (${spawnX}, ${spawnY})`);
+            // Randomly select an obstacle frame index (32-36)
+            const obstacleFrames = [32, 33, 34, 35, 36];
+            const randomFrame = Phaser.Utils.Array.GetRandom(obstacleFrames);
+            spawnedItem = group.create(spawnX, spawnY, itemKey, randomFrame); // Create with specific frame
+            console.log(`Obstacle (frame ${randomFrame}) spawned at (${spawnX}, ${spawnY})`);
         }
 
 
