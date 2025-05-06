@@ -321,7 +321,7 @@ class GameplayScene extends Phaser.Scene {
         const startY = 100;
         const spacingX = 40;
         const spacingY = 70;
-        const framesPerRow = 10;
+        const framesPerRow = 8; // Corrected based on 256px width / 32px frameWidth
         const frameWidth = 32;
         const frameHeight = 48;
 
