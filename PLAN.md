@@ -26,7 +26,7 @@
 ## Phase 2: Obstacles & Collision
 
 - [x] **Obstacle Creation:**
-    - [x] `preload`: Load placeholder obstacle assets (e.g., cone, rock).
+    - [x] `preload`: Load placeholder obstacle assets (e.g., cone, rock). *(Replaced with sprite frames)*
     - [x] `create`: Create a Phaser Group for obstacles (`this.obstacles`).
     - [x] Implement timed event/function to spawn obstacles periodically.
     - [x] Spawn obstacles above the top screen edge.
@@ -36,13 +36,13 @@
 - [x] **Collision Detection:**
     - [x] `create`: Set up physics collider between player and `obstacles` group.
     - [x] Create `handleCollision(player, obstacle)` function.
-    - [x] `handleCollision`: Implement initial game over logic (e.g., stop player, log message).
+    - [x] `handleCollision`: Implement initial game over logic (e.g., stop player, log message). *(Now transitions to GameOverScene)*
 
 ## Phase 3: Scoring & UI
 
 - [x] **Basic Score:**
     - [x] Initialize `this.score = 0` in `create` or `init`.
-    - [x] `update`: Increment score based on time/distance.
+    - [x] `update`: Increment score based on time/distance. *(Also increments on tricks/collect)*
     - [x] `preload`: Load font or prepare to use default text.
     - [x] `create`: Create `this.scoreText` Phaser Text object.
     - [x] `create`: Position score text (e.g., top-right).
@@ -57,14 +57,14 @@
 ## Phase 4: Tricks, Collectibles & Game States
 
 - [x] **Ramps & Jumps:**
-    - [x] `preload`: Load ramp asset.
+    - [x] `preload`: Load ramp asset. *(Placeholder done)*
     - [x] `create`: Create `ramps` group.
     - [x] Implement spawning logic for ramps.
     - [x] `create`: Set up physics *overlap* check between player and `ramps`.
     - [x] Create `handleRampOverlap(player, ramp)` function.
-    - [x] `handleRampOverlap`: Trigger jump state (velocity change, animation). *(Velocity change done)*
+    - [x] `handleRampOverlap`: Trigger jump state (velocity change, animation).
     - [x] `handleRampOverlap`: Add points for the jump.
-    - [x] `handleRampOverlap`: Play jump sound/visual effect.
+    - [x] `handleRampOverlap`: Play jump sound/visual effect. *(Sound and point popup done)*
 - [x] **Rails/Ledges & Grinding:**
     - [x] `preload`: Load rail/ledge asset. *(Placeholder done)*
     - [x] `create`: Create `grindables` group.
@@ -72,11 +72,11 @@
     - [x] `create`: Set up physics *overlap* check between player and `grindables`.
     - [x] Create `handleGrindOverlapStart(player, grindable)` function. *(Implemented in `handleGrindOverlap`)*
     - [x] Create `handleGrindOverlapEnd(player, grindable)` function (or check in `update`). *(Implemented as `endGrind` and check in `update`)*
-    - [x] `handleGrindOverlapStart`: Enter grinding state (snap position, change animation, sparks). *(Snap position done)*
+    - [x] `handleGrindOverlapStart`: Enter grinding state (snap position, change animation, sparks). *(Snap position and animation done)*
     - [x] `update` (while grinding): Add points based on duration.
     - [x] `handleGrindOverlapEnd`: Exit grinding state.
 - [x] **Collectibles:**
-    - [x] `preload`: Load collectible item assets (skates, wheels, etc.). *(Placeholder done)*
+    - [x] `preload`: Load collectible item assets (skates, wheels, etc.). *(Replaced with sprite frames)*
     - [x] `create`: Create `collectibles` group.
     - [x] Implement spawning logic for collectibles.
     - [x] `create`: Set up physics *overlap* check between player and `collectibles`.
@@ -100,8 +100,8 @@
         - [x] `create`: Display final score.
         - [x] `create`: Display high scores (load from `localStorage`).
         - [ ] `create`: Implement/play funny game over animation (dog drag).
-        - [x] `create`: Display "Restart?" / "Quit?" options.
-        - [x] `create`: Add input listeners for restart/quit.
+        - [x] `create`: Display "Restart?" / "Quit?" options. *(Restart only)*
+        - [x] `create`: Add input listeners for restart/quit. *(Restart only)*
         - [x] On Restart: `this.scene.start('GameplayScene')`.
         - [ ] On Quit: Display "Later Blader 🤙" text.
 
@@ -114,11 +114,14 @@
     - [x] Trigger sound effects on corresponding actions (`this.sound.play(...)`).
 - [ ] **Graphics & Animation:**
     - [x] Replace placeholders with final retro-style graphics (inspired by `roy_skate1.png`). *(Obstacles and Collectibles done)*
+    - [ ] Replace ramp placeholder with final graphics.
+    - [ ] Replace rail/ledge placeholder with final graphics.
     - [x] Create sprite sheets for player animations (skating, jumping, grinding, falling).
     - [x] Use Phaser's animation manager (`this.anims.create`) to define animations.
     - [x] Play correct player animation based on state.
     - [ ] Add particle effects (grind sparks, jump poof).
     - [x] Implement point pop-up visuals.
+    - [ ] Change background color/add background image.
 - [x] **Mobile Controls:**
     - [x] `create`: Add touch input listeners (`this.input.on('pointerdown', ...)`).
     - [x] Implement logic to detect touch on left/right screen halves.
