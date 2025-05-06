@@ -110,12 +110,8 @@ class GameplayScene extends Phaser.Scene {
         graphics.destroy();
 
         // --- Collectible Placeholder ---
-        // Create a simple yellow circle placeholder for collectibles
-        graphics = this.make.graphics({ fillStyle: { color: 0xffff00 } }); // Yellow color
-        const collectibleRadius = 15;
-        graphics.fillCircle(collectibleRadius, collectibleRadius, collectibleRadius); // Draw circle
-        graphics.generateTexture('collectible_placeholder', collectibleRadius * 2, collectibleRadius * 2); // Texture size is diameter x diameter
-        graphics.destroy();
+        // Collectibles will now use frames from the 'skater' spritesheet.
+        // No separate placeholder texture needed.
 
         // --- Load Audio Assets ---
         this.load.audio('music', 'assets/audio/music.mp3');
@@ -362,12 +358,15 @@ class GameplayScene extends Phaser.Scene {
             spawnedItem = group.create(safeSpawnX, spawnY, itemKey);
             console.log(`Grindable spawned at (${safeSpawnX}, ${spawnY})`);
         } else if (spawnType === 'collectible') {
-            itemKey = 'collectible_placeholder';
+            itemKey = 'skater'; // Use the main spritesheet
             group = this.collectibles;
-            spawnedItem = group.create(spawnX, spawnY, itemKey);
-            // Make collectibles circular physics bodies
+            // Randomly select a collectible frame index (24-31)
+            const collectibleFrames = [24, 25, 26, 27, 28, 29, 30, 31];
+            const randomFrame = Phaser.Utils.Array.GetRandom(collectibleFrames);
+            spawnedItem = group.create(spawnX, spawnY, itemKey, randomFrame); // Create with specific frame
+            // Make collectibles circular physics bodies (using sprite width)
             spawnedItem.body.setCircle(spawnedItem.width / 2);
-            console.log(`Collectible spawned at (${spawnX}, ${spawnY})`);
+            console.log(`Collectible (frame ${randomFrame}) spawned at (${spawnX}, ${spawnY})`);
         } else { // 'obstacle'
             itemKey = 'obstacle_placeholder';
             group = this.obstacles;
@@ -692,8 +691,10 @@ class GameplayScene extends Phaser.Scene {
         [this.obstacles, this.ramps, this.grindables, this.collectibles].forEach(group => {
             group.children.each(item => {
                 // Check if item exists and has a body (and isn't already marked for destruction)
-                if (item && item.body && item.y > GAME_HEIGHT + item.height) {
-                    console.log(`Destroying off-screen ${item.texture.key}`);
+                if (item && item.body && item.y > GAME_HEIGHT + item.displayHeight) { // Use displayHeight for accurate check
+                    // Log texture key and frame if available
+                    const itemInfo = item.frame ? `${item.texture.key} (frame ${item.frame.name})` : item.texture.key;
+                    console.log(`Destroying off-screen ${itemInfo}`);
                     group.remove(item, true, true); // Remove from group, destroy sprite & body
                 }
             });
