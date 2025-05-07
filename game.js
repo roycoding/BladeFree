@@ -615,8 +615,9 @@ class GameplayScene extends Phaser.Scene {
                 this.updateHelmetIcon();
                 this.sound.play('ui_confirm'); // Sound for gaining helmet
                 // Don't award points for the first helmet, it's a power-up
-                console.log("Helmet acquired!");
-                this.showPointsPopup(player.x, player.y, 0, "Helmet!"); // Show "Helmet!" with 0 points
+                console.log("Helmet acquired! SKULL PROTECTION!");
+                // Show "SKULL PROTECTION" in larger letters, no points text
+                this.showPointsPopup(player.x, player.y, null, "SKULL PROTECTION", true); 
             } else {
                 // Already have a helmet, award points instead
                 this.score += collectiblePoints;
@@ -649,15 +650,22 @@ class GameplayScene extends Phaser.Scene {
     }
 
     // --- Show Points Pop-up ---
-    showPointsPopup(x, y, points, itemName = null) { // Add itemName parameter
+    showPointsPopup(x, y, points, itemName = null, isSpecialMessage = false) { // Add isSpecialMessage parameter
         // Construct the text string
-        let popupText = `+${points}`;
-        if (itemName) {
-            popupText = `${itemName}\n+${points}`; // Add item name on a new line
+        let popupText;
+        let fontSize = '18px'; // Default font size
+
+        if (isSpecialMessage && itemName) {
+            popupText = itemName; // Only the special message
+            fontSize = '28px'; // Larger font for special messages
+        } else if (itemName) {
+            popupText = `${itemName}\n+${points}`; // Item name and points
+        } else {
+            popupText = `+${points}`; // Just points
         }
 
         const pointsText = this.add.text(x, y, popupText, {
-            fontSize: '18px', // Slightly smaller to fit name
+            fontSize: fontSize,
             fill: '#ffff00', // Yellow for points
             fontFamily: 'Arial',
             align: 'center', // Center align if multiple lines
