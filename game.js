@@ -438,34 +438,56 @@ class GameplayScene extends Phaser.Scene {
         this.sound.play('collide');
         this.sound.play('game_over'); // Play game over sound effect
 
-        // Stop player physics interaction
-        this.isFalling = true; // Set falling flag (still relevant for state)
-        player.body.enable = false; // Disable physics body
-        player.setVelocity(0,0); // Stop any residual movement
+        // Stop player physics interaction and set collision pose
+        this.isFalling = true; // Use this flag to manage animation state
+        player.body.enable = false;
+        player.setVelocity(0, 0);
+        player.setTexture('skater', 11); // Collision pose (e.g., first frame of 'fall' animation)
+        player.setOrigin(0.5, 0.5); // Ensure origin
 
-        // Change player sprite to the first part of the dog-drag image (frame 20)
-        player.setTexture('skater', 20);
-        player.setOrigin(0.5, 0.5); // Ensure origin is centered if it was changed
+        const collisionPointX = player.x;
+        const collisionPointY = player.y;
+        const playerSpriteDepth = player.depth;
 
-        // Create and position the other parts of the dog-drag image
-        const dragPart2 = this.add.sprite(player.x + player.displayWidth, player.y, 'skater', 21).setOrigin(0.5, 0.5).setDepth(player.depth);
-        const dragPart3 = this.add.sprite(dragPart2.x + dragPart2.displayWidth, player.y, 'skater', 22).setOrigin(0.5, 0.5).setDepth(player.depth);
+        // 1. Create lone dog sprite off-screen and tween it to the player
+        const loneDogSprite = this.add.sprite(-player.displayWidth, collisionPointY, 'skater', 20)
+            .setOrigin(0.5, 0.5)
+            .setDepth(playerSpriteDepth);
 
-        // Group the main player sprite and the additional parts for the tween
-        const dragGroup = [player, dragPart2, dragPart3];
-
-        // Tween the entire drag image off-screen to the left
         this.tweens.add({
-            targets: dragGroup,
-            x: `-=${GAME_WIDTH + player.displayWidth * 2}`, // Move them all left by screen width + width of 2 extra parts
-            duration: 2000, // Duration of the drag in milliseconds
-            ease: 'Linear',
+            targets: loneDogSprite,
+            x: collisionPointX - player.displayWidth / 2, // Dog arrives next to player's left side
+            duration: 700, // Duration for dog to reach player
+            ease: 'Power1',
             onComplete: () => {
-                console.log(`Transitioning to GameOverScene with score: ${finalScore}`);
-                // Clean up the extra drag parts before changing scene
-                dragPart2.destroy();
-                dragPart3.destroy();
-                this.scene.start('GameOverScene', { score: finalScore });
+                // 2. Dog has reached player. Make player and lone dog invisible.
+                player.setVisible(false);
+                loneDogSprite.destroy(); // Destroy the temporary lone dog
+
+                // 3. Create the composite "dog dragging skater" image
+                //    (Dog - SkaterTorso - SkaterLegs)
+                const dragDog = this.add.sprite(collisionPointX - player.displayWidth, collisionPointY, 'skater', 20)
+                    .setOrigin(0.5, 0.5).setDepth(playerSpriteDepth);
+                const dragSkaterMid = this.add.sprite(collisionPointX, collisionPointY, 'skater', 21)
+                    .setOrigin(0.5, 0.5).setDepth(playerSpriteDepth);
+                const dragSkaterEnd = this.add.sprite(collisionPointX + player.displayWidth, collisionPointY, 'skater', 22)
+                    .setOrigin(0.5, 0.5).setDepth(playerSpriteDepth);
+
+                const dragGroup = [dragDog, dragSkaterMid, dragSkaterEnd];
+
+                // 4. Tween the composite image off-screen to the left
+                this.tweens.add({
+                    targets: dragGroup,
+                    x: `-=${GAME_WIDTH + player.displayWidth * 3}`, // Move far enough left
+                    duration: 1500, // Duration of the drag
+                    ease: 'Linear',
+                    onComplete: () => {
+                        console.log(`Transitioning to GameOverScene with score: ${finalScore}`);
+                        // Clean up the drag group sprites
+                        dragGroup.forEach(s => s.destroy());
+                        this.scene.start('GameOverScene', { score: finalScore });
+                    }
+                });
             }
         });
     }
