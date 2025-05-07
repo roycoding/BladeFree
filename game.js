@@ -84,6 +84,7 @@ class GameplayScene extends Phaser.Scene {
         this.highScoreText = null;  // Text object for high score
         this.hasHelmet = false;     // Flag for helmet power-up
         this.helmetIcon = null;     // UI icon for helmet status
+        this.initialHelmetSpawned = false; // Flag to ensure one helmet spawns early
         // this.isGameOver = false; // No longer needed, scene state handles this
 
         // Mapping for collectible items
@@ -271,6 +272,7 @@ class GameplayScene extends Phaser.Scene {
         this.player.setVelocity(0, 0); // Ensure player starts stationary
         this.isFalling = false; // Reset falling state on restart
         this.hasHelmet = false; // Reset helmet status
+        this.initialHelmetSpawned = false; // Reset for next game
         this.updateHelmetIcon(); // Update UI
 
         // Ensure obstacle timer is running if restarting
@@ -352,17 +354,26 @@ class GameplayScene extends Phaser.Scene {
 
     // --- Obstacle/Ramp/Grindable/Collectible Spawning ---
     spawnObstacle() {
-        // Decide what to spawn: 50% obstacle, 15% ramp, 15% grindable, 20% collectible
-        const rand = Phaser.Math.Between(1, 100);
-        let spawnType = 'obstacle'; // Default
-        if (rand <= 15) { // 1-15
-            spawnType = 'ramp';
-        } else if (rand <= 30) { // 16-30
-            spawnType = 'grindable';
-        } else if (rand <= 50) { // 31-50
-             spawnType = 'collectible';
+        let spawnType;
+
+        // Force spawn a helmet as one of the first collectibles if not already done
+        if (!this.initialHelmetSpawned) {
+            spawnType = 'collectible_helmet'; // Special type for initial helmet
+            this.initialHelmetSpawned = true;
+            console.log("Attempting to spawn initial helmet.");
+        } else {
+            // Decide what to spawn: 50% obstacle, 15% ramp, 15% grindable, 20% collectible
+            const rand = Phaser.Math.Between(1, 100);
+            spawnType = 'obstacle'; // Default
+            if (rand <= 15) { // 1-15
+                spawnType = 'ramp';
+            } else if (rand <= 30) { // 16-30
+                spawnType = 'grindable';
+            } else if (rand <= 50) { // 31-50
+                 spawnType = 'collectible';
+            }
+            // else: 51-100 remains 'obstacle'
         }
-        // else: 51-100 remains 'obstacle'
 
         // Calculate a random horizontal position
         // Ensure it's not too close to the edges
@@ -387,12 +398,20 @@ class GameplayScene extends Phaser.Scene {
             const safeSpawnX = Phaser.Math.Clamp(spawnX, grindableWidth / 2 + spawnPadding, GAME_WIDTH - grindableWidth / 2 - spawnPadding); // Add padding
             spawnedItem = group.create(safeSpawnX, spawnY, itemKey);
             console.log(`Grindable spawned at (${safeSpawnX}, ${spawnY})`);
-        } else if (spawnType === 'collectible') {
+        } else if (spawnType === 'collectible' || spawnType === 'collectible_helmet') {
             itemKey = 'skater'; // Use the main spritesheet
             group = this.collectibles;
-            // Randomly select a collectible frame index (24-31)
-            const collectibleFrames = [24, 25, 26, 27, 28, 29, 30, 31];
-            const randomFrame = Phaser.Utils.Array.GetRandom(collectibleFrames);
+            let randomFrame;
+            if (spawnType === 'collectible_helmet') {
+                randomFrame = 27; // Force helmet frame
+            } else {
+                // Randomly select a collectible frame index (24-31), excluding helmet if it was just forced
+                const collectibleFrames = [24, 25, 26, 28, 29, 30, 31]; // All except 27
+                if (Phaser.Math.Between(1, 5) === 1) { // 20% chance to spawn a helmet normally too
+                    collectibleFrames.push(27);
+                }
+                randomFrame = Phaser.Utils.Array.GetRandom(collectibleFrames);
+            }
             spawnedItem = group.create(spawnX, spawnY, itemKey, randomFrame); // Create with specific frame
             // Make collectibles circular physics bodies (using sprite width)
             spawnedItem.body.setCircle(spawnedItem.width / 2);
@@ -428,9 +447,8 @@ class GameplayScene extends Phaser.Scene {
     handleCollision(player, obstacle) {
         console.log("Collision detected!");
 
-        // Stop obstacle spawning
         // player.setAlpha(0.5); // Remove transparency, rely on animation
-        this.obstacleTimer.paused = true; // Stop spawning new obstacles
+        // REMOVED: this.obstacleTimer.paused = true; // This was pausing timer even with helmet
 
         // Optional: Stop the player's movement
         player.setVelocity(0, 0);
