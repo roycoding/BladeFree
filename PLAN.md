@@ -112,18 +112,18 @@
         - [ ] Randomly determine length for grindable.
         - [ ] Create grindable placeholder/sprite with variable height.
         - [ ] Ensure physics body of grindable matches its visual height.
-- [ ] **Helmet Power-up:**
-    - [ ] `GameplayScene`: Add `hasHelmet` boolean flag.
-    - [ ] `GameplayScene`: `preload` helmet icon asset for UI.
-    - [ ] `GameplayScene`: `create` add UI element for helmet status (e.g., near score).
-    - [ ] `GameplayScene`: `handleCollect`:
-        - [ ] If collected item is a helmet:
-            - [ ] If `!hasHelmet`, set `hasHelmet = true`, update UI.
-            - [ ] If `hasHelmet`, award points only.
-    - [ ] `GameplayScene`: `handleCollision`:
-        - [ ] If `hasHelmet`, set `hasHelmet = false`, update UI, play "helmet break" sound, prevent game over.
-        - [ ] If `!hasHelmet`, proceed with game over.
-    - [ ] `GameplayScene`: `preload` "helmet break" sound.
+- [x] **Helmet Power-up:**
+    - [x] `GameplayScene`: Add `hasHelmet` boolean flag.
+    - [x] `GameplayScene`: `preload` helmet icon asset for UI. *(Used frame 27 from skater.png)*
+    - [x] `GameplayScene`: `create` add UI element for helmet status (e.g., near score).
+    - [x] `GameplayScene`: `handleCollect`:
+        - [x] If collected item is a helmet:
+            - [x] If `!hasHelmet`, set `hasHelmet = true`, update UI.
+            - [x] If `hasHelmet`, award points only.
+    - [x] `GameplayScene`: `handleCollision`:
+        - [x] If `hasHelmet`, set `hasHelmet = false`, update UI, play "helmet break" sound, prevent game over.
+        - [x] If `!hasHelmet`, proceed with game over.
+    - [ ] `GameplayScene`: `preload` "helmet break" sound. *(Used 'collide' as placeholder, needs dedicated sound)*
 
 ## Phase 5: Audio & Polish
 

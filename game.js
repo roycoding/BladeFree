@@ -82,6 +82,8 @@ class GameplayScene extends Phaser.Scene {
         this.highScore = 0;         // Highest score achieved
         this.scoreText = null;      // Text object for current score
         this.highScoreText = null;  // Text object for high score
+        this.hasHelmet = false;     // Flag for helmet power-up
+        this.helmetIcon = null;     // UI icon for helmet status
         // this.isGameOver = false; // No longer needed, scene state handles this
 
         // Mapping for collectible items
@@ -139,6 +141,8 @@ class GameplayScene extends Phaser.Scene {
         this.load.audio('ui_confirm', 'assets/audio/ui_confirm.mp3');
         // Load game over sound here so it's ready when transitioning
         this.load.audio('game_over', 'assets/audio/game_over.mp3');
+        // Using 'collide' as placeholder for 'helmet_break' sound for now
+        // this.load.audio('helmet_break', 'assets/audio/helmet_break.mp3');
 
 
         console.log("Assets preloaded");
@@ -249,6 +253,15 @@ class GameplayScene extends Phaser.Scene {
             align: 'left'
         }).setOrigin(0, 0); // Anchor to top-left
 
+        // Helmet UI Icon (next to score)
+        // Using frame 27 (helmet collectible) as the icon. Scale it down.
+        this.helmetIcon = this.add.sprite(GAME_WIDTH - 20 - this.scoreText.width - 10, 20 + 12, 'skater', 27)
+            .setOrigin(1, 0.5) // Align to the right of its position, vertically centered with score text
+            .setScale(0.75)
+            .setVisible(false) // Initially hidden
+            .setDepth(1);
+
+
         // Reset score
         this.score = 0;
         this.scoreText.setText('Score: 0'); // Update display too
@@ -257,6 +270,8 @@ class GameplayScene extends Phaser.Scene {
         this.player.setAlpha(1.0); // Make player fully visible
         this.player.setVelocity(0, 0); // Ensure player starts stationary
         this.isFalling = false; // Reset falling state on restart
+        this.hasHelmet = false; // Reset helmet status
+        this.updateHelmetIcon(); // Update UI
 
         // Ensure obstacle timer is running if restarting
         if (this.obstacleTimer) {
@@ -436,10 +451,37 @@ class GameplayScene extends Phaser.Scene {
 
         // Stop the obstacle timer
         if (this.obstacleTimer) {
-            this.obstacleTimer.paused = true;
+            // this.obstacleTimer.paused = true; // Don't pause if helmet protects
         }
 
-        // Stop music and play collision sound
+        // --- Helmet Protection Check ---
+        if (this.hasHelmet) {
+            this.hasHelmet = false;
+            this.updateHelmetIcon();
+            this.sound.play('collide'); // Placeholder for "helmet_break" sound
+            console.log("Helmet protected player! Lost helmet.");
+
+            // Make player flash briefly to indicate invulnerability/hit
+            this.tweens.add({
+                targets: player,
+                alpha: 0.5,
+                duration: 100,
+                yoyo: true,
+                repeat: 3, // Flash 3 times
+                onComplete: () => {
+                    player.setAlpha(1.0); // Ensure player is fully visible
+                }
+            });
+
+            // Destroy the obstacle that was hit
+            obstacle.destroy();
+            return; // Player continues, game does not end
+        }
+
+        // --- No Helmet: Proceed with Game Over ---
+        if (this.obstacleTimer) { // Pause timer if game is truly over
+            this.obstacleTimer.paused = true;
+        }
         this.sound.stopByKey('music');
         this.sound.play('collide');
         this.sound.play('game_over'); // Play game over sound effect
@@ -448,7 +490,7 @@ class GameplayScene extends Phaser.Scene {
         this.isFalling = true; // Use this flag to manage animation state
         player.body.enable = false;
         player.setVelocity(0, 0);
-        player.setTexture('skater', 11); // Collision pose (e.g., first frame of 'fall' animation)
+        player.setTexture('skater', 11); // Collision pose
         player.setOrigin(0.5, 0.5); // Ensure origin
 
         const collisionPointX = player.x;
@@ -552,21 +594,45 @@ class GameplayScene extends Phaser.Scene {
 
         console.log(`${itemName} collected!`);
 
-        // Award points
-        this.score += collectiblePoints;
-        this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
-        console.log(`+${collectiblePoints} points for ${itemName}!`);
-
-        // Play collect sound
-        this.sound.play('collect');
+        // Special handling for helmet (frame 27)
+        if (frameIndex == '27') { // Frame index is a string
+            if (!this.hasHelmet) {
+                this.hasHelmet = true;
+                this.updateHelmetIcon();
+                this.sound.play('ui_confirm'); // Sound for gaining helmet
+                // Don't award points for the first helmet, it's a power-up
+                console.log("Helmet acquired!");
+                this.showPointsPopup(player.x, player.y, 0, "Helmet!"); // Show "Helmet!" with 0 points
+            } else {
+                // Already have a helmet, award points instead
+                this.score += collectiblePoints;
+                this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
+                console.log(`+${collectiblePoints} points for extra ${itemName}!`);
+                this.sound.play('collect');
+                this.showPointsPopup(player.x, player.y, collectiblePoints, `Extra ${itemName}`);
+            }
+        } else {
+            // Award points for other collectibles
+            this.score += collectiblePoints;
+            this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
+            console.log(`+${collectiblePoints} points for ${itemName}!`);
+            this.sound.play('collect');
+            this.showPointsPopup(player.x, player.y, collectiblePoints, itemName);
+        }
 
         // Destroy the collectible
         collectible.destroy();
-
-        // Show points pop-up with item name
-        this.showPointsPopup(player.x, player.y, collectiblePoints, itemName);
     }
 
+    // --- Update Helmet Icon UI ---
+    updateHelmetIcon() {
+        if (this.helmetIcon) {
+            this.helmetIcon.setVisible(this.hasHelmet);
+            // Adjust position if scoreText width changes significantly (optional refinement)
+            this.helmetIcon.x = GAME_WIDTH - 20 - (this.scoreText ? this.scoreText.width : 100) - 25; // Reposition based on score text width
+            this.helmetIcon.y = 20 + (this.scoreText ? this.scoreText.height / 2 : 12);
+        }
+    }
 
     // --- Show Points Pop-up ---
     showPointsPopup(x, y, points, itemName = null) { // Add itemName parameter
@@ -722,6 +788,7 @@ class GameplayScene extends Phaser.Scene {
             this.score += (normalPointsPerSecond * delta) / 1000;
         }
         this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
+        this.updateHelmetIcon(); // Update helmet icon position if score text width changes
 
 
         // --- Grind End Check ---
