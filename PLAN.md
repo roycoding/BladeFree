@@ -159,6 +159,7 @@
     - [x] Create sprite sheets for player animations (skating, jumping, grinding, falling).
     - [x] Use Phaser's animation manager (`this.anims.create`) to define animations.
     - [x] Play correct player animation based on state.
+    - [ ] Add crash animation when skater collides (distinct from dog-drag setup).
     - [ ] Add particle effects (grind sparks, jump poof).
     - [x] Implement point pop-up visuals.
     - [x] Change background color/add background image. *(Canvas background color changed)*
