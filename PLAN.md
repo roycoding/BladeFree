@@ -53,6 +53,12 @@
     - [x] `create`: Position high score text.
     - [x] `handleCollision`: Compare final score with high score.
     - [x] `handleCollision`: If higher, update high score variable and save to `localStorage`.
+    - [ ] `GameOverScene`: Implement new high score celebration.
+        - [ ] Display "New High Score!" message prominently.
+        - [ ] Show a graphic of the skater with a medal or trophy.
+        - [ ] Play a special sound effect.
+        - [ ] `preload` new graphic assets for medal/trophy.
+        - [ ] `preload` new sound effect.
 
 ## Phase 4: Tricks, Collectibles & Game States
 
