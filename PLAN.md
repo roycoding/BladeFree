@@ -118,7 +118,7 @@
     - [x] `GameplayScene`: `create` add UI element for helmet status (e.g., near score).
     - [x] `GameplayScene`: `handleCollect`:
         - [x] If collected item is a helmet:
-            - [x] If `!hasHelmet`, set `hasHelmet = true`, update UI.
+            - [x] If `!hasHelmet`, set `hasHelmet = true`, update UI, display "SKULL PROTECTION" message.
             - [x] If `hasHelmet`, award points only.
     - [x] `GameplayScene`: `handleCollision`:
         - [x] If `hasHelmet`, set `hasHelmet = false`, update UI, play "helmet break" sound, prevent game over.
