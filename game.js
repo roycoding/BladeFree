@@ -308,8 +308,15 @@ class GameplayScene extends Phaser.Scene {
         this.anims.create({
             key: 'fall',
             // Use frames that visually represent the fall sequence
-            frames: this.anims.generateFrameNumbers('skater', { frames: [11, 2, 3] }),
+            frames: this.anims.generateFrameNumbers('skater', { frames: [11, 2, 3] }), // Original fall
             frameRate: 8,
+            repeat: 0 // Play once
+        });
+
+        this.anims.create({
+            key: 'dog-drag',
+            frames: this.anims.generateFrameNumbers('skater', { start: 20, end: 22 }),
+            frameRate: 5, // Adjust as needed for good visual speed
             repeat: 0 // Play once
         });
 
@@ -438,16 +445,22 @@ class GameplayScene extends Phaser.Scene {
         this.sound.play('collide');
         this.sound.play('game_over'); // Play game over sound effect
 
-        // Play fall animation and stop player physics interaction
-        this.isFalling = true; // Set falling flag
-        player.play('fall');
-        player.body.enable = false; // Disable physics body to stop further checks
+        // Play dog-drag animation and stop player physics interaction
+        this.isFalling = true; // Set falling flag (still relevant for state)
+        player.play('dog-drag');
+        player.body.enable = false; // Disable physics body
 
-        // Transition to GameOverScene slightly delayed to show fall anim
-        this.time.delayedCall(500, () => { // Delay 500ms
-            console.log(`Transitioning to GameOverScene with score: ${finalScore}`);
-            this.scene.start('GameOverScene', { score: finalScore });
-        }, [], this);
+        // Tween the player off-screen to the left
+        this.tweens.add({
+            targets: player,
+            x: -player.width, // Move completely off-screen to the left
+            duration: 2000, // Duration of the drag in milliseconds
+            ease: 'Linear', // Or 'Power1'
+            onComplete: () => {
+                console.log(`Transitioning to GameOverScene with score: ${finalScore}`);
+                this.scene.start('GameOverScene', { score: finalScore });
+            }
+        });
     }
 
     // --- Ramp Overlap Handling ---

@@ -99,7 +99,7 @@
         - [x] `init(data)`: Receive score (`this.finalScore = data.score`).
         - [x] `create`: Display final score.
         - [x] `create`: Display high scores (load from `localStorage`).
-        - [ ] `create`: Implement/play funny game over animation (dog drag).
+        - [x] `create`: Implement/play funny game over animation (dog drag).
         - [x] `create`: Display "Restart?" / "Quit?" options. *(Restart only)*
         - [x] `create`: Add input listeners for restart/quit. *(Restart only)*
         - [x] On Restart: `this.scene.start('GameplayScene')`.
