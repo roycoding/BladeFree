@@ -104,6 +104,26 @@
         - [x] `create`: Add input listeners for restart/quit. *(Restart only)*
         - [x] On Restart: `this.scene.start('GameplayScene')`.
         - [ ] On Quit: Display "Later Blader 🤙" text.
+- [x] **Rails/Ledges & Grinding (Enhancements):**
+    - [x] `update` (while grinding): Add points based on duration. *(Running total of points as skater grinds is covered by this)*
+    - [ ] `handleGrindOverlap`: Improve player snapping to align to the middle of the rail.
+    - [ ] `update`: Lock player's X position to the rail's X position while grinding.
+    - [ ] `spawnObstacle`: Implement rails and ledges of different lengths.
+        - [ ] Randomly determine length for grindable.
+        - [ ] Create grindable placeholder/sprite with variable height.
+        - [ ] Ensure physics body of grindable matches its visual height.
+- [ ] **Helmet Power-up:**
+    - [ ] `GameplayScene`: Add `hasHelmet` boolean flag.
+    - [ ] `GameplayScene`: `preload` helmet icon asset for UI.
+    - [ ] `GameplayScene`: `create` add UI element for helmet status (e.g., near score).
+    - [ ] `GameplayScene`: `handleCollect`:
+        - [ ] If collected item is a helmet:
+            - [ ] If `!hasHelmet`, set `hasHelmet = true`, update UI.
+            - [ ] If `hasHelmet`, award points only.
+    - [ ] `GameplayScene`: `handleCollision`:
+        - [ ] If `hasHelmet`, set `hasHelmet = false`, update UI, play "helmet break" sound, prevent game over.
+        - [ ] If `!hasHelmet`, proceed with game over.
+    - [ ] `GameplayScene`: `preload` "helmet break" sound.
 
 ## Phase 5: Audio & Polish
 
@@ -112,10 +132,30 @@
     - [x] `preload`: Load sound effect files (jump, grind, collect, collide, UI click).
     - [x] `create` (`GameplayScene`): Play background music (`loop: true`).
     - [x] Trigger sound effects on corresponding actions (`this.sound.play(...)`).
+- [ ] **Scene Music:**
+    - [ ] `StartScene`: `preload` and `create` music for the start screen.
+    - [ ] `StartScene`: Ensure music stops when transitioning to `GameplayScene`.
+    - [ ] `GameOverScene`: `preload` and `create` music for the game over screen (can reuse start screen music).
+    - [ ] `GameOverScene`: Ensure music stops when transitioning to `GameplayScene`.
+    - [ ] `GameplayScene`: Ensure its music stops when transitioning to `GameOverScene` and `StartScene` music stops if transitioning from there.
+- [ ] **Audio Controls:**
+    - [ ] `index.html`: Add mute button element.
+    - [ ] `game.js`/UI: Implement `toggleMute()` function (`this.sound.mute`).
+    - [ ] `game.js`/UI: Update mute button appearance based on state.
+    - [ ] `game.js`/UI: Persist mute state in `localStorage`.
+    - [ ] `index.html`: Add volume slider element (range input).
+    - [ ] `game.js`/UI: Implement `setVolume(value)` function (`this.sound.volume`).
+    - [ ] `game.js`/UI: Persist volume level in `localStorage`.
 - [ ] **Graphics & Animation:**
     - [x] Replace placeholders with final retro-style graphics (inspired by `roy_skate1.png`). *(Obstacles and Collectibles done)*
     - [ ] Replace ramp placeholder with final graphics.
+        - [ ] `preload` new ramp asset(s).
+        - [ ] Update `spawnObstacle` to use new ramp graphics.
+        - [ ] Adjust physics body if needed.
     - [ ] Replace rail/ledge placeholder with final graphics.
+        - [ ] `preload` new rail/ledge asset(s).
+        - [ ] Update `spawnObstacle` to use new rail/ledge graphics (consider variable lengths).
+        - [ ] Adjust physics body if needed.
     - [x] Create sprite sheets for player animations (skating, jumping, grinding, falling).
     - [x] Use Phaser's animation manager (`this.anims.create`) to define animations.
     - [x] Play correct player animation based on state.
