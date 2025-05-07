@@ -112,6 +112,9 @@ class GameplayScene extends Phaser.Scene {
             frameHeight: 48
         });
 
+        // --- Background Image ---
+        this.load.image('asphalt_bg', 'assets/graphics/asphalt.png');
+
         // --- Obstacle Placeholder ---
         // Obstacles will now use frames from the 'skater' spritesheet.
         // No separate placeholder texture needed.
@@ -157,8 +160,11 @@ class GameplayScene extends Phaser.Scene {
     create() {
         console.log("GameplayScene create started");
         
-        // Set the background color to a dark gray
-        this.cameras.main.setBackgroundColor('#A9A9A9'); // Dark gray
+        // Add the tiling asphalt background
+        this.background = this.add.tileSprite(0, 0, GAME_WIDTH, GAME_HEIGHT, 'asphalt_bg');
+        this.background.setOrigin(0, 0); // Position at top-left
+        this.background.setScrollFactor(0); // Make it static relative to the camera
+        // No need to setBackgroundColor if we have a full background image
 
         // Add the player sprite using the loaded spritesheet
         // Positioned horizontally centered, vertically at PLAYER_START_Y

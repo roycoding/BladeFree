@@ -169,7 +169,7 @@
     - [ ] Add crash animation when skater collides (distinct from dog-drag setup).
     - [ ] Add particle effects (grind sparks, jump poof).
     - [x] Implement point pop-up visuals.
-    - [x] Change background color/add background image. *(Canvas background color changed)*
+    - [x] Change background color/add background image. *(Canvas background color changed to asphalt texture)*
 - [x] **Mobile Controls:**
     - [x] `create`: Add touch input listeners (`this.input.on('pointerdown', ...)`).
     - [x] Implement logic to detect touch on left/right screen halves.
