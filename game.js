@@ -19,6 +19,8 @@ class StartScene extends Phaser.Scene {
     preload() {
         // Load UI confirmation sound
         this.load.audio('ui_confirm', 'assets/audio/ui_confirm.mp3');
+        // Load start screen music
+        this.load.audio('start_music', 'assets/audio/start_music.mp3');
     }
 
     create() {
@@ -39,9 +41,13 @@ class StartScene extends Phaser.Scene {
             fontFamily: 'Arial'
         }).setOrigin(0.5);
 
+        // Play start screen music
+        this.sound.play('start_music', { loop: true, volume: 0.4 }); // Adjust volume as needed
+
         // Function to start the game and play sound
         const startGame = () => {
             this.sound.play('ui_confirm');
+            this.sound.stopByKey('start_music'); // Stop start music before transitioning
             this.scene.start('GameplayScene');
         };
 
@@ -790,6 +796,8 @@ class GameOverScene extends Phaser.Scene {
     preload() {
         // Load UI confirmation sound if needed for restart button
         this.load.audio('ui_confirm', 'assets/audio/ui_confirm.mp3');
+        // Load music for game over screen (can be same as start screen)
+        this.load.audio('start_music', 'assets/audio/start_music.mp3');
         // Game over sound is loaded by GameplayScene before transition
     }
 
@@ -802,6 +810,9 @@ class GameOverScene extends Phaser.Scene {
     create() {
         // Set the background color to a dark gray
         this.cameras.main.setBackgroundColor('#A9A9A9'); // Dark gray
+
+        // Play game over screen music
+        this.sound.play('start_music', { loop: true, volume: 0.4 }); // Adjust volume as needed
         
         // Load high score
         this.highScore = localStorage.getItem('bladeFreeHighScore') || 0;
@@ -837,6 +848,7 @@ class GameOverScene extends Phaser.Scene {
         // Listen for 'R' key press to restart
         this.input.keyboard.once('keydown-R', () => {
             this.sound.play('ui_confirm'); // Play sound on restart
+            this.sound.stopByKey('start_music'); // Stop game over music
             this.scene.start('GameplayScene'); // Restart the gameplay
         });
 

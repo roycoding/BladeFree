@@ -99,7 +99,7 @@
         - [x] `init(data)`: Receive score (`this.finalScore = data.score`).
         - [x] `create`: Display final score.
         - [x] `create`: Display high scores (load from `localStorage`).
-        - [x] `create`: Implement/play funny game over animation (dog drag).
+        - [x] `create`: Implement/play funny game over animation (dog drag). *(Multi-stage dog drag implemented)*
         - [x] `create`: Display "Restart?" / "Quit?" options. *(Restart only)*
         - [x] `create`: Add input listeners for restart/quit. *(Restart only)*
         - [x] On Restart: `this.scene.start('GameplayScene')`.
@@ -132,12 +132,12 @@
     - [x] `preload`: Load sound effect files (jump, grind, collect, collide, UI click).
     - [x] `create` (`GameplayScene`): Play background music (`loop: true`).
     - [x] Trigger sound effects on corresponding actions (`this.sound.play(...)`).
-- [ ] **Scene Music:**
-    - [ ] `StartScene`: `preload` and `create` music for the start screen.
-    - [ ] `StartScene`: Ensure music stops when transitioning to `GameplayScene`.
-    - [ ] `GameOverScene`: `preload` and `create` music for the game over screen (can reuse start screen music).
-    - [ ] `GameOverScene`: Ensure music stops when transitioning to `GameplayScene`.
-    - [ ] `GameplayScene`: Ensure its music stops when transitioning to `GameOverScene` and `StartScene` music stops if transitioning from there.
+- [x] **Scene Music:**
+    - [x] `StartScene`: `preload` and `create` music for the start screen.
+    - [x] `StartScene`: Ensure music stops when transitioning to `GameplayScene`.
+    - [x] `GameOverScene`: `preload` and `create` music for the game over screen (can reuse start screen music).
+    - [x] `GameOverScene`: Ensure music stops when transitioning to `GameplayScene`.
+    - [x] `GameplayScene`: Ensure its music stops when transitioning to `GameOverScene` and `StartScene` music stops if transitioning from there. *(Gameplay to GameOver was already handled; StartScene transition now also handles its music)*.
 - [ ] **Audio Controls:**
     - [ ] `index.html`: Add mute button element.
     - [ ] `game.js`/UI: Implement `toggleMute()` function (`this.sound.mute`).
