@@ -313,13 +313,6 @@ class GameplayScene extends Phaser.Scene {
             repeat: 0 // Play once
         });
 
-        this.anims.create({
-            key: 'dog-drag',
-            frames: this.anims.generateFrameNumbers('skater', { start: 20, end: 22 }),
-            frameRate: 5, // Adjust as needed for good visual speed
-            repeat: 0 // Play once
-        });
-
         // Set initial animation
         this.player.play('skate-cycle', true); // Start playing the skate cycle
 
@@ -445,19 +438,33 @@ class GameplayScene extends Phaser.Scene {
         this.sound.play('collide');
         this.sound.play('game_over'); // Play game over sound effect
 
-        // Play dog-drag animation and stop player physics interaction
+        // Stop player physics interaction
         this.isFalling = true; // Set falling flag (still relevant for state)
-        player.play('dog-drag');
         player.body.enable = false; // Disable physics body
+        player.setVelocity(0,0); // Stop any residual movement
 
-        // Tween the player off-screen to the left
+        // Change player sprite to the first part of the dog-drag image (frame 20)
+        player.setTexture('skater', 20);
+        player.setOrigin(0.5, 0.5); // Ensure origin is centered if it was changed
+
+        // Create and position the other parts of the dog-drag image
+        const dragPart2 = this.add.sprite(player.x + player.displayWidth, player.y, 'skater', 21).setOrigin(0.5, 0.5).setDepth(player.depth);
+        const dragPart3 = this.add.sprite(dragPart2.x + dragPart2.displayWidth, player.y, 'skater', 22).setOrigin(0.5, 0.5).setDepth(player.depth);
+
+        // Group the main player sprite and the additional parts for the tween
+        const dragGroup = [player, dragPart2, dragPart3];
+
+        // Tween the entire drag image off-screen to the left
         this.tweens.add({
-            targets: player,
-            x: -player.width, // Move completely off-screen to the left
+            targets: dragGroup,
+            x: `-=${GAME_WIDTH + player.displayWidth * 2}`, // Move them all left by screen width + width of 2 extra parts
             duration: 2000, // Duration of the drag in milliseconds
-            ease: 'Linear', // Or 'Power1'
+            ease: 'Linear',
             onComplete: () => {
                 console.log(`Transitioning to GameOverScene with score: ${finalScore}`);
+                // Clean up the extra drag parts before changing scene
+                dragPart2.destroy();
+                dragPart3.destroy();
                 this.scene.start('GameOverScene', { score: finalScore });
             }
         });
