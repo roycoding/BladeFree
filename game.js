@@ -26,24 +26,18 @@ class StartScene extends Phaser.Scene {
     }
 
     create() {
-        // Set the background color to a dark gray
-        this.cameras.main.setBackgroundColor('#A9A9A9'); // Dark gray
-        
-        // Add title image and scale it down
-        const titleImage = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 3, 'title_image').setOrigin(0.5);
-        // Original dimensions: 1536x1024. Aspect ratio: 1.5
-        // Let's target a width of about 550px
-        const targetWidth = 550;
-        const scale = targetWidth / titleImage.width;
-        titleImage.setScale(scale);
+        // Add title image as the full background
+        const titleImage = this.add.image(0, 0, 'title_image').setOrigin(0,0);
+        // No scaling needed if image is 800x600
+        // No setBackgroundColor needed as the image covers the screen
 
-
-        // Add instruction text (adjust Y position if needed due to title image)
-        // Position it below the scaled title image
-        this.add.text(GAME_WIDTH / 2, titleImage.y + titleImage.displayHeight / 2 + 50, 'Press any Arrow Key to Start', {
-            fontSize: '24px',
-            fill: '#fff',
-            fontFamily: 'Arial'
+        // Add instruction text, centered on the screen
+        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT * 0.75, 'Press any Arrow Key to Start', { // Adjusted Y position
+            fontSize: '32px', // Slightly larger text
+            fill: '#FFFFFF',    // White text
+            fontFamily: 'Arial',
+            stroke: '#000000', // Black stroke
+            strokeThickness: 6 // Thickness of the stroke
         }).setOrigin(0.5);
 
         // Play start screen music
