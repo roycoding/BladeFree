@@ -21,21 +21,19 @@ class StartScene extends Phaser.Scene {
         this.load.audio('ui_confirm', 'assets/audio/ui_confirm.mp3');
         // Load start screen music
         this.load.audio('start_music', 'assets/audio/start_music.mp3');
+        // Load title image
+        this.load.image('title_image', 'assets/graphics/title.png');
     }
 
     create() {
         // Set the background color to a dark gray
         this.cameras.main.setBackgroundColor('#A9A9A9'); // Dark gray
         
-        // Add title text
-        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 3, 'BladeFree', {
-            fontSize: '64px',
-            fill: '#fff',
-            fontFamily: 'Arial'
-        }).setOrigin(0.5);
+        // Add title image
+        this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 3, 'title_image').setOrigin(0.5);
 
-        // Add instruction text
-        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Press any Arrow Key to Start', {
+        // Add instruction text (adjust Y position if needed due to title image)
+        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 1.8, 'Press any Arrow Key to Start', {
             fontSize: '24px',
             fill: '#fff',
             fontFamily: 'Arial'
