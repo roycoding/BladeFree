@@ -176,3 +176,10 @@
     - [ ] Adjust game parameters (speed, frequency, points) for fun and challenge.
     - [ ] Identify and fix bugs.
     - [ ] Optimize performance if needed.
+- [ ] **Difficulty Scaling:**
+    - [ ] `GameplayScene`: Add `timeSurvived` counter.
+    - [ ] `GameplayScene`: `update`: Increment `timeSurvived`.
+    - [ ] `GameplayScene`: `update`: Gradually increase `SCROLL_SPEED` based on `timeSurvived`.
+        - [ ] Define a base scroll speed and a maximum scroll speed.
+        - [ ] Define how quickly the speed increases (e.g., per second or per score milestone).
+    - [ ] Consider other difficulty scaling factors (e.g., obstacle density, spawn patterns).
