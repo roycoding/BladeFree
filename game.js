@@ -892,6 +892,8 @@ class GameOverScene extends Phaser.Scene {
         this.load.audio('ui_confirm', 'assets/audio/ui_confirm.mp3');
         // Load music for game over screen (can be same as start screen)
         this.load.audio('start_music', 'assets/audio/start_music.mp3');
+        // Load game over background image
+        this.load.image('game_over_bg', 'assets/graphics/end.png');
         // Game over sound is loaded by GameplayScene before transition
     }
 
@@ -902,8 +904,9 @@ class GameOverScene extends Phaser.Scene {
     }
 
     create() {
-        // Set the background color to a dark gray
-        this.cameras.main.setBackgroundColor('#A9A9A9'); // Dark gray
+        // Add the game over background image
+        this.add.image(0, 0, 'game_over_bg').setOrigin(0,0);
+        // No setBackgroundColor needed
 
         // Play game over screen music
         this.sound.play('start_music', { loop: true, volume: 0.4 }); // Adjust volume as needed
@@ -911,32 +914,34 @@ class GameOverScene extends Phaser.Scene {
         // Load high score
         this.highScore = localStorage.getItem('bladeFreeHighScore') || 0;
 
-        // Game Over Text
-        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 3, 'GAME OVER', {
-            fontSize: '64px',
-            fill: '#ff0000', // Red for game over
-            fontFamily: 'Arial'
-        }).setOrigin(0.5);
+        // "GAME OVER" text is now part of the background image.
 
-        // Final Score Text
-        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, `Your Score: ${this.finalScore}`, {
+        // Final Score Text - Positioned lower on the screen
+        const scoreYPosition = GAME_HEIGHT * 0.65; // Adjust as needed
+        this.add.text(GAME_WIDTH / 2, scoreYPosition, `Your Score: ${this.finalScore}`, {
             fontSize: '32px',
-            fill: '#fff',
-            fontFamily: 'Arial'
+            fill: '#FFFFFF', // White for better contrast on the new bg
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 5
         }).setOrigin(0.5);
 
-        // High Score Text
-        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, `High Score: ${this.highScore}`, {
+        // High Score Text - Positioned below final score
+        this.add.text(GAME_WIDTH / 2, scoreYPosition + 50, `High Score: ${this.highScore}`, {
             fontSize: '32px',
-            fill: '#fff',
-            fontFamily: 'Arial'
+            fill: '#FFFFFF',
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 5
         }).setOrigin(0.5);
 
-        // Restart Text
-        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT * 0.75, 'Press R to Restart', {
-            fontSize: '24px',
-            fill: '#fff',
-            fontFamily: 'Arial'
+        // Restart Text - Positioned further down
+        this.add.text(GAME_WIDTH / 2, scoreYPosition + 120, 'Press R to Restart', {
+            fontSize: '28px',
+            fill: '#FFFF00', // Yellow for emphasis
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 5
         }).setOrigin(0.5);
 
         // Listen for 'R' key press to restart
