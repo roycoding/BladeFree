@@ -110,8 +110,8 @@ class GameplayScene extends Phaser.Scene {
         graphics.destroy();
 
         // --- Grindable Placeholder ---
-        // Create a simple grey rectangle placeholder for rails/ledges (vertically oriented)
-        graphics = this.make.graphics({ fillStyle: { color: 0xaaaaaa } }); // Grey color
+        // Create a simple black rectangle placeholder for rails/ledges (vertically oriented)
+        graphics = this.make.graphics({ fillStyle: { color: 0x000000 } }); // Black color
         const grindableWidth = 15; // Thin rail
         const grindableHeight = 250; // Long rail
         graphics.fillRect(0, 0, grindableWidth, grindableHeight);
