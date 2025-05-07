@@ -449,11 +449,6 @@ class GameplayScene extends Phaser.Scene {
             console.log(`New high score: ${this.highScore}`);
         }
 
-        // Stop the obstacle timer
-        if (this.obstacleTimer) {
-            // this.obstacleTimer.paused = true; // Don't pause if helmet protects
-        }
-
         // --- Helmet Protection Check ---
         if (this.hasHelmet) {
             this.hasHelmet = false;
@@ -479,12 +474,13 @@ class GameplayScene extends Phaser.Scene {
         }
 
         // --- No Helmet: Proceed with Game Over ---
-        if (this.obstacleTimer) { // Pause timer if game is truly over
+        // Stop the obstacle timer ONLY if game is truly over
+        if (this.obstacleTimer) {
             this.obstacleTimer.paused = true;
         }
         this.sound.stopByKey('music');
-        this.sound.play('collide');
-        this.sound.play('game_over'); // Play game over sound effect
+        this.sound.play('collide'); // Collision sound
+        this.sound.play('game_over'); // Play game over sound effect ONLY if no helmet
 
         // Stop player physics interaction and set collision pose
         this.isFalling = true; // Use this flag to manage animation state
