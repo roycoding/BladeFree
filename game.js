@@ -816,7 +816,8 @@ class GameplayScene extends Phaser.Scene {
                     this.score += bonusPoints;
                     this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
                     // Center the "COLLECTION COMPLETE!" message on the screen
-                    this.showPointsPopup(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, bonusPoints, "COLLECTION COMPLETE!", true, 2500);
+                    const collectionMessage = "COLLECTION COMPLETE!\n500 Point Bonus!";
+                    this.showPointsPopup(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, null, collectionMessage, true, 2500);
                     this.sound.play('ui_confirm'); // Placeholder for special bonus sound
 
                     // Reset inventory for next collection
