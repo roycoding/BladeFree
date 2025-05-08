@@ -127,12 +127,9 @@ class GameplayScene extends Phaser.Scene {
         // Obstacles will now use frames from the 'skater' spritesheet.
         // No separate placeholder texture needed.
 
-        // --- Ramp Placeholder ---
-        // Create a simple blue rectangle placeholder for ramps
-        let graphics = this.make.graphics({ fillStyle: { color: 0x0000ff } }); // Blue color
-        graphics.fillRect(0, 0, 80, 20); // 80 wide, 20 high rectangle
-        graphics.generateTexture('ramp_placeholder', 80, 20);
-        graphics.destroy();
+        // --- Ramp Graphic ---
+        this.load.image('ramp_graphic', 'assets/graphics/ramp.png');
+        // No procedural placeholder needed anymore for ramps.
 
         // --- Grindable Graphic ---
         this.load.image('rail_graphic', 'assets/graphics/rail1.png');
@@ -449,10 +446,10 @@ class GameplayScene extends Phaser.Scene {
         let group = null;
 
         if (spawnType === 'ramp') {
-            itemKey = 'ramp_placeholder';
+            itemKey = 'ramp_graphic'; // Use the new ramp graphic
             group = this.ramps;
             spawnedItem = group.create(spawnX, spawnY, itemKey);
-            console.log(`Ramp spawned at (${spawnX}, ${spawnY})`);
+            console.log(`Ramp (ramp.png) spawned at (${spawnX}, ${spawnY})`);
         } else if (spawnType === 'grindable') {
             itemKey = 'rail_graphic'; // Use the new rail graphic
             group = this.grindables;
