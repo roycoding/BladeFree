@@ -1000,8 +1000,8 @@ class GameOverScene extends Phaser.Scene {
             // this.sound.play('ui_confirm');
 
             // Hide the game over background image
-            if (this.children.list.find(child => child.texture && child.texture.key === 'game_over_bg')) {
-                this.children.list.find(child => child.texture.key === 'game_over_bg').setVisible(false);
+            if (this.gameOverBackgroundImage) {
+                this.gameOverBackgroundImage.setVisible(false);
             }
             
             // Set background to solid black
