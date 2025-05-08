@@ -23,6 +23,11 @@ class StartScene extends Phaser.Scene {
         this.load.audio('start_music', 'assets/audio/start_music.mp3');
         // Load title image
         this.load.image('title_image', 'assets/graphics/title.png');
+        // Load skater spritesheet for the play button
+        this.load.spritesheet('skater', 'assets/graphics/skater.png', {
+            frameWidth: 32,
+            frameHeight: 48
+        });
     }
 
     create() {
@@ -31,32 +36,30 @@ class StartScene extends Phaser.Scene {
         // No scaling needed if image is 800x600
         // No setBackgroundColor needed as the image covers the screen
 
-        // Add instruction text, centered on the screen
-        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT * 0.75, 'Press any Arrow Key to Start', { // Adjusted Y position
-            fontSize: '32px', // Slightly larger text
-            fill: '#FFFFFF',    // White text
-            fontFamily: 'Arial',
-            stroke: '#000000', // Black stroke
-            strokeThickness: 6 // Thickness of the stroke
-        }).setOrigin(0.5);
-
         // Play start screen music
         this.sound.play('start_music', { loop: true, volume: 0.4 }); // Adjust volume as needed
 
         // Function to start the game and play sound
         const startGame = () => {
+            // Ensure audio context is resumed by playing a sound on user interaction
+            if (this.sound.context.state === 'suspended') {
+                this.sound.context.resume();
+            }
             this.sound.play('ui_confirm');
             this.sound.stopByKey('start_music'); // Stop start music before transitioning
             this.scene.start('GameplayScene');
         };
 
-        // Listen for ANY key press to start (for debugging)
-        this.input.keyboard.once('keydown', startGame);
-        // this.input.keyboard.once('keydown-LEFT', startGame);
-        // this.input.keyboard.once('keydown-RIGHT', startGame);
-        // this.input.keyboard.once('keydown-UP', startGame); // Also allow Up/Down if desired
-        // this.input.keyboard.once('keydown-DOWN', startGame);
+        // Add Play Button sprite
+        const playButton = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT * 0.75, 'skater', 37)
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true })
+            .setScale(2); // Make the button a bit larger
 
+        playButton.on('pointerdown', startGame);
+
+        // Also allow ANY key press to start
+        this.input.keyboard.once('keydown', startGame);
 
         console.log("StartScene created");
     }
