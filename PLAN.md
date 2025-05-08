@@ -59,6 +59,7 @@
         - [ ] Play a special sound effect.
         - [ ] `preload` new graphic assets for medal/trophy.
         - [ ] `preload` new sound effect.
+    - [ ] Add secret key combination (e.g., Shift+R) to reset high score in `localStorage`.
 - [x] **Inventory System & Collection Bonus:**
     - [x] `GameplayScene`: Define a list of all inventory items (e.g., using frame indices from `collectibleData`). *(Excludes helmet)*
     - [x] `GameplayScene`: Add a data structure to track collected inventory items (e.g., `this.playerInventory = {}`).
