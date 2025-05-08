@@ -96,6 +96,8 @@ class GameplayScene extends Phaser.Scene {
         this.hasHelmet = false;     // Flag for helmet power-up
         this.helmetIcon = null;     // UI icon for helmet status
         this.initialHelmetSpawned = false; // Flag to ensure one helmet spawns early
+        this.isPaused = false;      // Flag to track if game is paused
+        this.pauseText = null;      // Text object for "PAUSED" message
         // this.isGameOver = false; // No longer needed, scene state handles this
 
         // Mapping for collectible items
@@ -359,14 +361,60 @@ class GameplayScene extends Phaser.Scene {
         // Add animationcomplete listener for jump-landing
         this.player.on('animationcomplete-jump-landing', () => {
             console.log("Jump landing animation complete");
-            if (!this.isGrinding && !this.isJumping && !this.isFalling) {
+            if (!this.isGrinding && !this.isJumping && !this.isFalling && !this.isPaused) {
                 console.log("Transitioning from landing to skate-cycle");
                 this.player.play('skate-cycle', true);
             }
         }, this);
 
+        // --- Pause Functionality ---
+        this.pauseText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'PAUSED', {
+            fontSize: '64px',
+            fill: '#FFFF00',
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 6
+        }).setOrigin(0.5).setDepth(10).setVisible(false); // High depth, initially hidden
+
+        this.input.keyboard.on('keydown-P', () => {
+            this.togglePause();
+        });
+
 
         console.log("GameplayScene create/reset finished");
+    }
+
+    togglePause() {
+        this.isPaused = !this.isPaused;
+
+        if (this.isPaused) {
+            console.log("Game Paused");
+            this.physics.pause();
+            if (this.obstacleTimer) this.obstacleTimer.paused = true;
+            this.tweens.pauseAll();
+            this.player.anims.pause();
+            // Pause all group items' animations if they have any active
+            [this.obstacles, this.ramps, this.grindables, this.collectibles].forEach(group => {
+                group.children.each(item => {
+                    if (item.anims) item.anims.pause();
+                });
+            });
+            this.sound.pauseAll(); // Pauses all sounds, including music
+            this.pauseText.setVisible(true);
+        } else {
+            console.log("Game Resumed");
+            this.physics.resume();
+            if (this.obstacleTimer) this.obstacleTimer.paused = false;
+            this.tweens.resumeAll();
+            if (this.player.anims.currentAnim) this.player.anims.resume(); else if (!this.isGrinding && !this.isJumping && !this.isFalling) this.player.play('skate-cycle', true);
+            [this.obstacles, this.ramps, this.grindables, this.collectibles].forEach(group => {
+                group.children.each(item => {
+                    if (item.anims && item.anims.currentAnim) item.anims.resume();
+                });
+            });
+            this.sound.resumeAll(); // Resumes all sounds
+            this.pauseText.setVisible(false);
+        }
     }
 
     // --- Obstacle/Ramp/Grindable/Collectible Spawning ---
@@ -747,6 +795,10 @@ class GameplayScene extends Phaser.Scene {
 
 
     update(time, delta) {
+        if (this.isPaused) {
+            return; // Do nothing if paused
+        }
+
         // --- Player Movement ---
         if (!this.player || !this.cursors) {
             return; // Exit if player or cursors aren't ready
