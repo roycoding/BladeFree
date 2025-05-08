@@ -560,7 +560,8 @@ class GameplayScene extends Phaser.Scene {
             });
             
             // Show "Your helmet cracked..." message
-            this.showPointsPopup(player.x, player.y - 50, null, "Your helmet cracked,\nbut you were saved!", true);
+            const helmetMessageDuration = 2000; // 2 seconds
+            this.showPointsPopup(player.x, player.y - 50, null, "Your helmet cracked,\nbut you were saved!", true, helmetMessageDuration);
 
 
             // Flash screen red
@@ -750,7 +751,7 @@ class GameplayScene extends Phaser.Scene {
     }
 
     // --- Show Points Pop-up ---
-    showPointsPopup(x, y, points, itemName = null, isSpecialMessage = false) { // Add isSpecialMessage parameter
+    showPointsPopup(x, y, points, itemName = null, isSpecialMessage = false, customDuration = null) { // Add customDuration
         // Construct the text string
         let popupText;
         let fontSize = '18px'; // Default font size
@@ -781,7 +782,7 @@ class GameplayScene extends Phaser.Scene {
             targets: pointsText,
             y: y - 50, // Move up
             alpha: 0, // Fade out
-            duration: 800, // Duration in milliseconds
+            duration: customDuration !== null ? customDuration : 800, // Use custom or default duration
             ease: 'Power1',
             onComplete: () => {
                 pointsText.destroy(); // Remove text object when tween finishes
