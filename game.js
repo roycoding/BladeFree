@@ -1242,13 +1242,13 @@ class GameOverScene extends Phaser.Scene {
 
         // --- Quit Button (Lower Right) ---
         this.quitButton = this.add.text(GAME_WIDTH - buttonPadding, GAME_HEIGHT - buttonPadding, 'QUIT', {
-            fontSize: '32px', fill: '#FF8C00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5,
+            fontSize: '32px', fill: '#b234e2', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5, // New color
             backgroundColor: '#333333', padding: { left: 15, right: 15, top: 10, bottom: 10 }
         }).setOrigin(1, 1).setInteractive({ useHandCursor: true }); // Origin bottom-right
 
         this.quitButton.on('pointerdown', performQuit);
-        this.quitButton.on('pointerover', () => this.quitButton.setStyle({ fill: '#FFA500' }));
-        this.quitButton.on('pointerout', () => this.quitButton.setStyle({ fill: '#FF8C00' }));
+        this.quitButton.on('pointerover', () => this.quitButton.setStyle({ fill: '#d154f2' })); // Lighter purple/magenta for hover
+        this.quitButton.on('pointerout', () => this.quitButton.setStyle({ fill: '#b234e2' })); // Restore original new color
 
 
         // Listen for 'R' key press to restart
