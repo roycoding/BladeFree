@@ -59,6 +59,24 @@
         - [ ] Play a special sound effect.
         - [ ] `preload` new graphic assets for medal/trophy.
         - [ ] `preload` new sound effect.
+- [ ] **Inventory System & Collection Bonus:**
+    - [ ] `GameplayScene`: Define a list of all inventory items (e.g., using frame indices from `collectibleData`).
+    - [ ] `GameplayScene`: Add a data structure to track collected inventory items (e.g., `this.playerInventory = {}`).
+    - [ ] `GameplayScene.create`:
+        - [ ] Create UI elements (sprites) at the top of the screen to represent each inventory item.
+        - [ ] Initially, display these UI item sprites as grayed out or lightened (e.g., `setTint(0x808080)` or `setAlpha(0.5)`).
+        - [ ] Store references to these UI item sprites.
+    - [ ] `GameplayScene.handleCollect`:
+        - [ ] When a collectible that is part of the inventory set is collected:
+            - [ ] Mark the item as collected in `this.playerInventory`.
+            - [ ] Update the corresponding UI item sprite to its normal appearance (remove tint/alpha).
+            - [ ] Check if all inventory items have been collected.
+    - [ ] `GameplayScene.update` or `handleCollect`:
+        - [ ] If all inventory items are collected:
+            - [ ] Award a significant bonus (e.g., points, temporary invincibility, special sound/visual effect).
+            - [ ] Potentially reset the inventory (or make it a one-time bonus per game).
+    - [ ] `GameplayScene.create` (on restart): Reset `this.playerInventory` and UI item appearances.
+    - [ ] Ensure helmet is handled separately if it's not part of this specific inventory collection goal, or decide if it is.
 
 ## Phase 4: Tricks, Collectibles & Game States
 
