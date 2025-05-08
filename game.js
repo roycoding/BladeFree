@@ -61,6 +61,15 @@ class StartScene extends Phaser.Scene {
         // Also allow ANY key press to start
         this.input.keyboard.once('keydown', startGame);
 
+        // Add "Push START to SKATE" text below the button
+        this.add.text(GAME_WIDTH / 2, playButton.y + playButton.displayHeight / 2 + 30, 'Push START to SKATE', {
+            fontSize: '28px',
+            fill: '#FFFF00', // Yellow
+            fontFamily: 'Arial',
+            stroke: '#000000', // Black stroke
+            strokeThickness: 5
+        }).setOrigin(0.5);
+
         console.log("StartScene created");
     }
 }
