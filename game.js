@@ -1261,49 +1261,6 @@ class GameOverScene extends Phaser.Scene {
         console.log("GameOverScene created");
     }
 }
-            this.sound.stopAll();
-            // Optionally play a quit sound
-            // this.sound.play('ui_confirm');
-
-            // Hide the game over background image
-            if (this.gameOverBackgroundImage) {
-                this.gameOverBackgroundImage.setVisible(false);
-            }
-            
-            // Set background to solid black
-            this.cameras.main.setBackgroundColor('#000000');
-
-            // Hide other texts
-            this.scoreTextDisplay.setVisible(false);
-            this.highScoreTextDisplay.setVisible(false);
-            this.restartTextDisplay.setVisible(false);
-            this.quitText.setVisible(false);
-
-            // Display and animate "Later Blader" image
-            this.laterBladerImage = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'later_blader_img')
-                .setOrigin(0.5)
-                .setScale(0.01) // Start very small
-                .setAngle(0);   // Start angle
-
-            this.tweens.add({
-                targets: this.laterBladerImage,
-                scale: 1, // Scale to original size (500x331). Adjust if too big.
-                angle: 360 * 3, // Three full rotations
-                duration: 1500, // Duration in milliseconds
-                ease: 'Cubic.easeOut', // Smoother easing
-                onComplete: () => {
-                    console.log("Later Blader animation complete.");
-                    // After a short delay, return to the StartScene
-                    this.time.delayedCall(2000, () => { // 2-second delay
-                        this.scene.start('StartScene');
-                    }, [], this);
-                }
-            });
-        });
-
-        console.log("GameOverScene created");
-    }
-}
 
 
 // --- Phaser Game Configuration ---
