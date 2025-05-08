@@ -898,6 +898,8 @@ class GameOverScene extends Phaser.Scene {
         this.load.audio('spray_can_rattle', 'assets/audio/spray_can_rattle.mp3');
         // Load spray sound
         this.load.audio('spray', 'assets/audio/spray.mp3');
+        // Load "Later Blader" image
+        this.load.image('later_blader_img', 'assets/graphics/later_blader.png');
         // Game over sound is loaded by GameplayScene before transition
     }
 
@@ -957,15 +959,72 @@ class GameOverScene extends Phaser.Scene {
             strokeThickness: 5
         }).setOrigin(0.5);
 
+        // Quit Text
+        this.quitText = this.add.text(GAME_WIDTH / 2, scoreYPosition + 170, 'Press Q to Quit', {
+            fontSize: '24px',
+            fill: '#FFA500', // Orange for quit
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 4
+        }).setOrigin(0.5);
+
+
+        // Store references to text elements to hide them later
+        this.scoreTextDisplay = this.add.text(GAME_WIDTH / 2, scoreYPosition, `Your Score: ${this.finalScore}`, {
+            fontSize: '32px', fill: '#FFFFFF', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5
+        }).setOrigin(0.5);
+        this.highScoreTextDisplay = this.add.text(GAME_WIDTH / 2, scoreYPosition + 50, `High Score: ${this.highScore}`, {
+            fontSize: '32px', fill: '#FFFFFF', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5
+        }).setOrigin(0.5);
+        this.restartTextDisplay = this.add.text(GAME_WIDTH / 2, scoreYPosition + 120, 'Press R to Restart', {
+            fontSize: '28px', fill: '#FFFF00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5
+        }).setOrigin(0.5);
+
+
         // Listen for 'R' key press to restart
-        this.input.keyboard.once('keydown-R', () => {
-            this.sound.play('ui_confirm'); // Play sound on restart
-            this.sound.stopByKey('start_music'); // Stop game over music
-            this.scene.start('GameplayScene'); // Restart the gameplay
+        this.input.keyboard.on('keydown-R', () => { // Changed to 'on' to allow re-pressing if Q is pressed then R
+            if (!this.laterBladerImage || !this.laterBladerImage.visible) { // Only restart if quit animation isn't showing
+                this.sound.play('ui_confirm');
+                this.sound.stopByKey('start_music');
+                this.scene.start('GameplayScene');
+            }
+        });
+
+        // Listen for 'Q' key press to quit
+        this.input.keyboard.on('keydown-Q', () => {
+            if (this.laterBladerImage && this.laterBladerImage.visible) return; // Already quitting
+
+            // Stop all sounds
+            this.sound.stopAll();
+            // Optionally play a quit sound
+            // this.sound.play('ui_confirm'); 
+
+            // Hide other texts
+            this.scoreTextDisplay.setVisible(false);
+            this.highScoreTextDisplay.setVisible(false);
+            this.restartTextDisplay.setVisible(false);
+            this.quitText.setVisible(false);
+
+            // Display and animate "Later Blader" image
+            this.laterBladerImage = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'later_blader_img')
+                .setOrigin(0.5)
+                .setScale(0.01) // Start very small
+                .setAngle(0);   // Start angle
+
+            this.tweens.add({
+                targets: this.laterBladerImage,
+                scale: 1, // Scale to original size (500x331). Adjust if too big.
+                angle: 360 * 3, // Three full rotations
+                duration: 1500, // Duration in milliseconds
+                ease: 'Cubic.easeOut', // Smoother easing
+                onComplete: () => {
+                    console.log("Later Blader animation complete.");
+                    // Game effectively ends here. No further interaction.
+                }
+            });
         });
 
         console.log("GameOverScene created");
-        // Add funny animation/text later (Phase 4/5)
     }
 }
 

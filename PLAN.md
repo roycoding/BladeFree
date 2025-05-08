@@ -106,10 +106,11 @@
         - [x] `create`: Display final score.
         - [x] `create`: Display high scores (load from `localStorage`).
         - [x] `create`: Implement/play funny game over animation (dog drag). *(Multi-stage dog drag implemented)*
-        - [x] `create`: Display "Restart?" / "Quit?" options. *(Restart only)*
-        - [x] `create`: Add input listeners for restart/quit. *(Restart only)*
+        - [x] `create`: Display "Restart?" / "Quit?" options. *(Restart and Quit text added)*
+        - [x] `create`: Add input listeners for restart/quit. *(Restart and Quit listeners added)*
         - [x] On Restart: `this.scene.start('GameplayScene')`.
-        - [ ] On Quit: Display "Later Blader 🤙" text.
+        - [x] On Quit: Display "Later Blader 🤙" text. *(Image with spiral animation implemented)*
+            - [ ] Consider adding clickable buttons for mobile compatibility for Restart/Quit.
 - [x] **Rails/Ledges & Grinding (Enhancements):**
     - [x] `update` (while grinding): Add points based on duration. *(Running total of points as skater grinds is covered by this)*
     - [ ] `handleGrindOverlap`: Improve player snapping to align to the middle of the rail.
