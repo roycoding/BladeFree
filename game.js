@@ -158,6 +158,8 @@ class GameplayScene extends Phaser.Scene {
         this.load.audio('ui_confirm', 'assets/audio/ui_confirm.mp3');
         // Load game over sound here so it's ready when transitioning
         this.load.audio('game_over', 'assets/audio/game_over.mp3');
+        // Load dog bark sound
+        this.load.audio('dog_bark', 'assets/audio/dog_bark.mp3');
         // Using 'collide' as placeholder for 'helmet_break' sound for now
         // this.load.audio('helmet_break', 'assets/audio/helmet_break.mp3');
 
@@ -580,6 +582,8 @@ class GameplayScene extends Phaser.Scene {
         const loneDogSprite = this.add.sprite(-player.displayWidth, collisionPointY, 'skater', 20)
             .setOrigin(0.5, 0.5)
             .setDepth(playerSpriteDepth);
+        
+        this.sound.play('dog_bark', { volume: 0.7 }); // Play dog bark sound
 
         this.tweens.add({
             targets: loneDogSprite,
