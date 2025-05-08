@@ -575,7 +575,7 @@ class GameplayScene extends Phaser.Scene {
             
             // Show "Your helmet cracked..." message
             const helmetMessageDuration = 2000; // 2 seconds
-            this.showPointsPopup(player.x, player.y - 50, null, "Your helmet cracked,\nbut you were saved!", true, helmetMessageDuration);
+            this.showPointsPopup(player.x, player.y - 50, null, "You cracked your HELMET,\nbut not your HEAD!", true, helmetMessageDuration);
 
 
             // Flash screen red
