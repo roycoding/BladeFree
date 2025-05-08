@@ -933,31 +933,31 @@ class GameOverScene extends Phaser.Scene {
 
         // Final Score Text - Positioned lower on the screen
         const scoreYPosition = GAME_HEIGHT * 0.65; // Adjust as needed
-        this.add.text(GAME_WIDTH / 2, scoreYPosition, `Your Score: ${this.finalScore}`, {
-            fontSize: '32px',
-            fill: '#FFFFFF', // White for better contrast on the new bg
-            fontFamily: 'Arial',
-            stroke: '#000000',
-            strokeThickness: 5
-        }).setOrigin(0.5);
+        // this.add.text(GAME_WIDTH / 2, scoreYPosition, `Your Score: ${this.finalScore}`, { // Removed duplicate
+        //     fontSize: '32px',
+        //     fill: '#FFFFFF', // White for better contrast on the new bg
+        //     fontFamily: 'Arial',
+        //     stroke: '#000000',
+        //     strokeThickness: 5
+        // }).setOrigin(0.5);
 
         // High Score Text - Positioned below final score
-        this.add.text(GAME_WIDTH / 2, scoreYPosition + 50, `High Score: ${this.highScore}`, {
-            fontSize: '32px',
-            fill: '#FFFFFF',
-            fontFamily: 'Arial',
-            stroke: '#000000',
-            strokeThickness: 5
-        }).setOrigin(0.5);
+        // this.add.text(GAME_WIDTH / 2, scoreYPosition + 50, `High Score: ${this.highScore}`, { // Removed duplicate
+        //     fontSize: '32px',
+        //     fill: '#FFFFFF',
+        //     fontFamily: 'Arial',
+        //     stroke: '#000000',
+        //     strokeThickness: 5
+        // }).setOrigin(0.5);
 
         // Restart Text - Positioned further down
-        this.add.text(GAME_WIDTH / 2, scoreYPosition + 120, 'Press R to Restart', {
-            fontSize: '28px',
-            fill: '#FFFF00', // Yellow for emphasis
-            fontFamily: 'Arial',
-            stroke: '#000000',
-            strokeThickness: 5
-        }).setOrigin(0.5);
+        // this.add.text(GAME_WIDTH / 2, scoreYPosition + 120, 'Press R to Restart', { // Removed duplicate
+        //     fontSize: '28px',
+        //     fill: '#FFFF00', // Yellow for emphasis
+        //     fontFamily: 'Arial',
+        //     stroke: '#000000',
+        //     strokeThickness: 5
+        // }).setOrigin(0.5);
 
         // Quit Text
         this.quitText = this.add.text(GAME_WIDTH / 2, scoreYPosition + 170, 'Press Q to Quit', {
