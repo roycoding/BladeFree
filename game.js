@@ -99,6 +99,10 @@ class GameplayScene extends Phaser.Scene {
         this.initialHelmetSpawned = false; // Flag to ensure one helmet spawns early
         this.isPaused = false;      // Flag to track if game is paused
         this.pauseText = null;      // Text object for "PAUSED" message
+        
+        this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
+        this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
+        this.inventoryUIIcons = {}; // To store references to UI sprites for inventory items
         // this.isGameOver = false; // No longer needed, scene state handles this
 
         // Mapping for collectible items
@@ -277,6 +281,9 @@ class GameplayScene extends Phaser.Scene {
             .setVisible(false) // Initially hidden
             .setDepth(1);
 
+        // --- Inventory UI Setup ---
+        this.initializeInventory();
+
 
         // Reset score
         this.score = 0;
@@ -412,6 +419,55 @@ class GameplayScene extends Phaser.Scene {
             this.pauseText.setVisible(false);
         }
     }
+
+    initializeInventory() {
+        // Clear previous icons if any (for restarts)
+        for (const frame in this.inventoryUIIcons) {
+            if (this.inventoryUIIcons[frame]) {
+                this.inventoryUIIcons[frame].destroy();
+            }
+        }
+        this.inventoryUIIcons = {};
+        this.playerInventory = {};
+
+        const startX = 20; // Starting X position for the first inventory icon
+        const iconY = 60;  // Y position for inventory icons (below score/high score)
+        const iconSpacing = 40; // Spacing between icons
+        const iconScale = 0.75;
+        const uncollectedTint = 0xaaaaaa; // Light gray tint for uncollected items
+
+        this.inventoryItems.forEach((frame, index) => {
+            this.playerInventory[frame] = false; // Initialize as not collected
+
+            const iconX = startX + (index * iconSpacing);
+            const iconSprite = this.add.sprite(iconX, iconY, 'skater', frame)
+                .setOrigin(0, 0.5) // Align to left, vertically centered
+                .setScale(iconScale)
+                .setTint(uncollectedTint)
+                .setDepth(1);
+            this.inventoryUIIcons[frame] = iconSprite;
+        });
+    }
+
+    checkInventoryComplete() {
+        for (const frame of this.inventoryItems) {
+            if (!this.playerInventory[frame]) {
+                return false; // Not all items collected
+            }
+        }
+        return true; // All items collected
+    }
+
+    resetInventoryDisplay() {
+        const uncollectedTint = 0xaaaaaa;
+        this.inventoryItems.forEach(frame => {
+            this.playerInventory[frame] = false;
+            if (this.inventoryUIIcons[frame]) {
+                this.inventoryUIIcons[frame].setTint(uncollectedTint);
+            }
+        });
+    }
+
 
     // --- Obstacle/Ramp/Grindable/Collectible Spawning ---
     spawnObstacle() {
@@ -743,6 +799,29 @@ class GameplayScene extends Phaser.Scene {
             console.log(`+${collectiblePoints} points for ${itemName}!`);
             this.sound.play('collect');
             this.showPointsPopup(player.x, player.y, collectiblePoints, itemName);
+
+            // --- Inventory Collection Logic ---
+            // Check if the collected item is part of the defined inventory set
+            const itemFrameKey = parseInt(frameIndex, 10); // Ensure frameIndex is a number
+            if (this.inventoryItems.includes(itemFrameKey) && !this.playerInventory[itemFrameKey]) {
+                this.playerInventory[itemFrameKey] = true;
+                if (this.inventoryUIIcons[itemFrameKey]) {
+                    this.inventoryUIIcons[itemFrameKey].clearTint(); // Make it look collected
+                }
+                console.log(`Inventory item ${itemName} (frame ${itemFrameKey}) collected!`);
+
+                if (this.checkInventoryComplete()) {
+                    console.log("COLLECTION COMPLETE!");
+                    const bonusPoints = 500;
+                    this.score += bonusPoints;
+                    this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
+                    this.showPointsPopup(player.x, player.y - 70, bonusPoints, "COLLECTION COMPLETE!", true, 2500);
+                    this.sound.play('ui_confirm'); // Placeholder for special bonus sound
+
+                    // Reset inventory for next collection
+                    this.resetInventoryDisplay();
+                }
+            }
         }
 
         // Destroy the collectible
