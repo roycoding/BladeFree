@@ -894,6 +894,8 @@ class GameOverScene extends Phaser.Scene {
         this.load.audio('start_music', 'assets/audio/start_music.mp3');
         // Load game over background image
         this.load.image('game_over_bg', 'assets/graphics/end.png');
+        // Load spray can rattle sound
+        this.load.audio('spray_can_rattle', 'assets/audio/spray_can_rattle.mp3');
         // Game over sound is loaded by GameplayScene before transition
     }
 
@@ -910,6 +912,8 @@ class GameOverScene extends Phaser.Scene {
 
         // Play game over screen music
         this.sound.play('start_music', { loop: true, volume: 0.4 }); // Adjust volume as needed
+        // Play spray can rattle sound once
+        this.sound.play('spray_can_rattle', { volume: 0.6 }); // Adjust volume as needed
         
         // Load high score
         this.highScore = localStorage.getItem('bladeFreeHighScore') || 0;
