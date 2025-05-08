@@ -529,10 +529,34 @@ class GameplayScene extends Phaser.Scene {
 
         // --- Helmet Protection Check ---
         if (this.hasHelmet) {
-            this.hasHelmet = false;
-            this.updateHelmetIcon();
+            // this.hasHelmet = false; // We'll set this after the animation
+            // this.updateHelmetIcon(); // We'll hide it via animation
             this.sound.play('collide'); // Placeholder for "helmet_break" sound
             console.log("Helmet protected player! Lost helmet.");
+
+            // Animate the helmet icon disappearing
+            if (this.helmetIcon && this.helmetIcon.visible) {
+                this.tweens.add({
+                    targets: this.helmetIcon,
+                    angle: 360, // Spin it
+                    scaleX: 0,  // Shrink to nothing
+                    scaleY: 0,
+                    alpha: 0,   // Fade out
+                    duration: 500, // Duration of animation
+                    ease: 'Power1',
+                    onComplete: () => {
+                        this.hasHelmet = false; // Now officially set hasHelmet to false
+                        this.helmetIcon.setVisible(false); // Ensure it's hidden
+                        this.helmetIcon.setScale(0.75); // Reset scale for next time
+                        this.helmetIcon.setAlpha(1);    // Reset alpha
+                        this.helmetIcon.setAngle(0);    // Reset angle
+                    }
+                });
+            } else {
+                // Fallback if icon somehow not visible but hasHelmet was true
+                this.hasHelmet = false;
+                this.updateHelmetIcon();
+            }
 
             // Flash screen red
             this.cameras.main.flash(150, 255, 0, 0, false); // duration, r, g, b, force
