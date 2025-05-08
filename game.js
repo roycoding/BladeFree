@@ -1027,7 +1027,10 @@ class GameOverScene extends Phaser.Scene {
                 ease: 'Cubic.easeOut', // Smoother easing
                 onComplete: () => {
                     console.log("Later Blader animation complete.");
-                    // Game effectively ends here. No further interaction.
+                    // After a short delay, return to the StartScene
+                    this.time.delayedCall(2000, () => { // 2-second delay
+                        this.scene.start('StartScene');
+                    }, [], this);
                 }
             });
         });
