@@ -1178,25 +1178,89 @@ class GameOverScene extends Phaser.Scene {
         this.highScoreTextDisplay = this.add.text(GAME_WIDTH / 2, scoreYPosition + 50, `High Score: ${this.highScore}`, {
             fontSize: '32px', fill: '#FFFFFF', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5
         }).setOrigin(0.5);
-        this.restartTextDisplay = this.add.text(GAME_WIDTH / 2, scoreYPosition + 120, 'Press R to Restart', {
-            fontSize: '28px', fill: '#FFFF00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5
-        }).setOrigin(0.5);
+        // this.restartTextDisplay = this.add.text(GAME_WIDTH / 2, scoreYPosition + 120, 'Press R to Restart', {
+        //     fontSize: '28px', fill: '#FFFF00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5
+        // }).setOrigin(0.5); // Will be replaced by a button
 
 
-        // Listen for 'R' key press to restart
-        this.input.keyboard.on('keydown-R', () => { // Changed to 'on' to allow re-pressing if Q is pressed then R
-            if (!this.laterBladerImage || !this.laterBladerImage.visible) { // Only restart if quit animation isn't showing
+        // --- Button Actions ---
+        const performRestart = () => {
+            if (!this.laterBladerImage || !this.laterBladerImage.visible) {
                 this.sound.play('ui_confirm');
                 this.sound.stopByKey('start_music');
                 this.scene.start('GameplayScene');
             }
-        });
+        };
+
+        const performQuit = () => {
+            if (this.laterBladerImage && this.laterBladerImage.visible) return;
+
+            this.sound.stopAll();
+            if (this.gameOverBackgroundImage) {
+                this.gameOverBackgroundImage.setVisible(false);
+            }
+            this.cameras.main.setBackgroundColor('#000000');
+            this.scoreTextDisplay.setVisible(false);
+            this.highScoreTextDisplay.setVisible(false);
+            this.restartButton.setVisible(false); // Hide button
+            this.quitButton.setVisible(false); // Hide button
+
+            this.laterBladerImage = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'later_blader_img')
+                .setOrigin(0.5)
+                .setScale(0.01)
+                .setAngle(0);
+
+            this.tweens.add({
+                targets: this.laterBladerImage,
+                scale: 1,
+                angle: 360 * 3,
+                duration: 1500,
+                ease: 'Cubic.easeOut',
+                onComplete: () => {
+                    console.log("Later Blader animation complete.");
+                    this.time.delayedCall(2000, () => {
+                        this.scene.start('StartScene');
+                    }, [], this);
+                }
+            });
+        };
+
+        // --- Restart Button ---
+        this.restartButton = this.add.text(GAME_WIDTH / 2, scoreYPosition + 120, 'RESTART', {
+            fontSize: '32px', fill: '#00FF00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5,
+            backgroundColor: '#333333', padding: { left: 15, right: 15, top: 10, bottom: 10 }
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        
+        this.restartButton.on('pointerdown', performRestart);
+        this.restartButton.on('pointerover', () => this.restartButton.setStyle({ fill: '#80FF80' }));
+        this.restartButton.on('pointerout', () => this.restartButton.setStyle({ fill: '#00FF00' }));
+
+
+        // --- Quit Button ---
+        this.quitButton = this.add.text(GAME_WIDTH / 2, scoreYPosition + 190, 'QUIT', { // Adjusted Y for spacing
+            fontSize: '32px', fill: '#FF8C00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5,
+            backgroundColor: '#333333', padding: { left: 15, right: 15, top: 10, bottom: 10 }
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+        this.quitButton.on('pointerdown', performQuit);
+        this.quitButton.on('pointerover', () => this.quitButton.setStyle({ fill: '#FFA500' }));
+        this.quitButton.on('pointerout', () => this.quitButton.setStyle({ fill: '#FF8C00' }));
+
+
+        // Listen for 'R' key press to restart
+        this.input.keyboard.on('keydown-R', performRestart);
 
         // Listen for 'Q' key press to quit
-        this.input.keyboard.on('keydown-Q', () => {
-            if (this.laterBladerImage && this.laterBladerImage.visible) return; // Already quitting
+        this.input.keyboard.on('keydown-Q', performQuit);
 
-            // Stop all sounds
+        // Hide the old text prompts if they were separate
+        if(this.restartTextDisplay) this.restartTextDisplay.setVisible(false); // Hide old text if it exists
+        if(this.quitText) this.quitText.setVisible(false); // Hide old text if it exists
+
+
+        console.log("GameOverScene created");
+    }
+}
             this.sound.stopAll();
             // Optionally play a quit sound
             // this.sound.play('ui_confirm');
