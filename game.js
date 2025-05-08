@@ -434,7 +434,7 @@ class GameplayScene extends Phaser.Scene {
         const iconY = 60;  // Y position for inventory icons (below score/high score)
         const iconSpacing = 40; // Spacing between icons
         const iconScale = 0.75;
-        const uncollectedTint = 0x808080; // Darker gray tint for uncollected items
+        const uncollectedTint = 0xcccccc; // Very light gray / whitish tint
 
         this.inventoryItems.forEach((frame, index) => {
             this.playerInventory[frame] = false; // Initialize as not collected
@@ -459,7 +459,7 @@ class GameplayScene extends Phaser.Scene {
     }
 
     resetInventoryDisplay() {
-        const uncollectedTint = 0x808080; // Darker gray tint for uncollected items
+        const uncollectedTint = 0xcccccc; // Very light gray / whitish tint
         this.inventoryItems.forEach(frame => {
             this.playerInventory[frame] = false;
             if (this.inventoryUIIcons[frame]) {
@@ -787,8 +787,8 @@ class GameplayScene extends Phaser.Scene {
                 this.sound.play('ui_confirm'); // Sound for gaining helmet
                 // Don't award points for the first helmet, it's a power-up
                 console.log("Helmet acquired! SKULL PROTECTION!");
-                // Show "SKULL PROTECTION" in larger letters, no points text
-                this.showPointsPopup(player.x, player.y, null, "SKULL PROTECTION", true); 
+                // Show "SKULL PROTECTION" in larger letters, centered on screen
+                this.showPointsPopup(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, null, "SKULL PROTECTION", true); 
             }
             // "Else" case for collecting helmet when already having one is removed
             // because helmets should not spawn if player already has one.
