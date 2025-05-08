@@ -129,7 +129,7 @@
             - [x] If `hasHelmet`, award points only.
     - [x] `GameplayScene`: `handleCollision`:
         - [x] If `hasHelmet`, set `hasHelmet = false`, update UI, play "helmet break" sound, prevent game over.
-        - [ ] Animate helmet flying off player on collision.
+        - [x] Animate helmet flying off player on collision. *(Helmet icon hidden, new sprite falls and spins off screen, message displayed)*
         - [x] If `!hasHelmet`, proceed with game over.
     - [ ] `GameplayScene`: `preload` "helmet break" sound. *(Used 'collide' as placeholder, needs dedicated sound)*
 

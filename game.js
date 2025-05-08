@@ -530,33 +530,38 @@ class GameplayScene extends Phaser.Scene {
         // --- Helmet Protection Check ---
         if (this.hasHelmet) {
             // this.hasHelmet = false; // We'll set this after the animation
-            // this.updateHelmetIcon(); // We'll hide it via animation
+            // this.updateHelmetIcon(); // We'll handle UI icon differently
             this.sound.play('collide'); // Placeholder for "helmet_break" sound
             console.log("Helmet protected player! Lost helmet.");
 
-            // Animate the helmet icon disappearing
-            if (this.helmetIcon && this.helmetIcon.visible) {
-                this.tweens.add({
-                    targets: this.helmetIcon,
-                    angle: 360, // Spin it
-                    scaleX: 0,  // Shrink to nothing
-                    scaleY: 0,
-                    alpha: 0,   // Fade out
-                    duration: 500, // Duration of animation
-                    ease: 'Power1',
-                    onComplete: () => {
-                        this.hasHelmet = false; // Now officially set hasHelmet to false
-                        this.helmetIcon.setVisible(false); // Ensure it's hidden
-                        this.helmetIcon.setScale(0.75); // Reset scale for next time
-                        this.helmetIcon.setAlpha(1);    // Reset alpha
-                        this.helmetIcon.setAngle(0);    // Reset angle
-                    }
-                });
-            } else {
-                // Fallback if icon somehow not visible but hasHelmet was true
-                this.hasHelmet = false;
-                this.updateHelmetIcon();
+            // Immediately hide the UI helmet icon
+            if (this.helmetIcon) {
+                this.helmetIcon.setVisible(false);
             }
+            this.hasHelmet = false; // Set helmet status immediately
+
+            // Create a temporary falling helmet sprite at player's position
+            const fallingHelmet = this.add.sprite(player.x, player.y - player.displayHeight / 2, 'skater', 27)
+                .setOrigin(0.5)
+                .setScale(0.75) // Match UI icon scale initially
+                .setDepth(player.depth + 1); // Ensure it's on top
+
+            // Animate the falling helmet
+            this.tweens.add({
+                targets: fallingHelmet,
+                y: GAME_HEIGHT + fallingHelmet.displayHeight, // Fall off bottom of screen
+                angle: 360 * 2, // Spin twice
+                x: player.x + Phaser.Math.Between(-50, 50), // Slight horizontal drift
+                duration: 1500, // Duration of fall
+                ease: 'Sine.easeIn', // Accelerates downwards
+                onComplete: () => {
+                    fallingHelmet.destroy(); // Clean up the sprite
+                }
+            });
+            
+            // Show "Your helmet cracked..." message
+            this.showPointsPopup(player.x, player.y - 50, null, "Your helmet cracked,\nbut you were saved!", true);
+
 
             // Flash screen red
             this.cameras.main.flash(150, 255, 0, 0, false); // duration, r, g, b, force
