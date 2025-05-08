@@ -434,7 +434,8 @@ class GameplayScene extends Phaser.Scene {
         const iconY = 60;  // Y position for inventory icons (below score/high score)
         const iconSpacing = 40; // Spacing between icons
         const iconScale = 0.75;
-        const uncollectedTint = 0xcccccc; // Very light gray / whitish tint
+        const uncollectedTint = 0x707070; // Darker gray tint
+        const uncollectedAlpha = 0.4;    // Subdued alpha
 
         this.inventoryItems.forEach((frame, index) => {
             this.playerInventory[frame] = false; // Initialize as not collected
@@ -444,6 +445,7 @@ class GameplayScene extends Phaser.Scene {
                 .setOrigin(0, 0.5) // Align to left, vertically centered
                 .setScale(iconScale)
                 .setTint(uncollectedTint)
+                .setAlpha(uncollectedAlpha)
                 .setDepth(1);
             this.inventoryUIIcons[frame] = iconSprite;
         });
@@ -459,11 +461,12 @@ class GameplayScene extends Phaser.Scene {
     }
 
     resetInventoryDisplay() {
-        const uncollectedTint = 0xcccccc; // Very light gray / whitish tint
+        const uncollectedTint = 0x707070; // Darker gray tint
+        const uncollectedAlpha = 0.4;    // Subdued alpha
         this.inventoryItems.forEach(frame => {
             this.playerInventory[frame] = false;
             if (this.inventoryUIIcons[frame]) {
-                this.inventoryUIIcons[frame].setTint(uncollectedTint);
+                this.inventoryUIIcons[frame].setTint(uncollectedTint).setAlpha(uncollectedAlpha);
             }
         });
     }
@@ -806,7 +809,7 @@ class GameplayScene extends Phaser.Scene {
             if (this.inventoryItems.includes(itemFrameKey) && !this.playerInventory[itemFrameKey]) {
                 this.playerInventory[itemFrameKey] = true;
                 if (this.inventoryUIIcons[itemFrameKey]) {
-                    this.inventoryUIIcons[itemFrameKey].clearTint(); // Make it look collected
+                    this.inventoryUIIcons[itemFrameKey].clearTint().setAlpha(1.0); // Make it look collected
                 }
                 console.log(`Inventory item ${itemName} (frame ${itemFrameKey}) collected!`);
 
