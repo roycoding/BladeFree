@@ -466,10 +466,23 @@ class GameplayScene extends Phaser.Scene {
             if (spawnType === 'collectible_helmet') {
                 randomFrame = 27; // Force helmet frame
             } else {
-                // Randomly select a collectible frame index (24-31), excluding helmet if it was just forced
-                const collectibleFrames = [24, 25, 26, 28, 29, 30, 31]; // All except 27
-                if (Phaser.Math.Between(1, 5) === 1) { // 20% chance to spawn a helmet normally too
-                    collectibleFrames.push(27);
+                // Base collectible frames (excluding helmet)
+                let collectibleFrames = [24, 25, 26, 28, 29, 30, 31];
+                // If player doesn't have a helmet, add helmet (frame 27) to potential spawns
+                if (!this.hasHelmet) {
+                    // Add helmet to the pool with a certain chance, or always if you prefer
+                    // For example, 20% chance to be a helmet if a collectible spawns and player has no helmet
+                    if (Phaser.Math.Between(1, 5) === 1) { 
+                        collectibleFrames = [27]; // Make it a helmet
+                    } else {
+                         // Or, to just add it to the general pool:
+                         // collectibleFrames.push(27);
+                    }
+                }
+                // If collectibleFrames is empty (e.g. player has helmet and only helmet was forced by chance),
+                // default to a non-helmet item or handle as needed. For now, let's ensure it's not empty.
+                if (collectibleFrames.length === 0) {
+                    collectibleFrames = [24, 25, 26, 28, 29, 30, 31]; // Fallback to non-helmet items
                 }
                 randomFrame = Phaser.Utils.Array.GetRandom(collectibleFrames);
             }
@@ -720,14 +733,9 @@ class GameplayScene extends Phaser.Scene {
                 console.log("Helmet acquired! SKULL PROTECTION!");
                 // Show "SKULL PROTECTION" in larger letters, no points text
                 this.showPointsPopup(player.x, player.y, null, "SKULL PROTECTION", true); 
-            } else {
-                // Already have a helmet, award points instead
-                this.score += collectiblePoints;
-                this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
-                console.log(`+${collectiblePoints} points for extra ${itemName}!`);
-                this.sound.play('collect');
-                this.showPointsPopup(player.x, player.y, collectiblePoints, `Extra ${itemName}`);
             }
+            // "Else" case for collecting helmet when already having one is removed
+            // because helmets should not spawn if player already has one.
         } else {
             // Award points for other collectibles
             this.score += collectiblePoints;
