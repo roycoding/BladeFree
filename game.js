@@ -457,7 +457,7 @@ class GameplayScene extends Phaser.Scene {
             itemKey = 'rail_graphic'; // Use the new rail graphic
             group = this.grindables;
             // Ensure grindables don't spawn too close to the edge
-            const grindableWidth = 40; // Width of rail1.png
+            const grindableWidth = 20; // Updated width of rail1.png
             const safeSpawnX = Phaser.Math.Clamp(spawnX, grindableWidth / 2 + spawnPadding, GAME_WIDTH - grindableWidth / 2 - spawnPadding); // Add padding
             spawnedItem = group.create(safeSpawnX, spawnY, itemKey);
             console.log(`Grindable (rail1.png) spawned at (${safeSpawnX}, ${spawnY})`);
