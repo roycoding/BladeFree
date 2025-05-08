@@ -113,8 +113,8 @@
             - [ ] Consider adding clickable buttons for mobile compatibility for Restart/Quit.
 - [x] **Rails/Ledges & Grinding (Enhancements):**
     - [x] `update` (while grinding): Add points based on duration. *(Running total of points as skater grinds is covered by this)*
-    - [ ] `handleGrindOverlap`: Improve player snapping to align to the middle of the rail.
-    - [ ] `update`: Lock player's X position to the rail's X position while grinding.
+    - [x] `handleGrindOverlap`: Improve player snapping to align to the middle of the rail.
+    - [x] `update`: Lock player's X position to the rail's X position while grinding.
     - [ ] `spawnObstacle`: Implement rails and ledges of different lengths.
         - [ ] Randomly determine length for grindable.
         - [ ] Create grindable placeholder/sprite with variable height.

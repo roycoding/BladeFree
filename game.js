@@ -90,6 +90,7 @@ class GameplayScene extends Phaser.Scene {
         this.isGrinding = false;    // Flag to track if player is currently grinding
         this.isJumping = false;     // Flag to track if player is airborne from a jump
         this.isFalling = false;     // Flag to track if player is in collision state
+        this.activeGrindable = null; // Reference to the current rail being grinded
         this.highScore = 0;         // Highest score achieved
         this.scoreText = null;      // Text object for current score
         this.highScoreText = null;  // Text object for high score
@@ -798,7 +799,11 @@ class GameplayScene extends Phaser.Scene {
         if (!this.isGrinding) {
             this.isJumping = false; // Ensure not jumping when grinding
             this.isGrinding = true;
+            this.activeGrindable = grindable; // Store reference to the active rail
             console.log("Grind started!");
+
+            // Snap player's X position to the center of the rail
+            player.x = grindable.x;
 
             // Snap player's vertical position relative to the BOTTOM of the rail
             // Place player's bottom edge slightly above the rail's bottom edge initially
@@ -821,6 +826,7 @@ class GameplayScene extends Phaser.Scene {
     endGrind() {
         if (this.isGrinding) {
             this.isGrinding = false;
+            this.activeGrindable = null; // Clear active rail reference
             console.log("Grind ended.");
             this.sound.play('land'); // Play landing sound (reused from grind end)
             // Optional: Reset player tint if it was changed
@@ -887,6 +893,10 @@ class GameplayScene extends Phaser.Scene {
             this.player.anims.stop(); // Explicitly stop previous animation
             // Direct frame setting for grinding
             this.player.setTexture('skater', 16); // Directly set to frame 16 for grinding
+            // Keep player centered on the active rail
+            if (this.activeGrindable) {
+                this.player.x = this.activeGrindable.x;
+            }
         } else if (this.isJumping) { // Check jumping after grinding
             this.player.anims.stop(); // Explicitly stop previous animation
             // Direct frame setting for jumping
