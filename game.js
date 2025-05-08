@@ -534,6 +534,9 @@ class GameplayScene extends Phaser.Scene {
             this.sound.play('collide'); // Placeholder for "helmet_break" sound
             console.log("Helmet protected player! Lost helmet.");
 
+            // Flash screen red
+            this.cameras.main.flash(150, 255, 0, 0, false); // duration, r, g, b, force
+
             // Make player flash briefly to indicate invulnerability/hit
             this.tweens.add({
                 targets: player,
@@ -552,6 +555,9 @@ class GameplayScene extends Phaser.Scene {
         }
 
         // --- No Helmet: Proceed with Game Over ---
+        // Flash screen red
+        this.cameras.main.flash(200, 255, 0, 0, false); // duration, r, g, b, force
+
         // Stop the obstacle timer ONLY if game is truly over
         if (this.obstacleTimer) {
             this.obstacleTimer.paused = true;
