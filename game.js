@@ -190,6 +190,9 @@ class GameplayScene extends Phaser.Scene {
 
         // Setup cursor keys for input
         this.cursors = this.input.keyboard.createCursorKeys();
+        // Add A and D keys for movement
+        this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
         // --- Mobile Touch Input ---
         this.input.on('pointerdown', (pointer) => {
@@ -944,10 +947,10 @@ class GameplayScene extends Phaser.Scene {
         // --- Player Horizontal Movement (Keyboard) ---
         // Keyboard input overrides touch input if both are active
         let movingHorizontally = false;
-        if (this.cursors.left.isDown) {
+        if (this.cursors.left.isDown || this.keyA.isDown) {
             movingHorizontally = true;
             this.player.setVelocityX(-PLAYER_SPEED);
-        } else if (this.cursors.right.isDown) {
+        } else if (this.cursors.right.isDown || this.keyD.isDown) {
             movingHorizontally = true;
             this.player.setVelocityX(PLAYER_SPEED);
         } else {
@@ -1225,22 +1228,23 @@ class GameOverScene extends Phaser.Scene {
             });
         };
 
-        // --- Restart Button ---
-        this.restartButton = this.add.text(GAME_WIDTH / 2, scoreYPosition + 120, 'RESTART', {
+        // --- Restart Button (Lower Left) ---
+        const buttonPadding = 30; // Padding from screen edges
+        this.restartButton = this.add.text(buttonPadding, GAME_HEIGHT - buttonPadding, 'RESTART', {
             fontSize: '32px', fill: '#00FF00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5,
             backgroundColor: '#333333', padding: { left: 15, right: 15, top: 10, bottom: 10 }
-        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        }).setOrigin(0, 1).setInteractive({ useHandCursor: true }); // Origin bottom-left
         
         this.restartButton.on('pointerdown', performRestart);
         this.restartButton.on('pointerover', () => this.restartButton.setStyle({ fill: '#80FF80' }));
         this.restartButton.on('pointerout', () => this.restartButton.setStyle({ fill: '#00FF00' }));
 
 
-        // --- Quit Button ---
-        this.quitButton = this.add.text(GAME_WIDTH / 2, scoreYPosition + 190, 'QUIT', { // Adjusted Y for spacing
+        // --- Quit Button (Lower Right) ---
+        this.quitButton = this.add.text(GAME_WIDTH - buttonPadding, GAME_HEIGHT - buttonPadding, 'QUIT', {
             fontSize: '32px', fill: '#FF8C00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5,
             backgroundColor: '#333333', padding: { left: 15, right: 15, top: 10, bottom: 10 }
-        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        }).setOrigin(1, 1).setInteractive({ useHandCursor: true }); // Origin bottom-right
 
         this.quitButton.on('pointerdown', performQuit);
         this.quitButton.on('pointerover', () => this.quitButton.setStyle({ fill: '#FFA500' }));
