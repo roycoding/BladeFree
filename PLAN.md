@@ -110,7 +110,7 @@
         - [x] `create`: Add input listeners for restart/quit. *(Restart and Quit listeners added)*
         - [x] On Restart: `this.scene.start('GameplayScene')`.
         - [x] On Quit: Display "Later Blader 🤙" text. *(Image with spiral animation implemented)*
-            - [ ] Consider adding clickable buttons for mobile compatibility for Restart/Quit.
+            - [ ] Add clickable buttons to GameOverScene for "Restart" and "Quit" for mobile users.
 - [x] **Rails/Ledges & Grinding (Enhancements):**
     - [x] `update` (while grinding): Add points based on duration. *(Running total of points as skater grinds is covered by this)*
     - [x] `handleGrindOverlap`: Improve player snapping to align to the middle of the rail.
