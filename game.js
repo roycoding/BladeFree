@@ -583,7 +583,10 @@ class GameplayScene extends Phaser.Scene {
             .setOrigin(0.5, 0.5)
             .setDepth(playerSpriteDepth);
         
-        this.sound.play('dog_bark', { volume: 0.7 }); // Play dog bark sound
+        // Delay the dog bark sound by 1 second
+        this.time.delayedCall(1000, () => {
+            this.sound.play('dog_bark', { volume: 0.7 }); // Play dog bark sound
+        }, [], this);
 
         this.tweens.add({
             targets: loneDogSprite,
