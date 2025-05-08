@@ -911,7 +911,7 @@ class GameOverScene extends Phaser.Scene {
 
     create() {
         // Add the game over background image
-        this.add.image(0, 0, 'game_over_bg').setOrigin(0,0);
+        this.gameOverBackgroundImage = this.add.image(0, 0, 'game_over_bg').setOrigin(0,0);
         // No setBackgroundColor needed
 
         // Play game over screen music
@@ -997,7 +997,15 @@ class GameOverScene extends Phaser.Scene {
             // Stop all sounds
             this.sound.stopAll();
             // Optionally play a quit sound
-            // this.sound.play('ui_confirm'); 
+            // this.sound.play('ui_confirm');
+
+            // Hide the game over background image
+            if (this.children.list.find(child => child.texture && child.texture.key === 'game_over_bg')) {
+                this.children.list.find(child => child.texture.key === 'game_over_bg').setVisible(false);
+            }
+            
+            // Set background to solid black
+            this.cameras.main.setBackgroundColor('#000000');
 
             // Hide other texts
             this.scoreTextDisplay.setVisible(false);
