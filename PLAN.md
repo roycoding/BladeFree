@@ -81,16 +81,48 @@
 
 ## Phase 4: Tricks, Collectibles & Game States
 
-- [x] **Ramps & Jumps:**
+- [ ] **Active Jumping Mechanics:**
+    - [ ] **Input:**
+        - [ ] `GameplayScene.create`: Add keyboard listeners for Jump (Up Arrow, Spacebar).
+        - [ ] `GameplayScene.create`: Add touch input for Jump (e.g., swipe up, or a dedicated jump button area on mobile).
+    - [ ] **Player State:**
+        - [ ] `GameplayScene`: Add `canJump` boolean flag (true when on ground, false when airborne/grinding).
+        - [ ] `GameplayScene.update`: Manage `canJump` state (set to true on landing, false on jump/leaving ground).
+    - [ ] **Jumping Action:**
+        - [ ] `GameplayScene.update` or new `handleJumpInput()`:
+            - [ ] If jump input detected and `canJump` is true:
+                - [ ] Apply upward velocity (`JUMP_VELOCITY`).
+                - [ ] Set `isJumping = true`, `canJump = false`.
+                - [ ] Play jump sound.
+                - [ ] Play "jump takeoff" or "airborne" animation.
+    - [ ] **Interaction with Ramps:**
+        - [ ] `GameplayScene.handleRampOverlap`:
+            - [ ] If player *actively jumps* just before or on the ramp: Perform a "big air" jump (higher velocity, airborne/grab pose animation).
+            - [ ] If player *does not jump* but rides onto the ramp: Perform a "small air" jump (lower velocity, simpler/no special airborne pose, or just a slight lift).
+            - [ ] Points awarded might differ based on jump type.
+    - [ ] **Interaction with Rails/Ledges:**
+        - [ ] `GameplayScene.handleGrindOverlap` (or collider):
+            - [ ] Player must *actively jump* onto a rail/ledge to start grinding.
+            - [ ] If player simply skates into a rail without jumping, it's a collision (`handleCollision`).
+            - [ ] Consider a small "hop" animation if jumping onto a rail.
+        - [ ] `GameplayScene.update`: Allow player to jump *off* a rail (ends grind, sets `isJumping`).
+    - [ ] **Interaction with Obstacles:**
+        - [ ] Player can jump *over* some obstacles if their jump height and timing are correct.
+        - [ ] This might require adjusting obstacle hitboxes or player's hitbox while airborne.
+    - [ ] **Landing on Rails:**
+        - [ ] If player is airborne (from ramp or regular jump) and lands on a grindable:
+            - [ ] Initiate grind sequence.
+            - [ ] Play landing-on-rail sound/effect.
+- [x] **Ramps & Jumps (Passive - to be revised with Active Jumping):**
     - [x] `preload`: Load ramp asset. *(Placeholder done)*
     - [x] `create`: Create `ramps` group.
     - [x] Implement spawning logic for ramps.
     - [x] `create`: Set up physics *overlap* check between player and `ramps`.
     - [x] Create `handleRampOverlap(player, ramp)` function.
-    - [x] `handleRampOverlap`: Trigger jump state (velocity change, animation).
+    - [x] `handleRampOverlap`: Trigger jump state (velocity change, animation). *(Current: automatic small air)*
     - [x] `handleRampOverlap`: Add points for the jump.
     - [x] `handleRampOverlap`: Play jump sound/visual effect. *(Sound and point popup done)*
-- [x] **Rails/Ledges & Grinding:**
+- [x] **Rails/Ledges & Grinding (Passive - to be revised with Active Jumping):**
     - [x] `preload`: Load rail/ledge asset. *(Placeholder done)*
     - [x] `create`: Create `grindables` group.
     - [x] Implement spawning logic for grindables.
