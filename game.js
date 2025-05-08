@@ -434,7 +434,7 @@ class GameplayScene extends Phaser.Scene {
         const iconY = 60;  // Y position for inventory icons (below score/high score)
         const iconSpacing = 40; // Spacing between icons
         const iconScale = 0.75;
-        const uncollectedTint = 0xaaaaaa; // Light gray tint for uncollected items
+        const uncollectedTint = 0x808080; // Darker gray tint for uncollected items
 
         this.inventoryItems.forEach((frame, index) => {
             this.playerInventory[frame] = false; // Initialize as not collected
@@ -459,7 +459,7 @@ class GameplayScene extends Phaser.Scene {
     }
 
     resetInventoryDisplay() {
-        const uncollectedTint = 0xaaaaaa;
+        const uncollectedTint = 0x808080; // Darker gray tint for uncollected items
         this.inventoryItems.forEach(frame => {
             this.playerInventory[frame] = false;
             if (this.inventoryUIIcons[frame]) {
@@ -815,7 +815,8 @@ class GameplayScene extends Phaser.Scene {
                     const bonusPoints = 500;
                     this.score += bonusPoints;
                     this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
-                    this.showPointsPopup(player.x, player.y - 70, bonusPoints, "COLLECTION COMPLETE!", true, 2500);
+                    // Center the "COLLECTION COMPLETE!" message on the screen
+                    this.showPointsPopup(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, bonusPoints, "COLLECTION COMPLETE!", true, 2500);
                     this.sound.play('ui_confirm'); // Placeholder for special bonus sound
 
                     // Reset inventory for next collection
