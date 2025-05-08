@@ -134,14 +134,10 @@ class GameplayScene extends Phaser.Scene {
         graphics.generateTexture('ramp_placeholder', 80, 20);
         graphics.destroy();
 
-        // --- Grindable Placeholder ---
-        // Create a simple black rectangle placeholder for rails/ledges (vertically oriented)
-        graphics = this.make.graphics({ fillStyle: { color: 0x000000 } }); // Black color
-        const grindableWidth = 15; // Thin rail
-        const grindableHeight = 250; // Long rail
-        graphics.fillRect(0, 0, grindableWidth, grindableHeight);
-        graphics.generateTexture('grindable_placeholder', grindableWidth, grindableHeight);
-        graphics.destroy();
+        // --- Grindable Graphic ---
+        this.load.image('rail_graphic', 'assets/graphics/rail1.png');
+        // No procedural placeholder needed anymore for grindables.
+        // graphics.destroy(); // Ensure graphics object is destroyed if it was used last for ramp
 
         // --- Collectible Placeholder ---
         // Collectibles will now use frames from the 'skater' spritesheet.
@@ -458,13 +454,13 @@ class GameplayScene extends Phaser.Scene {
             spawnedItem = group.create(spawnX, spawnY, itemKey);
             console.log(`Ramp spawned at (${spawnX}, ${spawnY})`);
         } else if (spawnType === 'grindable') {
-            itemKey = 'grindable_placeholder';
+            itemKey = 'rail_graphic'; // Use the new rail graphic
             group = this.grindables;
             // Ensure grindables don't spawn too close to the edge
-            const grindableWidth = 15; // Match new placeholder width
+            const grindableWidth = 40; // Width of rail1.png
             const safeSpawnX = Phaser.Math.Clamp(spawnX, grindableWidth / 2 + spawnPadding, GAME_WIDTH - grindableWidth / 2 - spawnPadding); // Add padding
             spawnedItem = group.create(safeSpawnX, spawnY, itemKey);
-            console.log(`Grindable spawned at (${safeSpawnX}, ${spawnY})`);
+            console.log(`Grindable (rail1.png) spawned at (${safeSpawnX}, ${spawnY})`);
         } else if (spawnType === 'collectible' || spawnType === 'collectible_helmet') {
             itemKey = 'skater'; // Use the main spritesheet
             group = this.collectibles;

@@ -160,10 +160,11 @@
         - [ ] `preload` new ramp asset(s).
         - [ ] Update `spawnObstacle` to use new ramp graphics.
         - [ ] Adjust physics body if needed.
-    - [ ] Replace rail/ledge placeholder with final graphics.
-        - [ ] `preload` new rail/ledge asset(s).
-        - [ ] Update `spawnObstacle` to use new rail/ledge graphics (consider variable lengths).
-        - [ ] Adjust physics body if needed.
+    - [x] Replace rail/ledge placeholder with final graphics.
+        - [x] `preload` new rail/ledge asset(s). (`rail1.png` added)
+        - [x] Update `spawnObstacle` to use new rail/ledge graphics.
+        - [ ] Adjust physics body if needed. *(May need to verify after visual check)*
+        - [ ] Consider variable lengths for future.
     - [x] Create sprite sheets for player animations (skating, jumping, grinding, falling).
     - [x] Use Phaser's animation manager (`this.anims.create`) to define animations.
     - [x] Play correct player animation based on state.
