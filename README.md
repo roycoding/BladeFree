@@ -100,3 +100,20 @@ physics: {
 ```
 This will draw outlines around physics bodies and show velocity vectors, which is helpful for debugging collisions and movement. Remember to turn it off for "production" as it can impact performance.
 Use your browser's developer console (usually F12) to check for JavaScript errors and log messages.
+
+## Audio Credits
+
+The following sound effect files used in BladeFree were sourced from Pixabay and are used under the Pixabay Content License. For more details on the license, please visit: [Pixabay License Summary](https://pixabay.com/service/license-summary/).
+
+*   `assets/audio/ui_confirm.mp3`
+*   `assets/audio/jump.mp3`
+*   `assets/audio/collect.mp3`
+*   `assets/audio/collide.mp3`
+*   `assets/audio/grind_start.mp3`
+*   `assets/audio/land.mp3`
+*   `assets/audio/dog_bark.mp3`
+*   `assets/audio/spray_can_rattle.mp3`
+*   `assets/audio/spray.mp3`
+*   `assets/audio/game_over.mp3`
+
+The main background music (`music.mp3`) and start screen music (`start_music.mp3`) were created by royskates.com.
