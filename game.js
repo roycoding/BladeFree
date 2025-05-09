@@ -115,6 +115,9 @@ class GameplayScene extends Phaser.Scene {
         this.timeLastTrickEnded = 0;     // Timestamp of when the last trick interaction relevant for a transfer ended/started
 
         this.jumpAnimationTimer = null; // Timer for 360 animation frame switch
+        this.grindNameText = null;   // Text object for "Royale Grind" persistent display
+        this.isPerformingRampJump = false; // Flag to indicate a 360 ramp jump is in progress
+        this.pointsForCurrentRampJump = 0; // Points to award upon landing a 360
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -326,6 +329,14 @@ class GameplayScene extends Phaser.Scene {
             this.jumpAnimationTimer.remove(false);
             this.jumpAnimationTimer = null;
         }
+
+        // Reset grind name text
+        if (this.grindNameText) {
+            this.grindNameText.destroy();
+            this.grindNameText = null;
+        }
+        this.isPerformingRampJump = false;
+        this.pointsForCurrentRampJump = 0;
 
         // Ensure obstacle timer is running if restarting
         if (this.obstacleTimer) {
@@ -616,6 +627,10 @@ class GameplayScene extends Phaser.Scene {
                 this.jumpAnimationTimer = null;
             }
             this.isJumping = false; // Player is no longer in a controlled jump state
+            if (this.isPerformingRampJump) { // Also reset ramp jump flag
+                this.isPerformingRampJump = false;
+                this.pointsForCurrentRampJump = 0;
+            }
         }
 
         // player.setAlpha(0.5); // Remove transparency, rely on animation
@@ -814,18 +829,20 @@ class GameplayScene extends Phaser.Scene {
         
         // --- 360 Animation ---
         player.setTexture('skater', 9); // Start with frame 9 for first half of jump
-        const timeToApexMs = (JUMP_VELOCITY / JUMP_GRAVITY_PULL) * 1000;
+        const timeToApexMs = (JUMP_VELOCITY / JUMP_GRAVITY_PULL) * 1000; // Time to reach the peak of the jump
 
         if (this.jumpAnimationTimer) { // Clear any existing timer
             this.jumpAnimationTimer.remove(false);
         }
-        this.jumpAnimationTimer = this.time.delayedCall(timeToApexMs, () => {
+        // Switch to frame 17 later in the jump (e.g., at 133% of timeToApex) to make frame 9 visible longer
+        const frameSwitchDelay = timeToApexMs * 1.33; 
+        this.jumpAnimationTimer = this.time.delayedCall(frameSwitchDelay, () => {
             if (this.player && this.isJumping) { // Check if still jumping
-                this.player.setTexture('skater', 17); // Switch to frame 17 for second half
+                this.player.setTexture('skater', 17); // Switch to frame 17
             }
         }, [], this);
         
-        console.log(`360 Jump initiated! VelocityY: ${player.body.velocity.y}, PlayerY: ${player.y}. Frame 17 in ${timeToApexMs}ms.`);
+        console.log(`360 Jump initiated! VelocityY: ${player.body.velocity.y}, PlayerY: ${player.y}. Frame 17 in ${frameSwitchDelay}ms.`);
         this.sound.play('jump'); // Play jump sound
 
         // Don't destroy the ramp, let it scroll off. It's marked as 'hit' now.
@@ -836,8 +853,10 @@ class GameplayScene extends Phaser.Scene {
         this.lastTrickObjectType = 'ramp';
         this.timeLastTrickEnded = this.time.now; // Mark time of current ramp interaction
 
-        // Show points pop-up for the ramp itself, now with trick name
-        this.showPointsPopup(player.x, player.y - 30, rampPoints, "360");
+        // Set flags for landing the 360 trick
+        this.isPerformingRampJump = true;
+        this.pointsForCurrentRampJump = rampPoints;
+        // The "360" points pop-up will be shown on landing
     }
 
     // --- Collectible Handling ---
@@ -980,6 +999,11 @@ class GameplayScene extends Phaser.Scene {
 
         // If not already grinding, start the grind
         if (!this.isGrinding) {
+            if (this.isPerformingRampJump) { // Landed a 360 onto the rail
+                this.showPointsPopup(player.x, player.y - 30, this.pointsForCurrentRampJump, "360"); // Show 360 points
+                this.isPerformingRampJump = false;
+                this.pointsForCurrentRampJump = 0;
+            }
             if (this.jumpAnimationTimer) { // Cancel jump animation if landing into a grind
                 this.jumpAnimationTimer.remove(false);
                 this.jumpAnimationTimer = null;
@@ -1035,11 +1059,19 @@ class GameplayScene extends Phaser.Scene {
             // Initialize and show grind points display
             this.currentGrindPoints = 0;
             if (!this.grindPointsDisplay) {
-                this.grindPointsDisplay = this.add.text(player.x, player.y - 40, `+0`, {
+                this.grindPointsDisplay = this.add.text(player.x, player.y - 40, `+0`, { // Accumulating points
                     fontSize: '22px', fill: '#00ff00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 4
                 }).setOrigin(0.5).setDepth(2);
             }
             this.grindPointsDisplay.setPosition(player.x, player.y - 40).setText(`+0`).setVisible(true);
+
+            // Create and show persistent "Royale Grind" name text
+            if (this.grindNameText) { // Destroy if one somehow exists
+                this.grindNameText.destroy();
+            }
+            this.grindNameText = this.add.text(player.x, player.y - 65, 'Royale Grind', { // Position above grind points display
+                fontSize: '20px', fill: '#00ff00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 3
+            }).setOrigin(0.5).setDepth(2).setVisible(true);
 
             // Update last trick info
             this.lastTrickObject = grindable;
@@ -1061,6 +1093,10 @@ class GameplayScene extends Phaser.Scene {
             
             if (this.grindPointsDisplay) {
                 this.grindPointsDisplay.setVisible(false);
+            }
+            if (this.grindNameText) {
+                this.grindNameText.destroy();
+                this.grindNameText = null;
             }
             this.currentGrindPoints = 0; // Reset for next grind
 
@@ -1165,7 +1201,10 @@ class GameplayScene extends Phaser.Scene {
             
             if (this.grindPointsDisplay && this.grindPointsDisplay.visible) {
                 this.grindPointsDisplay.setText(`+${Math.floor(this.currentGrindPoints)}`);
-                this.grindPointsDisplay.setPosition(this.player.x, this.player.y - 40); // Keep it above player
+                this.grindPointsDisplay.setPosition(this.player.x, this.player.y - 40); 
+            }
+            if (this.grindNameText && this.grindNameText.visible) {
+                this.grindNameText.setPosition(this.player.x, this.player.y - 65); // Keep it above player and grind points
             }
         }
         // Removed the 'else' block that awarded points for survival time.
@@ -1203,6 +1242,13 @@ class GameplayScene extends Phaser.Scene {
             this.player.setY(PLAYER_START_Y); // Snap back exactly to the start line
             this.sound.play('land'); // Play landing sound
             this.isJumping = false; // Reset jumping flag
+            
+            if (this.isPerformingRampJump) { // Landed a 360 on the ground
+                this.showPointsPopup(this.player.x, this.player.y - 30, this.pointsForCurrentRampJump, "360");
+                this.isPerformingRampJump = false;
+                this.pointsForCurrentRampJump = 0;
+            }
+
             if (this.jumpAnimationTimer) { // Cancel timer if it's still pending
                 this.jumpAnimationTimer.remove(false);
                 this.jumpAnimationTimer = null;
