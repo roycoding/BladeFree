@@ -1344,7 +1344,7 @@ class GameOverScene extends Phaser.Scene {
         this.confirmationBg = this.add.image(0, 0, 'title_image').setOrigin(0,0).setDepth(19); // High depth
 
         // YES Button
-        const buttonYPosition = GAME_HEIGHT * 0.5; // Position buttons higher
+        const buttonYPosition = GAME_HEIGHT * 0.7; // Position buttons lower
         this.yesButton = this.add.text(GAME_WIDTH / 2 - 100, buttonYPosition, 'YES', {
             fontSize: '40px', fill: '#00FF00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5,
             backgroundColor: '#333333', padding: { left: 20, right: 20, top: 10, bottom: 10 }
