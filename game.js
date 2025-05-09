@@ -139,6 +139,7 @@ class GameplayScene extends Phaser.Scene {
 
         this.elapsedTimeText = null; // Text object for displaying elapsed time
         this.sceneRunningTime = 0; // For accurate scene-specific timer display
+        this.bladeFreeTile = null; // To hold the special BladeFree asphalt tile
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -167,6 +168,7 @@ class GameplayScene extends Phaser.Scene {
 
         // --- Background Image ---
         this.load.image('asphalt_bg', 'assets/graphics/asphalt.png');
+        this.load.image('asphalt_bladefree', 'assets/graphics/asphalt_bladefree.png'); // Load BladeFree tile
 
         // --- Obstacle Placeholder ---
         // Obstacles will now use frames from the 'skater' spritesheet.
@@ -398,6 +400,13 @@ class GameplayScene extends Phaser.Scene {
             this.elapsedTimeText.setText('Time: 00:00');
         }
         this.sceneRunningTime = 0; // Reset scene-specific running time
+
+        // Reset BladeFree tile if it exists from a previous game
+        if (this.bladeFreeTile) {
+            this.bladeFreeTile.destroy();
+            this.bladeFreeTile = null;
+        }
+
         // Explicitly use this.sys.time.now to ensure we're getting the most direct time reference
         this.gameStartTime = this.sys.time.now; // For difficulty scaling logic
         console.log(`GameplayScene.create: gameStartTime reset to ${this.gameStartTime} for difficulty scaling.`);
@@ -424,6 +433,13 @@ class GameplayScene extends Phaser.Scene {
         this.ramps.clear(true, true);
         this.grindables.clear(true, true);
         this.collectibles.clear(true, true);
+
+        // --- Spawn Special BladeFree Tile ---
+        // Spawn it once, positioned to scroll into view early
+        this.bladeFreeTile = this.physics.add.sprite(GAME_WIDTH / 2, -200, 'asphalt_bladefree');
+        this.bladeFreeTile.body.allowGravity = false;
+        this.bladeFreeTile.setVelocityY(SCROLL_SPEED);
+        this.bladeFreeTile.setDepth(0); // Render it behind player but above general background tile
 
         // --- Start Background Music ---
         // Stop previous music if restarting, before starting new one
@@ -1535,6 +1551,13 @@ class GameplayScene extends Phaser.Scene {
                 }
             });
         });
+
+        // --- BladeFree Tile Cleanup ---
+        if (this.bladeFreeTile && this.bladeFreeTile.y > GAME_HEIGHT + this.bladeFreeTile.displayHeight) {
+            console.log("Destroying off-screen BladeFree tile");
+            this.bladeFreeTile.destroy();
+            this.bladeFreeTile = null;
+        }
     }
 }
 
