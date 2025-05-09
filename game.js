@@ -22,6 +22,10 @@ const OBSTACLE_HORIZONTAL_SPEED_TIER1 = 30; // pixels/sec
 const OBSTACLE_MOVEMENT_TIER2_TIME = 120000; // 2 minutes in ms
 const OBSTACLE_HORIZONTAL_SPEED_TIER2 = 60; // pixels/sec
 
+// Difficulty Scaling Constants for Spawn Rate
+const SPAWN_DELAY_REDUCTION_PER_1000_PTS = 100; // ms reduction in spawn delay
+const MIN_OBSTACLE_SPAWN_DELAY = 500; // Minimum spawn delay in ms
+
 
 // --- Start Scene ---
 class StartScene extends Phaser.Scene {
@@ -126,6 +130,7 @@ class GameplayScene extends Phaser.Scene {
         this.pointsForCurrentRampJump = 0; // Points to award upon landing a 360
 
         this.gameStartTime = 0; // To track elapsed time for difficulty scaling
+        this.lastScoreThresholdForSpawnDelay = 0; // Tracks score for spawn rate increase
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -348,10 +353,12 @@ class GameplayScene extends Phaser.Scene {
         }
         this.isPerformingRampJump = false;
         this.pointsForCurrentRampJump = 0;
+        this.lastScoreThresholdForSpawnDelay = 0; // Reset for spawn rate scaling
 
         // Ensure obstacle timer is running if restarting
         if (this.obstacleTimer) {
             this.obstacleTimer.paused = false;
+            this.obstacleTimer.delay = OBSTACLE_SPAWN_DELAY; // Reset to initial delay
         } else {
              // Setup a timed event to spawn obstacles (if first time)
             this.obstacleTimer = this.time.addEvent({
@@ -1240,6 +1247,23 @@ class GameplayScene extends Phaser.Scene {
         // Removed the 'else' block that awarded points for survival time.
         this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
         this.updateHelmetIcon(); // Update helmet icon position if score text width changes
+
+        // --- Difficulty Scaling: Spawn Rate ---
+        const currentScoreTier = Math.floor(this.score / 1000) * 1000;
+        if (currentScoreTier > this.lastScoreThresholdForSpawnDelay && this.obstacleTimer) {
+            const numIncrements = (currentScoreTier - this.lastScoreThresholdForSpawnDelay) / 1000;
+            let newDelay = this.obstacleTimer.delay;
+            for (let i = 0; i < numIncrements; i++) {
+                newDelay -= SPAWN_DELAY_REDUCTION_PER_1000_PTS;
+            }
+            newDelay = Math.max(newDelay, MIN_OBSTACLE_SPAWN_DELAY);
+
+            if (newDelay !== this.obstacleTimer.delay) {
+                this.obstacleTimer.delay = newDelay;
+                console.log(`Score reached ${currentScoreTier}. Obstacle spawn delay reduced to: ${this.obstacleTimer.delay}ms`);
+            }
+            this.lastScoreThresholdForSpawnDelay = currentScoreTier;
+        }
 
 
         // --- Grind End Check ---
