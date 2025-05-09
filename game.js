@@ -637,9 +637,9 @@ class GameplayScene extends Phaser.Scene {
                 }
             });
             
-            // Show "Your helmet cracked..." message
+            // Show "Your helmet cracked..." message, centered on screen
             const helmetMessageDuration = 2000; // 2 seconds
-            this.showPointsPopup(player.x, player.y - 50, null, "You cracked your HELMET,\nbut not your HEAD!", true, helmetMessageDuration);
+            this.showPointsPopup(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, null, "You cracked your HELMET,\nbut not your HEAD!", true, helmetMessageDuration);
 
 
             // Flash screen red
