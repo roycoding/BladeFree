@@ -356,6 +356,10 @@ class GameplayScene extends Phaser.Scene {
             this.grindNameText.destroy();
             this.grindNameText = null;
         }
+        if (this.grindPointsDisplay) { // Add reset for grindPointsDisplay
+            this.grindPointsDisplay.destroy();
+            this.grindPointsDisplay = null;
+        }
         this.isPerformingRampJump = false;
         this.pointsForCurrentRampJump = 0;
         this.lastScoreThresholdForSpawnDelay = 0; // Reset for spawn rate scaling
