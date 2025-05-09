@@ -113,6 +113,8 @@ class GameplayScene extends Phaser.Scene {
         this.lastTrickObject = null;
         this.lastTrickObjectType = null; // 'ramp' or 'rail'
         this.timeLastTrickEnded = 0;     // Timestamp of when the last trick interaction relevant for a transfer ended/started
+
+        this.jumpAnimationTimer = null; // Timer for 360 animation frame switch
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -318,6 +320,12 @@ class GameplayScene extends Phaser.Scene {
         this.lastTrickObject = null;
         this.lastTrickObjectType = null;
         this.timeLastTrickEnded = 0;
+
+        // Reset jump animation timer
+        if (this.jumpAnimationTimer) {
+            this.jumpAnimationTimer.remove(false);
+            this.jumpAnimationTimer = null;
+        }
 
         // Ensure obstacle timer is running if restarting
         if (this.obstacleTimer) {
@@ -602,6 +610,14 @@ class GameplayScene extends Phaser.Scene {
     handleCollision(player, obstacle) {
         console.log("Collision detected!");
 
+        if (this.isJumping) { // If player was jumping during collision
+            if (this.jumpAnimationTimer) {
+                this.jumpAnimationTimer.remove(false);
+                this.jumpAnimationTimer = null;
+            }
+            this.isJumping = false; // Player is no longer in a controlled jump state
+        }
+
         // player.setAlpha(0.5); // Remove transparency, rely on animation
         // REMOVED: this.obstacleTimer.paused = true; // This was pausing timer even with helmet
 
@@ -795,9 +811,21 @@ class GameplayScene extends Phaser.Scene {
         this.isGrinding = false; // Ensure not grinding when jumping
         player.setVelocityY(-JUMP_VELOCITY);
         this.isJumping = true; // Set jumping flag
-        // Play airborne animation immediately (takeoff is implicit)
-        player.play('jump-airborne', true);
-        console.log(`Jump initiated! VelocityY: ${player.body.velocity.y}, PlayerY: ${player.y}`);
+        
+        // --- 360 Animation ---
+        player.setTexture('skater', 9); // Start with frame 9 for first half of jump
+        const timeToApexMs = (JUMP_VELOCITY / JUMP_GRAVITY_PULL) * 1000;
+
+        if (this.jumpAnimationTimer) { // Clear any existing timer
+            this.jumpAnimationTimer.remove(false);
+        }
+        this.jumpAnimationTimer = this.time.delayedCall(timeToApexMs, () => {
+            if (this.player && this.isJumping) { // Check if still jumping
+                this.player.setTexture('skater', 17); // Switch to frame 17 for second half
+            }
+        }, [], this);
+        
+        console.log(`360 Jump initiated! VelocityY: ${player.body.velocity.y}, PlayerY: ${player.y}. Frame 17 in ${timeToApexMs}ms.`);
         this.sound.play('jump'); // Play jump sound
 
         // Don't destroy the ramp, let it scroll off. It's marked as 'hit' now.
@@ -808,8 +836,8 @@ class GameplayScene extends Phaser.Scene {
         this.lastTrickObjectType = 'ramp';
         this.timeLastTrickEnded = this.time.now; // Mark time of current ramp interaction
 
-        // Show points pop-up for the ramp itself
-        this.showPointsPopup(player.x, player.y - 30, rampPoints);
+        // Show points pop-up for the ramp itself, now with trick name
+        this.showPointsPopup(player.x, player.y - 30, rampPoints, "360");
     }
 
     // --- Collectible Handling ---
@@ -952,6 +980,11 @@ class GameplayScene extends Phaser.Scene {
 
         // If not already grinding, start the grind
         if (!this.isGrinding) {
+            if (this.jumpAnimationTimer) { // Cancel jump animation if landing into a grind
+                this.jumpAnimationTimer.remove(false);
+                this.jumpAnimationTimer = null;
+            }
+
             // --- Transfer Combo Check ---
             if (this.lastTrickObjectType && (this.time.now - this.timeLastTrickEnded < TRANSFER_COMBO_WINDOW)) {
                 let transferPoints = 0;
@@ -976,7 +1009,13 @@ class GameplayScene extends Phaser.Scene {
             this.isJumping = false; // Ensure not jumping when grinding
             this.isGrinding = true;
             this.activeGrindable = grindable; // Store reference to the active rail
-            console.log("Grind started!");
+            
+            // Award points for initiating the "Royale Grind"
+            const grindStartPoints = 10; 
+            this.score += grindStartPoints;
+            this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
+            this.showPointsPopup(player.x, player.y - 30, grindStartPoints, "Royale Grind");
+            console.log("Royale Grind started! +10 points.");
 
             // Snap player's X position to the center of the rail
             player.x = grindable.x;
@@ -1100,10 +1139,10 @@ class GameplayScene extends Phaser.Scene {
             if (this.activeGrindable) {
                 this.player.x = this.activeGrindable.x;
             }
-        } else if (this.isJumping) { // Check jumping after grinding
-            this.player.anims.stop(); // Explicitly stop previous animation
-            // Direct frame setting for jumping
-            this.player.setTexture('skater', 9); // Directly set to frame 9 for jumping
+        } else if (this.isJumping) { 
+            // Animation (frames 9 and 17) is handled by handleRampOverlap and its delayedCall.
+            // No specific animation call needed here for the 360 jump.
+            // If other types of jumps are added later, their animation logic might go here.
         } else {
             // On the ground, not falling or grinding or jumping
             // Check if landing animation is still playing
@@ -1164,6 +1203,10 @@ class GameplayScene extends Phaser.Scene {
             this.player.setY(PLAYER_START_Y); // Snap back exactly to the start line
             this.sound.play('land'); // Play landing sound
             this.isJumping = false; // Reset jumping flag
+            if (this.jumpAnimationTimer) { // Cancel timer if it's still pending
+                this.jumpAnimationTimer.remove(false);
+                this.jumpAnimationTimer = null;
+            }
 
             // If landed on ground (not a ramp or rail which would set their own lastTrickObject/Type),
             // then the combo chain is broken.
