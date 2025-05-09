@@ -1116,6 +1116,12 @@ class GameOverScene extends Phaser.Scene {
         super('GameOverScene');
         this.finalScore = 0;
         this.highScore = 0;
+        this.isShowingResetConfirmation = false;
+        this.confirmationBg = null;
+        this.confirmationText = null;
+        this.yesButton = null;
+        this.noButton = null;
+        this.resetDot = null;
     }
 
     preload() {
@@ -1214,6 +1220,7 @@ class GameOverScene extends Phaser.Scene {
 
         // --- Button Actions ---
         const performRestart = () => {
+            if (this.isShowingResetConfirmation) return;
             if (!this.laterBladerImage || !this.laterBladerImage.visible) {
                 this.sound.play('ui_confirm');
                 this.sound.stopByKey('start_music');
@@ -1222,6 +1229,7 @@ class GameOverScene extends Phaser.Scene {
         };
 
         const performQuit = () => {
+            if (this.isShowingResetConfirmation) return;
             if (this.laterBladerImage && this.laterBladerImage.visible) return;
 
             this.sound.stopAll();
@@ -1289,6 +1297,7 @@ class GameOverScene extends Phaser.Scene {
 
         // --- Secret High Score Reset ---
         this.input.keyboard.on('keydown-DELETE', (event) => {
+            if (this.isShowingResetConfirmation) return; // Don't allow if confirmation is up
             if (event.shiftKey) { // Check if Shift key is also held down
                 console.log("Secret High Score Reset Activated!");
                 localStorage.setItem('bladeFreeHighScore', '0');
@@ -1304,8 +1313,95 @@ class GameOverScene extends Phaser.Scene {
             }
         });
 
+        // --- Mobile High Score Reset Dot ---
+        this.resetDot = this.add.graphics();
+        this.resetDot.fillStyle(0xb234e2, 1); // Purple color
+        this.resetDot.fillCircle(GAME_WIDTH - 20, 20, 10); // x, y, radius
+        this.resetDot.setInteractive(new Phaser.Geom.Circle(GAME_WIDTH - 20, 20, 10), Phaser.Geom.Circle.Contains);
+        this.resetDot.setDepth(10); // Ensure it's on top
+
+        this.resetDot.on('pointerdown', () => {
+            if (this.isShowingResetConfirmation) return;
+            this.showResetConfirmation();
+        });
+
 
         console.log("GameOverScene created");
+    }
+
+    showResetConfirmation() {
+        this.isShowingResetConfirmation = true;
+
+        // Hide main game over elements
+        if (this.gameOverBackgroundImage) this.gameOverBackgroundImage.setVisible(false);
+        this.scoreTextDisplay.setVisible(false);
+        this.highScoreTextDisplay.setVisible(false);
+        this.restartButton.setVisible(false);
+        this.quitButton.setVisible(false);
+        this.resetDot.setVisible(false); // Hide the dot itself
+
+        // Show confirmation screen background (using title.png)
+        this.confirmationBg = this.add.image(0, 0, 'title_image').setOrigin(0,0).setDepth(19); // High depth
+
+        // Confirmation Text
+        this.confirmationText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT * 0.4, 'Reset High Score?', {
+            fontSize: '48px', fill: '#FFFF00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 6
+        }).setOrigin(0.5).setDepth(20);
+
+        // YES Button
+        this.yesButton = this.add.text(GAME_WIDTH / 2 - 100, GAME_HEIGHT * 0.6, 'YES', {
+            fontSize: '40px', fill: '#00FF00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5,
+            backgroundColor: '#333333', padding: { left: 20, right: 20, top: 10, bottom: 10 }
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(20);
+
+        this.yesButton.on('pointerdown', () => {
+            localStorage.setItem('bladeFreeHighScore', '0');
+            this.highScore = 0;
+            if (this.highScoreTextDisplay) { // Update the (currently hidden) display
+                this.highScoreTextDisplay.setText(`High Score: ${this.highScore}`);
+            }
+            this.hideResetConfirmation(true); // Pass true to show reset message
+        });
+
+        // NO Button
+        this.noButton = this.add.text(GAME_WIDTH / 2 + 100, GAME_HEIGHT * 0.6, 'NO', {
+            fontSize: '40px', fill: '#FF0000', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5,
+            backgroundColor: '#333333', padding: { left: 20, right: 20, top: 10, bottom: 10 }
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(20);
+
+        this.noButton.on('pointerdown', () => {
+            this.hideResetConfirmation(false);
+        });
+    }
+
+    hideResetConfirmation(didReset) {
+        this.isShowingResetConfirmation = false;
+
+        // Hide confirmation elements
+        if (this.confirmationBg) this.confirmationBg.destroy();
+        if (this.confirmationText) this.confirmationText.destroy();
+        if (this.yesButton) this.yesButton.destroy();
+        if (this.noButton) this.noButton.destroy();
+        this.confirmationBg = null;
+        this.confirmationText = null;
+        this.yesButton = null;
+        this.noButton = null;
+
+
+        // Restore main game over elements
+        if (this.gameOverBackgroundImage) this.gameOverBackgroundImage.setVisible(true);
+        this.scoreTextDisplay.setVisible(true);
+        this.highScoreTextDisplay.setVisible(true); // Will show updated score if reset
+        this.restartButton.setVisible(true);
+        this.quitButton.setVisible(true);
+        this.resetDot.setVisible(true);
+
+        if (didReset) {
+            const resetConfirmText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 80, 'High Score Reset!', {
+                fontSize: '18px', fill: '#ff0000', fontFamily: 'Arial'
+            }).setOrigin(0.5).setDepth(20);
+            this.time.delayedCall(1500, () => { resetConfirmText.destroy(); });
+        }
     }
 }
 
