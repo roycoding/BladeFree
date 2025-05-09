@@ -247,3 +247,21 @@
         - [ ] Define a base scroll speed and a maximum scroll speed.
         - [ ] Define how quickly the speed increases (e.g., per second or per score milestone).
     - [ ] Consider other difficulty scaling factors (e.g., obstacle density, spawn patterns).
+
+## Phase 7: Deployment & Optimization
+
+- [ ] **Asset Optimization:**
+    - [ ] Review all image assets (`.png`) and optimize their file sizes (e.g., using tools like TinyPNG or ImageOptim) without significant quality loss.
+    - [ ] Review all audio assets (`.mp3`) and ensure they are compressed appropriately (e.g., adjust bitrate if necessary).
+    - [ ] Consider using more efficient image formats if appropriate (e.g., WebP, though browser compatibility needs checking for older devices).
+- [ ] **Code Optimization:**
+    - [ ] Minify `game.js` for production deployment to reduce its file size.
+    - [ ] Review code for any performance bottlenecks or unnecessary computations, especially in the `update` loops.
+- [ ] **Self-Host JavaScript Libraries:**
+    - [ ] Download the Phaser 3 library (`phaser.min.js`).
+    - [ ] Store it locally within the project (e.g., in an `lib/` or `js/` directory).
+    - [ ] Update `index.html` to load Phaser from the local path instead of the CDN.
+- [ ] **General Lightweighting:**
+    - [ ] Ensure no unused assets are being loaded.
+    - [ ] Check for and remove any console logs or debug features not needed for production.
+    - [ ] Test loading times on various connections and devices.
