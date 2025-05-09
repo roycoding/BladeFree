@@ -1595,7 +1595,10 @@ class GameOverScene extends Phaser.Scene {
         this.noButton = null;
         this.resetDot = null;
         this.versionText = null; // For displaying game version
-        this.copyrightText = null; // For displaying copyright info
+        // Copyright text will be split into multiple parts for the link
+        this.copyrightPrefixText = null;
+        this.copyrightLinkText = null;
+        this.copyrightSuffixText = null;
     }
 
     preload() {
@@ -1861,9 +1864,51 @@ class GameOverScene extends Phaser.Scene {
             .setOrigin(0.5, 1) // Anchor bottom-center
             .setDepth(20);
 
-        this.copyrightText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - bottomPadding, `Copyright 2025 royskates.com (GNU GPL v2)`, infoTextStyle)
-            .setOrigin(0.5, 1) // Anchor bottom-center
-            .setDepth(20);
+        // Copyright Text with Link
+        const copyrightFullString = "Copyright 2025 royskates.com (GNU GPL v2)";
+        const linkPart = "royskates.com";
+        const prefixPart = copyrightFullString.substring(0, copyrightFullString.indexOf(linkPart));
+        const suffixPart = copyrightFullString.substring(copyrightFullString.indexOf(linkPart) + linkPart.length);
+
+        const linkTextStyle = { ...infoTextStyle, fill: '#66ccff', fontStyle: 'italic' }; // Blueish, italic for link
+
+        // Calculate total width for centering
+        let tempPrefix = this.add.text(0, 0, prefixPart, infoTextStyle).setVisible(false);
+        let tempLink = this.add.text(0, 0, linkPart, linkTextStyle).setVisible(false);
+        let tempSuffix = this.add.text(0, 0, suffixPart, infoTextStyle).setVisible(false);
+        const totalCopyrightWidth = tempPrefix.width + tempLink.width + tempSuffix.width;
+        tempPrefix.destroy();
+        tempLink.destroy();
+        tempSuffix.destroy();
+
+        const copyrightY = GAME_HEIGHT - bottomPadding;
+        let currentX = (GAME_WIDTH - totalCopyrightWidth) / 2;
+
+        this.copyrightPrefixText = this.add.text(currentX, copyrightY, prefixPart, infoTextStyle)
+            .setOrigin(0, 1).setDepth(20);
+        
+        currentX += this.copyrightPrefixText.width;
+
+        this.copyrightLinkText = this.add.text(currentX, copyrightY, linkPart, linkTextStyle)
+            .setOrigin(0, 1).setDepth(20).setInteractive({ useHandCursor: true });
+        
+        this.copyrightLinkText.on('pointerdown', () => {
+            window.open('https://royskates.com', '_blank');
+        });
+        // Add underline effect for the link part using a graphics object
+        const line = this.add.graphics({ lineStyle: { width: 1, color: 0x66ccff } }).setDepth(20);
+        line.beginPath();
+        line.moveTo(this.copyrightLinkText.x, this.copyrightLinkText.y -1); // Position slightly above baseline
+        line.lineTo(this.copyrightLinkText.x + this.copyrightLinkText.width, this.copyrightLinkText.y -1);
+        line.strokePath();
+        // Store the line with the link text to clean it up
+        this.copyrightLinkText.setData('underline', line);
+
+
+        currentX += this.copyrightLinkText.width;
+
+        this.copyrightSuffixText = this.add.text(currentX, copyrightY, suffixPart, infoTextStyle)
+            .setOrigin(0, 1).setDepth(20);
     }
 
     hideResetConfirmation(didReset) {
@@ -1874,14 +1919,25 @@ class GameOverScene extends Phaser.Scene {
         if (this.confirmationText) this.confirmationText.destroy();
         if (this.yesButton) this.yesButton.destroy();
         if (this.noButton) this.noButton.destroy();
-        if (this.versionText) this.versionText.destroy(); // Destroy version text
-        if (this.copyrightText) this.copyrightText.destroy(); // Destroy copyright text
+        if (this.versionText) this.versionText.destroy(); 
+        
+        // Destroy copyright text parts
+        if (this.copyrightPrefixText) this.copyrightPrefixText.destroy();
+        if (this.copyrightLinkText) {
+            const underline = this.copyrightLinkText.getData('underline');
+            if (underline) underline.destroy();
+            this.copyrightLinkText.destroy();
+        }
+        if (this.copyrightSuffixText) this.copyrightSuffixText.destroy();
+
         this.confirmationBg = null;
         this.confirmationText = null;
         this.yesButton = null;
         this.noButton = null;
         this.versionText = null;
-        this.copyrightText = null;
+        this.copyrightPrefixText = null;
+        this.copyrightLinkText = null;
+        this.copyrightSuffixText = null;
 
 
         // Restore main game over elements
