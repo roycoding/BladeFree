@@ -1,4 +1,5 @@
 // Define constants for game settings
+const GAME_VERSION = "0.2.2"; // Current game version
 // Define constants for game settings
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
@@ -1581,6 +1582,8 @@ class GameOverScene extends Phaser.Scene {
         this.yesButton = null;
         this.noButton = null;
         this.resetDot = null;
+        this.versionText = null; // For displaying game version
+        this.copyrightText = null; // For displaying copyright info
     }
 
     preload() {
@@ -1832,6 +1835,23 @@ class GameOverScene extends Phaser.Scene {
         this.noButton.on('pointerdown', () => {
             this.hideResetConfirmation(false);
         });
+
+        // Add Version and Copyright Text
+        const bottomPadding = 20;
+        const infoTextStyle = {
+            fontSize: '14px',
+            fill: '#cccccc', // Light gray
+            fontFamily: 'Arial',
+            align: 'center'
+        };
+
+        this.versionText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - bottomPadding - 20, `Version: ${GAME_VERSION}`, infoTextStyle)
+            .setOrigin(0.5, 1) // Anchor bottom-center
+            .setDepth(20);
+
+        this.copyrightText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - bottomPadding, `Copyright 2025 royskates.com (GNU GPL v2)`, infoTextStyle)
+            .setOrigin(0.5, 1) // Anchor bottom-center
+            .setDepth(20);
     }
 
     hideResetConfirmation(didReset) {
@@ -1842,10 +1862,14 @@ class GameOverScene extends Phaser.Scene {
         if (this.confirmationText) this.confirmationText.destroy();
         if (this.yesButton) this.yesButton.destroy();
         if (this.noButton) this.noButton.destroy();
+        if (this.versionText) this.versionText.destroy(); // Destroy version text
+        if (this.copyrightText) this.copyrightText.destroy(); // Destroy copyright text
         this.confirmationBg = null;
         this.confirmationText = null;
         this.yesButton = null;
         this.noButton = null;
+        this.versionText = null;
+        this.copyrightText = null;
 
 
         // Restore main game over elements
