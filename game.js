@@ -1316,8 +1316,8 @@ class GameOverScene extends Phaser.Scene {
         // --- Mobile High Score Reset Dot ---
         this.resetDot = this.add.graphics();
         this.resetDot.fillStyle(0xb234e2, 1); // Purple color
-        this.resetDot.fillCircle(GAME_WIDTH - 20, 20, 10); // x, y, radius
-        this.resetDot.setInteractive(new Phaser.Geom.Circle(GAME_WIDTH - 20, 20, 10), Phaser.Geom.Circle.Contains);
+        this.resetDot.fillCircle(GAME_WIDTH - 15, 15, 7); // x, y, radius (made smaller and adjusted position slightly)
+        this.resetDot.setInteractive(new Phaser.Geom.Circle(GAME_WIDTH - 15, 15, 7), Phaser.Geom.Circle.Contains);
         this.resetDot.setDepth(10); // Ensure it's on top
 
         this.resetDot.on('pointerdown', () => {
@@ -1343,13 +1343,9 @@ class GameOverScene extends Phaser.Scene {
         // Show confirmation screen background (using title.png)
         this.confirmationBg = this.add.image(0, 0, 'title_image').setOrigin(0,0).setDepth(19); // High depth
 
-        // Confirmation Text
-        this.confirmationText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT * 0.4, 'Reset High Score?', {
-            fontSize: '48px', fill: '#FFFF00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 6
-        }).setOrigin(0.5).setDepth(20);
-
         // YES Button
-        this.yesButton = this.add.text(GAME_WIDTH / 2 - 100, GAME_HEIGHT * 0.6, 'YES', {
+        const buttonYPosition = GAME_HEIGHT * 0.5; // Position buttons higher
+        this.yesButton = this.add.text(GAME_WIDTH / 2 - 100, buttonYPosition, 'YES', {
             fontSize: '40px', fill: '#00FF00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5,
             backgroundColor: '#333333', padding: { left: 20, right: 20, top: 10, bottom: 10 }
         }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(20);
@@ -1364,10 +1360,15 @@ class GameOverScene extends Phaser.Scene {
         });
 
         // NO Button
-        this.noButton = this.add.text(GAME_WIDTH / 2 + 100, GAME_HEIGHT * 0.6, 'NO', {
+        this.noButton = this.add.text(GAME_WIDTH / 2 + 100, buttonYPosition, 'NO', {
             fontSize: '40px', fill: '#FF0000', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 5,
             backgroundColor: '#333333', padding: { left: 20, right: 20, top: 10, bottom: 10 }
         }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(20);
+        
+        // Confirmation Text (now below buttons)
+        this.confirmationText = this.add.text(GAME_WIDTH / 2, buttonYPosition + 80, 'Reset High Score?', {
+            fontSize: '32px', fill: '#FFFF00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 6
+        }).setOrigin(0.5).setDepth(20);
 
         this.noButton.on('pointerdown', () => {
             this.hideResetConfirmation(false);
