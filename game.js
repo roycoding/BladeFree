@@ -9,6 +9,13 @@ const JUMP_GRAVITY_PULL = 500; // Simulated gravity pulling player down after ju
 const SCROLL_SPEED = 180; // Speed obstacles move down screen (pixels/sec)
 const OBSTACLE_SPAWN_DELAY = 1500; // Milliseconds between obstacle spawns
 
+// Transfer Combo Constants
+const TRANSFER_COMBO_WINDOW = 750; // ms to make a transfer
+const RAMP_TO_RAMP_POINTS = 75;
+const RAMP_TO_RAIL_POINTS = 100;
+const RAIL_TO_RAMP_POINTS = 100;
+const RAIL_TO_RAIL_POINTS = 125;
+
 
 // --- Start Scene ---
 class StartScene extends Phaser.Scene {
@@ -101,6 +108,11 @@ class GameplayScene extends Phaser.Scene {
         this.initialHelmetSpawned = false; // Flag to ensure one helmet spawns early
         this.isPaused = false;      // Flag to track if game is paused
         this.pauseText = null;      // Text object for "PAUSED" message
+
+        // Transfer combo tracking
+        this.lastTrickObject = null;
+        this.lastTrickObjectType = null; // 'ramp' or 'rail'
+        this.timeLastTrickEnded = 0;     // Timestamp of when the last trick interaction relevant for a transfer ended/started
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -301,6 +313,11 @@ class GameplayScene extends Phaser.Scene {
         this.hasHelmet = false; // Reset helmet status
         this.initialHelmetSpawned = false; // Reset for next game
         this.updateHelmetIcon(); // Update UI
+
+        // Reset transfer combo state
+        this.lastTrickObject = null;
+        this.lastTrickObjectType = null;
+        this.timeLastTrickEnded = 0;
 
         // Ensure obstacle timer is running if restarting
         if (this.obstacleTimer) {
@@ -741,6 +758,26 @@ class GameplayScene extends Phaser.Scene {
 
         console.log("Ramp overlap detected!");
 
+        // --- Transfer Combo Check ---
+        if (this.lastTrickObjectType && (this.time.now - this.timeLastTrickEnded < TRANSFER_COMBO_WINDOW)) {
+            let transferPoints = 0;
+            let transferMessage = "";
+            if (this.lastTrickObjectType === 'ramp') {
+                transferPoints = RAMP_TO_RAMP_POINTS;
+                transferMessage = "Ramp Transfer!";
+                console.log("Ramp to Ramp Transfer!");
+            } else if (this.lastTrickObjectType === 'rail') {
+                transferPoints = RAIL_TO_RAMP_POINTS;
+                transferMessage = "Rail to Ramp Transfer!";
+                console.log("Rail to Ramp Transfer!");
+            }
+            if (transferPoints > 0) {
+                this.score += transferPoints;
+                this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
+                this.showPointsPopup(player.x, player.y - 60, transferPoints, transferMessage, true); // Show above normal ramp points
+            }
+        }
+
         // Mark the ramp as hit
         ramp.setData('hit', true);
 
@@ -766,7 +803,12 @@ class GameplayScene extends Phaser.Scene {
         // Don't destroy the ramp, let it scroll off. It's marked as 'hit' now.
         // ramp.destroy();
 
-        // Show points pop-up
+        // Update last trick info
+        this.lastTrickObject = ramp;
+        this.lastTrickObjectType = 'ramp';
+        this.timeLastTrickEnded = this.time.now; // Mark time of current ramp interaction
+
+        // Show points pop-up for the ramp itself
         this.showPointsPopup(player.x, player.y - 30, rampPoints);
     }
 
@@ -873,8 +915,18 @@ class GameplayScene extends Phaser.Scene {
 
         // Determine text color
         let fillColor = '#18ec21'; // Default green color
-        if (isSpecialMessage && itemName && (itemName.includes('HELMET') || itemName.includes('SKULL'))) {
-            fillColor = '#b234e2'; // Purple/magenta for helmet messages
+        if (isSpecialMessage && itemName) {
+            if (itemName.includes('HELMET') || itemName.includes('SKULL')) {
+                fillColor = '#b234e2'; // Purple/magenta for helmet messages
+            } else if (itemName.toLowerCase().includes('transfer')) { // New condition for transfers (case-insensitive)
+                fillColor = '#FF8C00'; // Dark Orange for transfers
+            } else if (itemName.toLowerCase().includes('collection complete')) {
+                 fillColor = '#FFFF00'; // Yellow for collection complete
+            }
+            // Default to yellow for other special messages if not specified above
+            else if (isSpecialMessage) {
+                fillColor = '#FFFF00';
+            }
         }
         pointsText.setStyle({ fill: fillColor }); // Apply the determined color
 
@@ -900,6 +952,27 @@ class GameplayScene extends Phaser.Scene {
 
         // If not already grinding, start the grind
         if (!this.isGrinding) {
+            // --- Transfer Combo Check ---
+            if (this.lastTrickObjectType && (this.time.now - this.timeLastTrickEnded < TRANSFER_COMBO_WINDOW)) {
+                let transferPoints = 0;
+                let transferMessage = "";
+                if (this.lastTrickObjectType === 'ramp') {
+                    transferPoints = RAMP_TO_RAIL_POINTS;
+                    transferMessage = "Ramp to Rail Transfer!";
+                    console.log("Ramp to Rail Transfer!");
+                } else if (this.lastTrickObjectType === 'rail') {
+                    transferPoints = RAIL_TO_RAIL_POINTS;
+                    transferMessage = "Rail Transfer!";
+                    console.log("Rail to Rail Transfer!");
+                }
+                if (transferPoints > 0) {
+                    this.score += transferPoints;
+                    this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
+                    // Display this message slightly differently or ensure it doesn't overlap with grind points
+                    this.showPointsPopup(player.x, player.y - 70, transferPoints, transferMessage, true);
+                }
+            }
+
             this.isJumping = false; // Ensure not jumping when grinding
             this.isGrinding = true;
             this.activeGrindable = grindable; // Store reference to the active rail
@@ -928,6 +1001,11 @@ class GameplayScene extends Phaser.Scene {
                 }).setOrigin(0.5).setDepth(2);
             }
             this.grindPointsDisplay.setPosition(player.x, player.y - 40).setText(`+0`).setVisible(true);
+
+            // Update last trick info
+            this.lastTrickObject = grindable;
+            this.lastTrickObjectType = 'rail';
+            this.timeLastTrickEnded = this.time.now; // Mark time of current grind start
         }
 
         // Points are awarded in the update loop based on the isGrinding flag
@@ -938,7 +1016,7 @@ class GameplayScene extends Phaser.Scene {
     endGrind() {
         if (this.isGrinding) {
             this.isGrinding = false;
-            this.activeGrindable = null; // Clear active rail reference
+            // activeGrindable is used to update timeLastTrickEnded before being cleared
             console.log("Grind ended.");
             this.sound.play('land'); // Play landing sound (reused from grind end)
             
@@ -946,6 +1024,13 @@ class GameplayScene extends Phaser.Scene {
                 this.grindPointsDisplay.setVisible(false);
             }
             this.currentGrindPoints = 0; // Reset for next grind
+
+            // Update timeLastTrickEnded to mark the end of this rail interaction
+            // lastTrickObject and lastTrickObjectType remain as this rail
+            if (this.activeGrindable) { 
+                 this.timeLastTrickEnded = this.time.now;
+            }
+            this.activeGrindable = null; // Clear active rail reference now
 
             // Optional: Reset player tint if it was changed
             // player.clearTint();
@@ -1079,6 +1164,31 @@ class GameplayScene extends Phaser.Scene {
             this.player.setY(PLAYER_START_Y); // Snap back exactly to the start line
             this.sound.play('land'); // Play landing sound
             this.isJumping = false; // Reset jumping flag
+
+            // If landed on ground (not a ramp or rail which would set their own lastTrickObject/Type),
+            // then the combo chain is broken.
+            // Check if player is currently overlapping a ramp or grindable.
+            // If not, they landed on plain ground.
+            let onTrickElement = false;
+            // Temporarily enable player body for overlap check if it was disabled by collision
+            const playerBodyWasEnabled = this.player.body.enable;
+            if (!playerBodyWasEnabled) this.player.body.setEnable(true);
+
+            this.physics.overlap(this.player, this.ramps, () => { onTrickElement = true; });
+            if (!onTrickElement) {
+                this.physics.overlap(this.player, this.grindables, () => { onTrickElement = true; });
+            }
+            
+            if (!playerBodyWasEnabled) this.player.body.setEnable(false); // Restore body state
+
+
+            if (!onTrickElement) {
+                console.log("Landed on ground, combo chain broken.");
+                this.lastTrickObject = null;
+                this.lastTrickObjectType = null;
+                // timeLastTrickEnded is not reset here, it holds the time of the last actual trick.
+            }
+            
             // Play landing animation (will transition back to skate in animationcomplete listener)
             this.player.play('jump-landing', true);
         }
