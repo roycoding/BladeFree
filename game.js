@@ -1288,6 +1288,23 @@ class GameOverScene extends Phaser.Scene {
         if(this.restartTextDisplay) this.restartTextDisplay.setVisible(false); // Hide old text if it exists
         if(this.quitText) this.quitText.setVisible(false); // Hide old text if it exists
 
+        // --- Secret High Score Reset ---
+        this.input.keyboard.on('keydown-DELETE', (event) => {
+            if (event.shiftKey) { // Check if Shift key is also held down
+                console.log("Secret High Score Reset Activated!");
+                localStorage.setItem('bladeFreeHighScore', '0');
+                this.highScore = 0;
+                if (this.highScoreTextDisplay) {
+                    this.highScoreTextDisplay.setText(`High Score: ${this.highScore}`);
+                }
+                // Optional: Add a visual confirmation like a brief text popup
+                const resetConfirmText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 80, 'High Score Reset!', {
+                    fontSize: '18px', fill: '#ff0000', fontFamily: 'Arial'
+                }).setOrigin(0.5);
+                this.time.delayedCall(1500, () => { resetConfirmText.destroy(); });
+            }
+        });
+
 
         console.log("GameOverScene created");
     }
