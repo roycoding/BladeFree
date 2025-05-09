@@ -138,6 +138,7 @@ class GameplayScene extends Phaser.Scene {
         this.rightPromptArrow = null; // Graphics for right arrow
 
         this.elapsedTimeText = null; // Text object for displaying elapsed time
+        this.sceneRunningTime = 0; // For accurate scene-specific timer display
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -392,28 +393,31 @@ class GameplayScene extends Phaser.Scene {
             this.rightPromptArrow = null;
         }
 
-        // Reset elapsed time text
+        // Reset elapsed time text and scene running time
         if (this.elapsedTimeText) {
             this.elapsedTimeText.setText('Time: 00:00');
         }
+        this.sceneRunningTime = 0; // Reset scene-specific running time
         // Explicitly use this.sys.time.now to ensure we're getting the most direct time reference
-        this.gameStartTime = this.sys.time.now; 
-        console.log(`GameplayScene.create: gameStartTime reset to ${this.gameStartTime}`);
+        this.gameStartTime = this.sys.time.now; // For difficulty scaling logic
+        console.log(`GameplayScene.create: gameStartTime reset to ${this.gameStartTime} for difficulty scaling.`);
 
 
         // Ensure obstacle timer is running if restarting
         if (this.obstacleTimer) {
-            this.obstacleTimer.paused = false;
-            this.obstacleTimer.delay = OBSTACLE_SPAWN_DELAY; // Reset to initial delay
-        } else {
-             // Setup a timed event to spawn obstacles (if first time)
-            this.obstacleTimer = this.time.addEvent({
-                delay: OBSTACLE_SPAWN_DELAY,
-                callback: this.spawnObstacle,
-                callbackScope: this,
-                loop: true
-            });
+            this.obstacleTimer.remove(false); // Remove the old timer event completely
+            this.obstacleTimer = null;      // Nullify the reference
         }
+        // Always create a new timer event for this scene instance
+        this.obstacleTimer = this.time.addEvent({
+            delay: OBSTACLE_SPAWN_DELAY,
+            callback: this.spawnObstacle,
+            callbackScope: this,
+            loop: true
+        });
+        // The new timer will start with OBSTACLE_SPAWN_DELAY by default.
+        // If you need to adjust it immediately based on score (e.g. if starting with high score),
+        // that logic would go here, but typically it starts fresh.
 
         // Clear any existing obstacles, ramps, grindables, collectibles if restarting
         this.obstacles.clear(true, true);
@@ -769,7 +773,11 @@ class GameplayScene extends Phaser.Scene {
 
             // --- Difficulty Scaling: Apply horizontal movement to obstacles based on time ---
             if (spawnType === 'obstacle') {
-                const elapsedTime = this.time.now - this.gameStartTime;
+                const currentTime = this.time.now; // Use the current time from the main game loop
+                const sceneStartTime = this.gameStartTime; // The start time set in create()
+                const elapsedTime = currentTime - sceneStartTime;
+                console.log(`spawnObstacle: currentTime = ${currentTime}, sceneStartTime = ${sceneStartTime}, calculated elapsedTime = ${elapsedTime} for difficulty.`);
+            
                 let horizontalSpeed = 0;
 
                 if (elapsedTime >= OBSTACLE_MOVEMENT_TIER2_TIME) {
@@ -1293,6 +1301,7 @@ class GameplayScene extends Phaser.Scene {
         if (this.isPaused) {
             return; // Do nothing if paused
         }
+        this.sceneRunningTime += delta; // Accumulate delta for scene-specific timer
 
         // --- Player Movement ---
         if (!this.player || !this.cursors) {
@@ -1387,8 +1396,8 @@ class GameplayScene extends Phaser.Scene {
 
         // --- Update Elapsed Time Display ---
         if (this.elapsedTimeText) {
-            const elapsedTimeMs = this.time.now - this.gameStartTime;
-            const totalSeconds = Math.floor(elapsedTimeMs / 1000);
+            // this.sceneRunningTime is accumulated in the main update loop if not paused
+            const totalSeconds = Math.floor(this.sceneRunningTime / 1000);
             const minutes = Math.floor(totalSeconds / 60);
             const seconds = totalSeconds % 60;
             this.elapsedTimeText.setText(`Time: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
