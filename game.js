@@ -1249,9 +1249,9 @@ class GameplayScene extends Phaser.Scene {
         this.updateHelmetIcon(); // Update helmet icon position if score text width changes
 
         // --- Difficulty Scaling: Spawn Rate ---
-        const currentScoreTier = Math.floor(this.score / 1000) * 1000;
+        const currentScoreTier = Math.floor(this.score / 700) * 700; // Changed interval to 700
         if (currentScoreTier > this.lastScoreThresholdForSpawnDelay && this.obstacleTimer) {
-            const numIncrements = (currentScoreTier - this.lastScoreThresholdForSpawnDelay) / 1000;
+            const numIncrements = (currentScoreTier - this.lastScoreThresholdForSpawnDelay) / 700; // Changed interval to 700
             let newDelay = this.obstacleTimer.delay;
             for (let i = 0; i < numIncrements; i++) {
                 newDelay -= SPAWN_DELAY_REDUCTION_PER_1000_PTS;
