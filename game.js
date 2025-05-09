@@ -169,6 +169,7 @@ class GameplayScene extends Phaser.Scene {
         // --- Background Image ---
         this.load.image('asphalt_bg', 'assets/graphics/asphalt.png');
         this.load.image('asphalt_bladefree', 'assets/graphics/asphalt_bladefree.png'); // Load BladeFree tile
+        this.load.image('asphalt_royskates', 'assets/graphics/asphalt_royskates.png'); // Load Royskates tile
 
         // --- Obstacle Placeholder ---
         // Obstacles will now use frames from the 'skater' spritesheet.
@@ -693,19 +694,21 @@ class GameplayScene extends Phaser.Scene {
             this.initialHelmetSpawned = true;
             console.log("Attempting to spawn initial helmet.");
         } else {
-            // Decide what to spawn: 5% BladeFree tile, 15% ramp, 15% grindable, 20% collectible, 45% obstacle
+            // Decide what to spawn: 3% BladeFree, 3% Royskates, 15% ramp, 15% grindable, 20% collectible, 44% obstacle
             const rand = Phaser.Math.Between(1, 100);
             spawnType = 'obstacle'; // Default
-            if (rand <= 5) { // 1-5
+            if (rand <= 3) { // 1-3
                 spawnType = 'bladeFreeTile';
-            } else if (rand <= 20) { // 6-20
+            } else if (rand <= 6) { // 4-6
+                spawnType = 'royskatesTile';
+            } else if (rand <= 21) { // 7-21
                 spawnType = 'ramp';
-            } else if (rand <= 35) { // 21-35
+            } else if (rand <= 36) { // 22-36
                 spawnType = 'grindable';
-            } else if (rand <= 55) { // 36-55
+            } else if (rand <= 56) { // 37-56
                  spawnType = 'collectible';
             }
-            // else: 56-100 remains 'obstacle'
+            // else: 57-100 remains 'obstacle'
         }
 
         // Calculate a random horizontal position
@@ -720,10 +723,16 @@ class GameplayScene extends Phaser.Scene {
 
         if (spawnType === 'bladeFreeTile') {
             itemKey = 'asphalt_bladefree';
-            group = this.bladeFreeTiles; // Add to the new group
-            spawnedItem = group.create(GAME_WIDTH / 2, spawnY, itemKey); // Center it horizontally
-            spawnedItem.setDepth(0); // Ensure it's behind player but above main background
+            group = this.bladeFreeTiles; 
+            spawnedItem = group.create(GAME_WIDTH / 2, spawnY, itemKey); 
+            spawnedItem.setDepth(0); 
             console.log(`BladeFree Tile spawned at (${GAME_WIDTH / 2}, ${spawnY})`);
+        } else if (spawnType === 'royskatesTile') {
+            itemKey = 'asphalt_royskates';
+            group = this.bladeFreeTiles; 
+            spawnedItem = group.create(GAME_WIDTH / 2, spawnY, itemKey); 
+            spawnedItem.setDepth(0); 
+            console.log(`Royskates Tile spawned at (${GAME_WIDTH / 2}, ${spawnY})`);
         } else if (spawnType === 'ramp') {
             itemKey = 'ramp_graphic'; // Use the new ramp graphic
             group = this.ramps;
