@@ -140,7 +140,8 @@ class GameplayScene extends Phaser.Scene {
 
         this.elapsedTimeText = null; // Text object for displaying elapsed time
         this.sceneRunningTime = 0; // For accurate scene-specific timer display
-        this.bladeFreeTiles = null; // Group to hold the special BladeFree asphalt tiles
+        this.bladeFreeOverlay = null; // Static BladeFree overlay at the top
+        this.royskatesOverlay = null; // Static Royskates overlay at the bottom
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -322,15 +323,28 @@ class GameplayScene extends Phaser.Scene {
             fill: '#fff',
             fontFamily: 'Arial',
             align: 'left'
-        }).setOrigin(0, 0); // Anchor to top-left
+        }).setOrigin(0, 0).setDepth(3); // Anchor to top-left, ensure high depth
 
-        // Elapsed Time Text (Top Center)
-        this.elapsedTimeText = this.add.text(GAME_WIDTH / 2, 20, 'Time: 00:00', {
+        // Static BladeFree Overlay (Top Center)
+        const topOverlayMargin = 10;
+        this.bladeFreeOverlay = this.add.sprite(GAME_WIDTH / 2, topOverlayMargin, 'asphalt_bladefree')
+            .setOrigin(0.5, 0) // Anchor top-center
+            .setDepth(2);      // Depth to be above background, below main UI
+
+        // Elapsed Time Text (Below BladeFree Overlay)
+        this.elapsedTimeText = this.add.text(GAME_WIDTH / 2, this.bladeFreeOverlay.y + this.bladeFreeOverlay.displayHeight + 5, 'Time: 00:00', {
             fontSize: '24px',
             fill: '#fff',
             fontFamily: 'Arial',
             align: 'center'
-        }).setOrigin(0.5, 0); // Anchor to top-center
+        }).setOrigin(0.5, 0).setDepth(3); // Anchor to top-center, ensure high depth
+
+        // Static Royskates Overlay (Bottom Center)
+        const bottomOverlayMargin = 10;
+        this.royskatesOverlay = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT - bottomOverlayMargin, 'asphalt_royskates')
+            .setOrigin(0.5, 1) // Anchor bottom-center
+            .setDepth(2);      // Depth to be above background, below main UI
+
 
         // Helmet UI Icon (next to score)
         // Using frame 27 (helmet collectible) as the icon. Scale it down.
@@ -404,11 +418,14 @@ class GameplayScene extends Phaser.Scene {
         }
         this.sceneRunningTime = 0; // Reset scene-specific running time
 
-        // Initialize or clear BladeFree tiles group
-        if (!this.bladeFreeTiles) {
-            this.bladeFreeTiles = this.physics.add.group({ allowGravity: false });
-        } else {
-            this.bladeFreeTiles.clear(true, true);
+        // Reset static overlays if they exist from a previous game
+        if (this.bladeFreeOverlay) {
+            this.bladeFreeOverlay.destroy();
+            this.bladeFreeOverlay = null;
+        }
+        if (this.royskatesOverlay) {
+            this.royskatesOverlay.destroy();
+            this.royskatesOverlay = null;
         }
 
         // Explicitly use this.sys.time.now to ensure we're getting the most direct time reference
@@ -437,7 +454,7 @@ class GameplayScene extends Phaser.Scene {
         this.ramps.clear(true, true);
         this.grindables.clear(true, true);
         this.collectibles.clear(true, true);
-        // BladeFreeTiles group is cleared where it's initialized/checked earlier in create()
+        // Static overlays are handled by their individual reset logic earlier in create()
 
         // --- Start Background Music ---
         // Stop previous music if restarting, before starting new one
@@ -696,21 +713,17 @@ class GameplayScene extends Phaser.Scene {
             this.initialHelmetSpawned = true;
             console.log("Attempting to spawn initial helmet.");
         } else {
-            // Decide what to spawn: 3% BladeFree, 3% Royskates, 15% ramp, 15% grindable, 20% collectible, 44% obstacle
+            // Decide what to spawn: 20% ramp, 20% grindable, 25% collectible, 35% obstacle
             const rand = Phaser.Math.Between(1, 100);
             spawnType = 'obstacle'; // Default
-            if (rand <= 3) { // 1-3
-                spawnType = 'bladeFreeTile';
-            } else if (rand <= 6) { // 4-6
-                spawnType = 'royskatesTile';
-            } else if (rand <= 21) { // 7-21
+            if (rand <= 20) { // 1-20
                 spawnType = 'ramp';
-            } else if (rand <= 36) { // 22-36
+            } else if (rand <= 40) { // 21-40
                 spawnType = 'grindable';
-            } else if (rand <= 56) { // 37-56
+            } else if (rand <= 65) { // 41-65
                  spawnType = 'collectible';
             }
-            // else: 57-100 remains 'obstacle'
+            // else: 66-100 remains 'obstacle'
         }
 
         // Calculate a random horizontal position
@@ -723,19 +736,7 @@ class GameplayScene extends Phaser.Scene {
         let itemKey = '';
         let group = null;
 
-        if (spawnType === 'bladeFreeTile') {
-            itemKey = 'asphalt_bladefree';
-            group = this.bladeFreeTiles; 
-            spawnedItem = group.create(GAME_WIDTH / 2, spawnY, itemKey); 
-            spawnedItem.setDepth(0); 
-            console.log(`BladeFree Tile spawned at (${GAME_WIDTH / 2}, ${spawnY})`);
-        } else if (spawnType === 'royskatesTile') {
-            itemKey = 'asphalt_royskates';
-            group = this.bladeFreeTiles; 
-            spawnedItem = group.create(GAME_WIDTH / 2, spawnY, itemKey); 
-            spawnedItem.setDepth(0); 
-            console.log(`Royskates Tile spawned at (${GAME_WIDTH / 2}, ${spawnY})`);
-        } else if (spawnType === 'ramp') {
+        if (spawnType === 'ramp') {
             itemKey = 'ramp_graphic'; // Use the new ramp graphic
             group = this.ramps;
             spawnedItem = group.create(spawnX, spawnY, itemKey);
@@ -1547,9 +1548,10 @@ class GameplayScene extends Phaser.Scene {
             }
         });
 
-        // --- Obstacle, Ramp, Grindable, Collectible & BladeFree Tile Cleanup ---
+        // --- Obstacle, Ramp, Grindable & Collectible Cleanup ---
         // Check items in all groups and destroy them if they go off-screen below
-        [this.obstacles, this.ramps, this.grindables, this.collectibles, this.bladeFreeTiles].forEach(group => {
+        // Static overlays (bladeFreeOverlay, royskatesOverlay) do not scroll and don't need cleanup here.
+        [this.obstacles, this.ramps, this.grindables, this.collectibles].forEach(group => {
             if (group) { // Ensure group exists
                 group.children.each(item => {
                     // Check if item exists and has a body (and isn't already marked for destruction)
