@@ -1166,6 +1166,7 @@ class GameplayScene extends Phaser.Scene {
             // Create and show persistent "Royale Grind" name text
             if (this.grindNameText) { // Destroy if one somehow exists
                 this.grindNameText.destroy();
+                this.grindNameText = null; // Explicitly nullify before recreating
             }
             this.grindNameText = this.add.text(player.x, player.y - 65, 'Royale Grind', { // Position above grind points display
                 fontSize: '20px', fill: '#00ff00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 3
