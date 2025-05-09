@@ -594,17 +594,6 @@ class GameplayScene extends Phaser.Scene {
         // Optional: Stop the colliding obstacle's movement
         // obstacle.setVelocity(0, 0); // Let's keep the obstacle moving for now
 
-        // --- High Score Check ---
-        // Compare floor of current score with existing high score
-        const finalScore = Math.floor(this.score);
-        if (finalScore > this.highScore) {
-            this.highScore = finalScore; // Save the floored score
-            localStorage.setItem('bladeFreeHighScore', this.highScore);
-            // Update display with the new integer high score
-            this.highScoreText.setText(`High Score: ${this.highScore}`);
-            console.log(`New high score: ${this.highScore}`);
-        }
-
         // --- Helmet Protection Check ---
         if (this.hasHelmet) {
             // this.hasHelmet = false; // We'll set this after the animation
@@ -665,6 +654,16 @@ class GameplayScene extends Phaser.Scene {
         // --- No Helmet: Proceed with Game Over ---
         // Flash screen red
         this.cameras.main.flash(200, 255, 0, 0, false); // duration, r, g, b, force
+
+        // --- High Score Check (Only on Game Over) ---
+        const finalScore = Math.floor(this.score);
+        if (finalScore > this.highScore) {
+            this.highScore = finalScore; // Update the scene's high score variable
+            localStorage.setItem('bladeFreeHighScore', this.highScore); // Save to localStorage
+            // The GameOverScene will display this new high score.
+            // No need to update GameplayScene's highScoreText here, as the game is ending.
+            console.log(`New high score achieved: ${this.highScore}`);
+        }
 
         // Stop the obstacle timer ONLY if game is truly over
         if (this.obstacleTimer) {
