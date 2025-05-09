@@ -215,6 +215,7 @@ class GameplayScene extends Phaser.Scene {
         // Add the tiling asphalt background
         this.background = this.add.tileSprite(0, 0, GAME_WIDTH, GAME_HEIGHT, 'asphalt_bg');
         this.background.setOrigin(0, 0); // Position at top-left
+        this.background.setDepth(-1); // Ensure main background is behind other elements
         // this.background.setScrollFactor(0); // Removed to allow scrolling
         // No need to setBackgroundColor if we have a full background image
 
