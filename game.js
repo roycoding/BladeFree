@@ -131,6 +131,9 @@ class GameplayScene extends Phaser.Scene {
 
         this.gameStartTime = 0; // To track elapsed time for difficulty scaling
         this.lastScoreThresholdForSpawnDelay = 0; // Tracks score for spawn rate increase
+
+        this.leftPromptText = null; // For mobile control prompt
+        this.rightPromptText = null; // For mobile control prompt
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -355,6 +358,16 @@ class GameplayScene extends Phaser.Scene {
         this.pointsForCurrentRampJump = 0;
         this.lastScoreThresholdForSpawnDelay = 0; // Reset for spawn rate scaling
 
+        // Reset mobile prompts
+        if (this.leftPromptText) {
+            this.leftPromptText.destroy();
+            this.leftPromptText = null;
+        }
+        if (this.rightPromptText) {
+            this.rightPromptText.destroy();
+            this.rightPromptText = null;
+        }
+
         // Ensure obstacle timer is running if restarting
         if (this.obstacleTimer) {
             this.obstacleTimer.paused = false;
@@ -442,6 +455,35 @@ class GameplayScene extends Phaser.Scene {
             this.togglePause();
         });
 
+        // --- Mobile Control Prompts ---
+        // Only show if it's likely a touch device (Phaser.Device.os.desktop is false)
+        // Or, for testing, always show: true
+        if (true || !this.sys.game.device.os.desktop) {
+            const promptStyle = {
+                fontSize: '20px',
+                fill: '#ffffff',
+                fontFamily: 'Arial',
+                stroke: '#000000',
+                strokeThickness: 4,
+                align: 'center',
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                padding: { x: 10, y: 5 }
+            };
+
+            this.leftPromptText = this.add.text(GAME_WIDTH * 0.25, GAME_HEIGHT * 0.6, 'Tap Here\n<-- Move Left', promptStyle)
+                .setOrigin(0.5)
+                .setDepth(5);
+
+            this.rightPromptText = this.add.text(GAME_WIDTH * 0.75, GAME_HEIGHT * 0.6, 'Tap Here\nMove Right -->', promptStyle)
+                .setOrigin(0.5)
+                .setDepth(5);
+
+            // Fade out prompts after a delay or on first move
+            this.time.delayedCall(4000, () => {
+                this.hideMobilePrompts();
+            }, [], this);
+        }
+
 
         console.log("GameplayScene create/reset finished");
     }
@@ -476,6 +518,25 @@ class GameplayScene extends Phaser.Scene {
             });
             this.sound.resumeAll(); // Resumes all sounds
             this.pauseText.setVisible(false);
+        }
+    }
+
+    hideMobilePrompts() {
+        if (this.leftPromptText && this.leftPromptText.visible) {
+            this.tweens.add({
+                targets: this.leftPromptText,
+                alpha: 0,
+                duration: 500,
+                onComplete: () => { if (this.leftPromptText) this.leftPromptText.destroy(); this.leftPromptText = null; }
+            });
+        }
+        if (this.rightPromptText && this.rightPromptText.visible) {
+            this.tweens.add({
+                targets: this.rightPromptText,
+                alpha: 0,
+                duration: 500,
+                onComplete: () => { if (this.rightPromptText) this.rightPromptText.destroy(); this.rightPromptText = null; }
+            });
         }
     }
 
@@ -1188,12 +1249,11 @@ class GameplayScene extends Phaser.Scene {
                  this.player.setVelocityX(0);
                  movingHorizontally = false;
             }
+        }
 
-            // If neither keyboard key is down, check if touch is still active
-            // This check might be redundant now with the logic above
-            // if (!this.input.activePointer.isDown) {
-            //      this.player.setVelocityX(0);
-            // }
+        // Hide mobile prompts if player starts moving and prompts are visible
+        if (movingHorizontally && (this.leftPromptText || this.rightPromptText)) {
+            this.hideMobilePrompts();
         }
 
         // --- Player Animation Control ---
