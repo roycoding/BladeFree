@@ -136,6 +136,8 @@ class GameplayScene extends Phaser.Scene {
         this.rightPromptText = null; // For mobile control prompt
         this.leftPromptArrow = null; // Graphics for left arrow
         this.rightPromptArrow = null; // Graphics for right arrow
+
+        this.elapsedTimeText = null; // Text object for displaying elapsed time
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -316,6 +318,14 @@ class GameplayScene extends Phaser.Scene {
             align: 'left'
         }).setOrigin(0, 0); // Anchor to top-left
 
+        // Elapsed Time Text (Top Center)
+        this.elapsedTimeText = this.add.text(GAME_WIDTH / 2, 20, 'Time: 00:00', {
+            fontSize: '24px',
+            fill: '#fff',
+            fontFamily: 'Arial',
+            align: 'center'
+        }).setOrigin(0.5, 0); // Anchor to top-center
+
         // Helmet UI Icon (next to score)
         // Using frame 27 (helmet collectible) as the icon. Scale it down.
         this.helmetIcon = this.add.sprite(GAME_WIDTH - 20 - this.scoreText.width - 10, 20 + 12, 'skater', 27)
@@ -381,6 +391,12 @@ class GameplayScene extends Phaser.Scene {
             this.rightPromptArrow.destroy();
             this.rightPromptArrow = null;
         }
+
+        // Reset elapsed time text
+        if (this.elapsedTimeText) {
+            this.elapsedTimeText.setText('Time: 00:00');
+        }
+
 
         // Ensure obstacle timer is running if restarting
         if (this.obstacleTimer) {
@@ -1365,6 +1381,15 @@ class GameplayScene extends Phaser.Scene {
         // Removed the 'else' block that awarded points for survival time.
         this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
         this.updateHelmetIcon(); // Update helmet icon position if score text width changes
+
+        // --- Update Elapsed Time Display ---
+        if (this.elapsedTimeText) {
+            const elapsedTimeMs = this.time.now - this.gameStartTime;
+            const totalSeconds = Math.floor(elapsedTimeMs / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            this.elapsedTimeText.setText(`Time: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+        }
 
         // --- Difficulty Scaling: Spawn Rate ---
         const currentScoreTier = Math.floor(this.score / 700) * 700; // Changed interval to 700
