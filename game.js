@@ -774,7 +774,7 @@ class GameplayScene extends Phaser.Scene {
             if (transferPoints > 0) {
                 this.score += transferPoints;
                 this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
-                this.showPointsPopup(player.x, player.y - 60, transferPoints, transferMessage, true); // Show above normal ramp points
+                this.showPointsPopup(player.x, player.y - 60, transferPoints, transferMessage, true, 1500); // Show above normal ramp points, duration 1500ms
             }
         }
 
@@ -969,7 +969,7 @@ class GameplayScene extends Phaser.Scene {
                     this.score += transferPoints;
                     this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
                     // Display this message slightly differently or ensure it doesn't overlap with grind points
-                    this.showPointsPopup(player.x, player.y - 70, transferPoints, transferMessage, true);
+                    this.showPointsPopup(player.x, player.y - 70, transferPoints, transferMessage, true, 1500); // Duration 1500ms
                 }
             }
 
