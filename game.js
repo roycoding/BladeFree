@@ -458,7 +458,7 @@ class GameplayScene extends Phaser.Scene {
         // --- Mobile Control Prompts ---
         // Only show if it's likely a touch device (Phaser.Device.os.desktop is false)
         // Or, for testing, always show: true
-        if (true || !this.sys.game.device.os.desktop) {
+        if (!this.sys.game.device.os.desktop) {
             const promptStyle = {
                 fontSize: '20px',
                 fill: '#ffffff',
