@@ -872,6 +872,13 @@ class GameplayScene extends Phaser.Scene {
             strokeThickness: 4
         }).setOrigin(0.5);
 
+        // Determine text color
+        let fillColor = '#18ec21'; // Default green color
+        if (isSpecialMessage && itemName && (itemName.includes('HELMET') || itemName.includes('SKULL'))) {
+            fillColor = '#b234e2'; // Purple/magenta for helmet messages
+        }
+        pointsText.setStyle({ fill: fillColor }); // Apply the determined color
+
         // Make sure popup is rendered on top
         pointsText.setDepth(2); // Higher than player (depth 1)
 
