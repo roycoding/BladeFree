@@ -214,7 +214,7 @@ class GameplayScene extends Phaser.Scene {
         // No need to setBackgroundColor if we have a full background image
 
         // Initialize game start time for difficulty scaling
-        this.gameStartTime = this.time.now;
+        // this.gameStartTime = this.time.now; // Moved to later in create for more accuracy
 
         // Add the player sprite using the loaded spritesheet
         // Positioned horizontally centered, vertically at PLAYER_START_Y
@@ -396,6 +396,7 @@ class GameplayScene extends Phaser.Scene {
         if (this.elapsedTimeText) {
             this.elapsedTimeText.setText('Time: 00:00');
         }
+        this.gameStartTime = this.time.now; // Reset game start time for the new session HERE
 
 
         // Ensure obstacle timer is running if restarting
