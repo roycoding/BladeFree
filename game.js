@@ -216,7 +216,7 @@ class GameplayScene extends Phaser.Scene {
         this.background = this.add.tileSprite(0, 0, GAME_WIDTH, GAME_HEIGHT, 'asphalt_bg');
         this.background.setOrigin(0, 0); // Position at top-left
         this.background.setDepth(-1); // Ensure main background is behind other elements
-        // this.background.setScrollFactor(0); // Removed to allow scrolling
+        this.background.setScrollFactor(0); // Make it static relative to the camera
         // No need to setBackgroundColor if we have a full background image
 
         // Initialize game start time for difficulty scaling
@@ -1332,11 +1332,6 @@ class GameplayScene extends Phaser.Scene {
             return; // Do nothing if paused
         }
         this.sceneRunningTime += delta; // Accumulate delta for scene-specific timer
-
-        // --- Background Scrolling ---
-        if (this.background) {
-            this.background.tilePositionY -= SCROLL_SPEED * (delta / 1000);
-        }
 
         // --- Player Movement ---
         if (!this.player || !this.cursors) {
