@@ -826,6 +826,7 @@ class GameplayScene extends Phaser.Scene {
         this.isGrinding = false; // Ensure not grinding when jumping
         player.setVelocityY(-JUMP_VELOCITY);
         this.isJumping = true; // Set jumping flag
+        player.anims.stop(); // Stop any current animation before setting texture for 360
         
         // --- 360 Animation ---
         player.setTexture('skater', 9); // Start with frame 9 for first half of jump
@@ -1038,7 +1039,8 @@ class GameplayScene extends Phaser.Scene {
             const grindStartPoints = 10; 
             this.score += grindStartPoints;
             this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
-            this.showPointsPopup(player.x, player.y - 30, grindStartPoints, "Royale Grind");
+            // Ephemeral pop-up for "Royale Grind" + points removed.
+            // this.showPointsPopup(player.x, player.y - 30, grindStartPoints, "Royale Grind"); 
             console.log("Royale Grind started! +10 points.");
 
             // Snap player's X position to the center of the rail
