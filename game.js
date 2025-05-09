@@ -134,6 +134,8 @@ class GameplayScene extends Phaser.Scene {
 
         this.leftPromptText = null; // For mobile control prompt
         this.rightPromptText = null; // For mobile control prompt
+        this.leftPromptArrow = null; // Graphics for left arrow
+        this.rightPromptArrow = null; // Graphics for right arrow
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -367,6 +369,14 @@ class GameplayScene extends Phaser.Scene {
             this.rightPromptText.destroy();
             this.rightPromptText = null;
         }
+        if (this.leftPromptArrow) {
+            this.leftPromptArrow.destroy();
+            this.leftPromptArrow = null;
+        }
+        if (this.rightPromptArrow) {
+            this.rightPromptArrow.destroy();
+            this.rightPromptArrow = null;
+        }
 
         // Ensure obstacle timer is running if restarting
         if (this.obstacleTimer) {
@@ -469,17 +479,44 @@ class GameplayScene extends Phaser.Scene {
                 backgroundColor: 'rgba(0,0,0,0.5)',
                 padding: { x: 10, y: 5 }
             };
+            const arrowYOffset = 40; // How far below the text the arrow is
+            const arrowSize = 15; // Size of the arrowhead
 
-            this.leftPromptText = this.add.text(GAME_WIDTH * 0.25, GAME_HEIGHT * 0.6, 'Tap Here\n<-- Move Left', promptStyle)
+            this.leftPromptText = this.add.text(GAME_WIDTH * 0.25, GAME_HEIGHT * 0.6, 'Tap Here\nMove Left', promptStyle)
+                .setOrigin(0.5)
+                .setDepth(5);
+            
+            this.leftPromptArrow = this.add.graphics().setDepth(5);
+            this.leftPromptArrow.fillStyle(0x00ff00, 1); // Green
+            this.leftPromptArrow.beginPath();
+            this.leftPromptArrow.moveTo(this.leftPromptText.x + arrowSize / 2, this.leftPromptText.y + arrowYOffset);
+            this.leftPromptArrow.lineTo(this.leftPromptText.x - arrowSize / 2, this.leftPromptText.y + arrowYOffset);
+            this.leftPromptArrow.lineTo(this.leftPromptText.x - arrowSize / 2, this.leftPromptText.y + arrowYOffset - arrowSize / 2);
+            this.leftPromptArrow.lineTo(this.leftPromptText.x - arrowSize * 1.5, this.leftPromptText.y + arrowYOffset); // Point of arrow
+            this.leftPromptArrow.lineTo(this.leftPromptText.x - arrowSize / 2, this.leftPromptText.y + arrowYOffset + arrowSize / 2);
+            this.leftPromptArrow.lineTo(this.leftPromptText.x - arrowSize / 2, this.leftPromptText.y + arrowYOffset);
+            this.leftPromptArrow.closePath();
+            this.leftPromptArrow.fillPath();
+
+
+            this.rightPromptText = this.add.text(GAME_WIDTH * 0.75, GAME_HEIGHT * 0.6, 'Tap Here\nMove Right', promptStyle)
                 .setOrigin(0.5)
                 .setDepth(5);
 
-            this.rightPromptText = this.add.text(GAME_WIDTH * 0.75, GAME_HEIGHT * 0.6, 'Tap Here\nMove Right -->', promptStyle)
-                .setOrigin(0.5)
-                .setDepth(5);
+            this.rightPromptArrow = this.add.graphics().setDepth(5);
+            this.rightPromptArrow.fillStyle(0xb234e2, 1); // Purple (using existing helmet/transfer color)
+            this.rightPromptArrow.beginPath();
+            this.rightPromptArrow.moveTo(this.rightPromptText.x - arrowSize / 2, this.rightPromptText.y + arrowYOffset);
+            this.rightPromptArrow.lineTo(this.rightPromptText.x + arrowSize / 2, this.rightPromptText.y + arrowYOffset);
+            this.rightPromptArrow.lineTo(this.rightPromptText.x + arrowSize / 2, this.rightPromptText.y + arrowYOffset - arrowSize / 2);
+            this.rightPromptArrow.lineTo(this.rightPromptText.x + arrowSize * 1.5, this.rightPromptText.y + arrowYOffset); // Point of arrow
+            this.rightPromptArrow.lineTo(this.rightPromptText.x + arrowSize / 2, this.rightPromptText.y + arrowYOffset + arrowSize / 2);
+            this.rightPromptArrow.lineTo(this.rightPromptText.x + arrowSize / 2, this.rightPromptText.y + arrowYOffset);
+            this.rightPromptArrow.closePath();
+            this.rightPromptArrow.fillPath();
 
             // Fade out prompts after a delay or on first move
-            this.time.delayedCall(4000, () => {
+            this.time.delayedCall(6000, () => { // Increased duration to 6 seconds
                 this.hideMobilePrompts();
             }, [], this);
         }
@@ -530,12 +567,28 @@ class GameplayScene extends Phaser.Scene {
                 onComplete: () => { if (this.leftPromptText) this.leftPromptText.destroy(); this.leftPromptText = null; }
             });
         }
+        if (this.leftPromptArrow && this.leftPromptArrow.visible) {
+            this.tweens.add({
+                targets: this.leftPromptArrow,
+                alpha: 0,
+                duration: 500,
+                onComplete: () => { if (this.leftPromptArrow) this.leftPromptArrow.destroy(); this.leftPromptArrow = null; }
+            });
+        }
         if (this.rightPromptText && this.rightPromptText.visible) {
             this.tweens.add({
                 targets: this.rightPromptText,
                 alpha: 0,
                 duration: 500,
                 onComplete: () => { if (this.rightPromptText) this.rightPromptText.destroy(); this.rightPromptText = null; }
+            });
+        }
+        if (this.rightPromptArrow && this.rightPromptArrow.visible) {
+            this.tweens.add({
+                targets: this.rightPromptArrow,
+                alpha: 0,
+                duration: 500,
+                onComplete: () => { if (this.rightPromptArrow) this.rightPromptArrow.destroy(); this.rightPromptArrow = null; }
             });
         }
     }
@@ -1253,7 +1306,7 @@ class GameplayScene extends Phaser.Scene {
         }
 
         // Hide mobile prompts if player starts moving and prompts are visible
-        if (movingHorizontally && (this.leftPromptText || this.rightPromptText)) {
+        if (movingHorizontally && (this.leftPromptText || this.rightPromptText || this.leftPromptArrow || this.rightPromptArrow)) {
             this.hideMobilePrompts();
         }
 
