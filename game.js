@@ -139,7 +139,7 @@ class GameplayScene extends Phaser.Scene {
 
         this.elapsedTimeText = null; // Text object for displaying elapsed time
         this.sceneRunningTime = 0; // For accurate scene-specific timer display
-        this.bladeFreeTile = null; // To hold the special BladeFree asphalt tile
+        this.bladeFreeTiles = null; // Group to hold the special BladeFree asphalt tiles
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -401,10 +401,11 @@ class GameplayScene extends Phaser.Scene {
         }
         this.sceneRunningTime = 0; // Reset scene-specific running time
 
-        // Reset BladeFree tile if it exists from a previous game
-        if (this.bladeFreeTile) {
-            this.bladeFreeTile.destroy();
-            this.bladeFreeTile = null;
+        // Initialize or clear BladeFree tiles group
+        if (!this.bladeFreeTiles) {
+            this.bladeFreeTiles = this.physics.add.group({ allowGravity: false });
+        } else {
+            this.bladeFreeTiles.clear(true, true);
         }
 
         // Explicitly use this.sys.time.now to ensure we're getting the most direct time reference
@@ -433,13 +434,7 @@ class GameplayScene extends Phaser.Scene {
         this.ramps.clear(true, true);
         this.grindables.clear(true, true);
         this.collectibles.clear(true, true);
-
-        // --- Spawn Special BladeFree Tile ---
-        // Spawn it once, positioned to scroll into view early
-        this.bladeFreeTile = this.physics.add.sprite(GAME_WIDTH / 2, -200, 'asphalt_bladefree');
-        this.bladeFreeTile.body.allowGravity = false;
-        this.bladeFreeTile.setVelocityY(SCROLL_SPEED);
-        this.bladeFreeTile.setDepth(0); // Render it behind player but above general background tile
+        // BladeFreeTiles group is cleared where it's initialized/checked earlier in create()
 
         // --- Start Background Music ---
         // Stop previous music if restarting, before starting new one
@@ -698,17 +693,19 @@ class GameplayScene extends Phaser.Scene {
             this.initialHelmetSpawned = true;
             console.log("Attempting to spawn initial helmet.");
         } else {
-            // Decide what to spawn: 50% obstacle, 15% ramp, 15% grindable, 20% collectible
+            // Decide what to spawn: 5% BladeFree tile, 15% ramp, 15% grindable, 20% collectible, 45% obstacle
             const rand = Phaser.Math.Between(1, 100);
             spawnType = 'obstacle'; // Default
-            if (rand <= 15) { // 1-15
+            if (rand <= 5) { // 1-5
+                spawnType = 'bladeFreeTile';
+            } else if (rand <= 20) { // 6-20
                 spawnType = 'ramp';
-            } else if (rand <= 30) { // 16-30
+            } else if (rand <= 35) { // 21-35
                 spawnType = 'grindable';
-            } else if (rand <= 50) { // 31-50
+            } else if (rand <= 55) { // 36-55
                  spawnType = 'collectible';
             }
-            // else: 51-100 remains 'obstacle'
+            // else: 56-100 remains 'obstacle'
         }
 
         // Calculate a random horizontal position
@@ -721,7 +718,13 @@ class GameplayScene extends Phaser.Scene {
         let itemKey = '';
         let group = null;
 
-        if (spawnType === 'ramp') {
+        if (spawnType === 'bladeFreeTile') {
+            itemKey = 'asphalt_bladefree';
+            group = this.bladeFreeTiles; // Add to the new group
+            spawnedItem = group.create(GAME_WIDTH / 2, spawnY, itemKey); // Center it horizontally
+            spawnedItem.setDepth(0); // Ensure it's behind player but above main background
+            console.log(`BladeFree Tile spawned at (${GAME_WIDTH / 2}, ${spawnY})`);
+        } else if (spawnType === 'ramp') {
             itemKey = 'ramp_graphic'; // Use the new ramp graphic
             group = this.ramps;
             spawnedItem = group.create(spawnX, spawnY, itemKey);
@@ -1538,26 +1541,21 @@ class GameplayScene extends Phaser.Scene {
             }
         });
 
-        // --- Obstacle, Ramp, Grindable & Collectible Cleanup ---
+        // --- Obstacle, Ramp, Grindable, Collectible & BladeFree Tile Cleanup ---
         // Check items in all groups and destroy them if they go off-screen below
-        [this.obstacles, this.ramps, this.grindables, this.collectibles].forEach(group => {
-            group.children.each(item => {
-                // Check if item exists and has a body (and isn't already marked for destruction)
-                if (item && item.body && item.y > GAME_HEIGHT + item.displayHeight) { // Use displayHeight for accurate check
-                    // Log texture key and frame if available
-                    const itemInfo = item.frame ? `${item.texture.key} (frame ${item.frame.name})` : item.texture.key;
-                    console.log(`Destroying off-screen ${itemInfo}`);
-                    group.remove(item, true, true); // Remove from group, destroy sprite & body
-                }
-            });
+        [this.obstacles, this.ramps, this.grindables, this.collectibles, this.bladeFreeTiles].forEach(group => {
+            if (group) { // Ensure group exists
+                group.children.each(item => {
+                    // Check if item exists and has a body (and isn't already marked for destruction)
+                    if (item && item.body && item.y > GAME_HEIGHT + item.displayHeight) { // Use displayHeight for accurate check
+                        // Log texture key and frame if available
+                        const itemInfo = item.frame ? `${item.texture.key} (frame ${item.frame.name})` : item.texture.key;
+                        console.log(`Destroying off-screen ${itemInfo}`);
+                        group.remove(item, true, true); // Remove from group, destroy sprite & body
+                    }
+                });
+            }
         });
-
-        // --- BladeFree Tile Cleanup ---
-        if (this.bladeFreeTile && this.bladeFreeTile.y > GAME_HEIGHT + this.bladeFreeTile.displayHeight) {
-            console.log("Destroying off-screen BladeFree tile");
-            this.bladeFreeTile.destroy();
-            this.bladeFreeTile = null;
-        }
     }
 }
 
