@@ -1014,11 +1014,8 @@ class GameplayScene extends Phaser.Scene {
             const grindPointsPerSecond = 30;
             this.score += (grindPointsPerSecond * delta) / 1000;
             // Adding points while grinding
-        } else {
-            // Normal score increment based on time (e.g., 10 points per second)
-            const normalPointsPerSecond = 10;
-            this.score += (normalPointsPerSecond * delta) / 1000;
         }
+        // Removed the 'else' block that awarded points for survival time.
         this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
         this.updateHelmetIcon(); // Update helmet icon position if score text width changes
 
