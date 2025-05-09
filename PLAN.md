@@ -11,14 +11,14 @@
 - [x] **Create Main Game Scene (`GameplayScene`):**
     - [x] Define the `GameplayScene` class extending `Phaser.Scene`.
     - [x] Add `GameplayScene` to the Phaser game configuration.
-    - [x] `preload`: Load placeholder skater asset.
-    - [x] `create`: Add skater sprite.
-    - [x] `create`: Enable Arcade Physics on the skater sprite.
+    - [x] `preload`: Load placeholder inline skater asset.
+    - [x] `create`: Add inline skater sprite.
+    - [x] `create`: Enable Arcade Physics on the inline skater sprite.
 - [x] **Player Movement:**
     - [x] `create`: Set up keyboard listeners (Left/Right arrows).
     - [x] `update`: Check key presses.
     - [x] `update`: Apply horizontal velocity/position change for movement.
-    - [x] `update`: Constrain skater movement within screen bounds.
+    - [x] `update`: Constrain inline skater movement within screen bounds.
 - [x] **Basic Scrolling World:**
     - [x] Keep player Y position relatively fixed.
     - [x] Define a constant scroll speed for obstacles/world elements.
@@ -222,7 +222,7 @@
     - [x] Create sprite sheets for player animations (skating, jumping, grinding, falling).
     - [x] Use Phaser's animation manager (`this.anims.create`) to define animations.
     - [x] Play correct player animation based on state.
-    - [ ] Add crash animation when skater collides (distinct from dog-drag setup).
+    - [ ] Add crash animation when inline skater collides (distinct from dog-drag setup).
     - [ ] Add particle effects (grind sparks, jump poof).
     - [x] Implement point pop-up visuals.
     - [x] Change background color/add background image. *(Canvas background color changed to asphalt texture)*
