@@ -1,6 +1,29 @@
 # BladeFree - Release Notes
 
-## Version 0.2.2 (Current)
+## Version 0.2.3 (Current)
+
+**Release Date:** 2025-05-09
+
+This release includes an update to an asset dimension and incorporates all previous fixes.
+
+### Enhancements:
+*   **Asset Update:** The `assets/graphics/later_blader.png` image has been updated to 500x500 pixels. The game's quit sequence will now display this image at its new native resolution.
+
+### (Features and fixes from v0.2.2 also included)
+
+*   **Timer and Difficulty Reset:** Implemented a more robust reset mechanism for the in-game timer and the `gameStartTime` variable used for difficulty scaling. This ensures that both the displayed timer and the logic for obstacle movement/spawn rates correctly reflect the start of a new game session after a restart.
+*   **Transfer Combos:** Added "Transfer Combo" scores and enhanced pop-up messages.
+*   **Trick System & Animations:** Added "360" and "Royale Grind" tricks with respective animations and persistent grind name display.
+*   **Difficulty Scaling:** Implemented time-based horizontal obstacle movement and score-based spawn rate increases.
+*   **Mobile UI Enhancements:** Added on-screen prompts with arrows for mobile controls.
+*   **Metadata & Planning:** Updated `index.html` with social media metadata and `PLAN.md` with deployment/optimization phase.
+*   **Previous Bug Fixes (from v0.2.1 & v0.2.2):**
+    *   Corrected 360 air animation frames.
+    *   Addressed potential errors with grind name text display on creation and restart.
+    *   Ensured game descriptions accurately reflect "aggressive inline skating".
+    *   Fixed `grindPointsDisplay` reset on game restart.
+
+## Version 0.2.2
 
 **Release Date:** 2025-05-09
 
