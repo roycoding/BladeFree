@@ -396,7 +396,9 @@ class GameplayScene extends Phaser.Scene {
         if (this.elapsedTimeText) {
             this.elapsedTimeText.setText('Time: 00:00');
         }
-        this.gameStartTime = this.time.now; // Reset game start time for the new session HERE
+        // Explicitly use this.sys.time.now to ensure we're getting the most direct time reference
+        this.gameStartTime = this.sys.time.now; 
+        console.log(`GameplayScene.create: gameStartTime reset to ${this.gameStartTime}`);
 
 
         // Ensure obstacle timer is running if restarting
