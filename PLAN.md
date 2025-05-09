@@ -164,7 +164,8 @@
         - [x] On Quit: Display "Later Blader 🤙" text. *(Image with spiral animation implemented)*
             - [x] Add clickable buttons to GameOverScene for "Restart" and "Quit" for mobile users.
 - [x] **Rails/Ledges & Grinding (Enhancements):**
-    - [x] `update` (while grinding): Add points based on duration. *(Running total of points as skater grinds is covered by this)*
+    - [x] `update` (while grinding): Add points based on duration.
+    - [x] `GameplayScene.update`: Display a running total of points earned *during the current grind* near the player.
     - [x] `handleGrindOverlap`: Improve player snapping to align to the middle of the rail.
     - [x] `update`: Lock player's X position to the rail's X position while grinding.
     - [ ] `spawnObstacle`: Implement rails and ledges of different lengths.

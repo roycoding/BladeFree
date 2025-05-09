@@ -91,6 +91,8 @@ class GameplayScene extends Phaser.Scene {
         this.isJumping = false;     // Flag to track if player is airborne from a jump
         this.isFalling = false;     // Flag to track if player is in collision state
         this.activeGrindable = null; // Reference to the current rail being grinded
+        this.currentGrindPoints = 0; // Points accumulated in the current grind, for display
+        this.grindPointsDisplay = null; // Text object for displaying current grind points
         this.highScore = 0;         // Highest score achieved
         this.scoreText = null;      // Text object for current score
         this.highScoreText = null;  // Text object for high score
@@ -911,6 +913,15 @@ class GameplayScene extends Phaser.Scene {
 
             // Optional: Visual cue for grinding (e.g., tint player)
             // player.setTint(0xffff00); // Yellow tint while grinding
+
+            // Initialize and show grind points display
+            this.currentGrindPoints = 0;
+            if (!this.grindPointsDisplay) {
+                this.grindPointsDisplay = this.add.text(player.x, player.y - 40, `+0`, {
+                    fontSize: '22px', fill: '#00ff00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 4
+                }).setOrigin(0.5).setDepth(2);
+            }
+            this.grindPointsDisplay.setPosition(player.x, player.y - 40).setText(`+0`).setVisible(true);
         }
 
         // Points are awarded in the update loop based on the isGrinding flag
@@ -924,6 +935,12 @@ class GameplayScene extends Phaser.Scene {
             this.activeGrindable = null; // Clear active rail reference
             console.log("Grind ended.");
             this.sound.play('land'); // Play landing sound (reused from grind end)
+            
+            if (this.grindPointsDisplay) {
+                this.grindPointsDisplay.setVisible(false);
+            }
+            this.currentGrindPoints = 0; // Reset for next grind
+
             // Optional: Reset player tint if it was changed
             // player.clearTint();
             // Player will naturally fall due to gravity pull logic in update if they jumped off
@@ -1012,8 +1029,14 @@ class GameplayScene extends Phaser.Scene {
         if (this.isGrinding) {
             // Award points faster while grinding (e.g., 30 points per second)
             const grindPointsPerSecond = 30;
-            this.score += (grindPointsPerSecond * delta) / 1000;
-            // Adding points while grinding
+            const pointsThisFrame = (grindPointsPerSecond * delta) / 1000;
+            this.score += pointsThisFrame;
+            this.currentGrindPoints += pointsThisFrame;
+            
+            if (this.grindPointsDisplay && this.grindPointsDisplay.visible) {
+                this.grindPointsDisplay.setText(`+${Math.floor(this.currentGrindPoints)}`);
+                this.grindPointsDisplay.setPosition(this.player.x, this.player.y - 40); // Keep it above player
+            }
         }
         // Removed the 'else' block that awarded points for survival time.
         this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
