@@ -314,7 +314,16 @@ class GameplayScene extends Phaser.Scene {
             fill: '#fff',
             fontFamily: 'Arial', // Basic fallback font
             align: 'right'
-        }).setOrigin(1, 0); // Anchor to top-right
+        }).setOrigin(1, 0).setDepth(3); // Anchor to top-right, ensure high depth
+
+        // Elapsed Time Text (Below Score Text)
+        this.elapsedTimeText = this.add.text(GAME_WIDTH - 20, this.scoreText.y + this.scoreText.height + 5, 'Time: 00:00', {
+            fontSize: '20px', // Slightly smaller than score
+            fill: '#fff',
+            fontFamily: 'Arial',
+            align: 'right'
+        }).setOrigin(1, 0).setDepth(3); // Anchor to top-right (below score), ensure high depth
+
 
         // High Score Text (Top Left)
         // Ensure we display the loaded high score as an integer
@@ -324,26 +333,6 @@ class GameplayScene extends Phaser.Scene {
             fontFamily: 'Arial',
             align: 'left'
         }).setOrigin(0, 0).setDepth(3); // Anchor to top-left, ensure high depth
-
-        // Static BladeFree Overlay (Top Center)
-        const topOverlayMargin = 10;
-        this.bladeFreeOverlay = this.add.sprite(GAME_WIDTH / 2, topOverlayMargin, 'asphalt_bladefree')
-            .setOrigin(0.5, 0) // Anchor top-center
-            .setDepth(2);      // Depth to be above background, below main UI
-
-        // Elapsed Time Text (Below BladeFree Overlay)
-        this.elapsedTimeText = this.add.text(GAME_WIDTH / 2, this.bladeFreeOverlay.y + this.bladeFreeOverlay.displayHeight + 5, 'Time: 00:00', {
-            fontSize: '24px',
-            fill: '#fff',
-            fontFamily: 'Arial',
-            align: 'center'
-        }).setOrigin(0.5, 0).setDepth(3); // Anchor to top-center, ensure high depth
-
-        // Static Royskates Overlay (Bottom Center)
-        const bottomOverlayMargin = 10;
-        this.royskatesOverlay = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT - bottomOverlayMargin, 'asphalt_royskates')
-            .setOrigin(0.5, 1) // Anchor bottom-center
-            .setDepth(2);      // Depth to be above background, below main UI
 
 
         // Helmet UI Icon (next to score)
@@ -427,7 +416,20 @@ class GameplayScene extends Phaser.Scene {
             this.royskatesOverlay.destroy();
             this.royskatesOverlay = null;
         }
+        
+        // --- Create Static Overlays AFTER potential destruction ---
+        // Static BladeFree Overlay (Top Center)
+        const topOverlayMargin = 10;
+        this.bladeFreeOverlay = this.add.sprite(GAME_WIDTH / 2, topOverlayMargin, 'asphalt_bladefree')
+            .setOrigin(0.5, 0) // Anchor top-center
+            .setDepth(2);      // Depth to be above background, below main UI
 
+        // Static Royskates Overlay (Bottom Center)
+        const bottomOverlayMargin = 10;
+        this.royskatesOverlay = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT - bottomOverlayMargin, 'asphalt_royskates')
+            .setOrigin(0.5, 1) // Anchor bottom-center
+            .setDepth(2);      // Depth to be above background, below main UI
+        
         // Explicitly use this.sys.time.now to ensure we're getting the most direct time reference
         this.gameStartTime = this.sys.time.now; // For difficulty scaling logic
         console.log(`GameplayScene.create: gameStartTime reset to ${this.gameStartTime} for difficulty scaling.`);
