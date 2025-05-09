@@ -336,12 +336,12 @@ class GameplayScene extends Phaser.Scene {
 
 
         // Helmet UI Icon (next to score)
-        // Using frame 27 (helmet collectible) as the icon. Scale it down.
-        this.helmetIcon = this.add.sprite(GAME_WIDTH - 20 - this.scoreText.width - 10, 20 + 12, 'skater', 27)
+        // Using frame 27 (helmet collectible) as the icon.
+        this.helmetIcon = this.add.sprite(GAME_WIDTH - 20 - this.scoreText.width - 15, 20 + 12, 'skater', 27) // Adjusted X for larger icon
             .setOrigin(1, 0.5) // Align to the right of its position, vertically centered with score text
-            .setScale(0.75)
+            .setScale(1.0) // Increased scale for better visibility
             .setVisible(false) // Initially hidden
-            .setDepth(1);
+            .setDepth(3); // Ensure it's on top of other UI like score text
 
         // --- Inventory UI Setup ---
         this.initializeInventory();
@@ -663,17 +663,27 @@ class GameplayScene extends Phaser.Scene {
         this.inventoryUIIcons = {};
         this.playerInventory = {};
 
-        const startX = 20; // Starting X position for the first inventory icon
-        const iconY = 60;  // Y position for inventory icons (below score/high score)
-        const iconSpacing = 40; // Spacing between icons
+        const startX = 20; // Starting X position for the first inventory icon in a row
+        const iconYRow1 = 60;  // Y position for the first row of inventory icons
+        const iconYRow2 = iconYRow1 + 40; // Y position for the second row
+        const iconSpacing = 40; // Spacing between icons horizontally
         const iconScale = 0.75;
         const uncollectedTint = 0x707070; // Darker gray tint
         const uncollectedAlpha = 0.4;    // Subdued alpha
+        const itemsPerRow = 4;
 
         this.inventoryItems.forEach((frame, index) => {
             this.playerInventory[frame] = false; // Initialize as not collected
 
-            const iconX = startX + (index * iconSpacing);
+            let iconX, iconY;
+            if (index < itemsPerRow) { // First row
+                iconX = startX + (index * iconSpacing);
+                iconY = iconYRow1;
+            } else { // Second row
+                iconX = startX + ((index - itemsPerRow) * iconSpacing);
+                iconY = iconYRow2;
+            }
+
             const iconSprite = this.add.sprite(iconX, iconY, 'skater', frame)
                 .setOrigin(0, 0.5) // Align to left, vertically centered
                 .setScale(iconScale)
@@ -1144,9 +1154,11 @@ class GameplayScene extends Phaser.Scene {
     updateHelmetIcon() {
         if (this.helmetIcon) {
             this.helmetIcon.setVisible(this.hasHelmet);
-            // Adjust position if scoreText width changes significantly (optional refinement)
-            this.helmetIcon.x = GAME_WIDTH - 20 - (this.scoreText ? this.scoreText.width : 100) - 25; // Reposition based on score text width
-            this.helmetIcon.y = 20 + (this.scoreText ? this.scoreText.height / 2 : 12);
+            // Adjust position if scoreText width changes significantly
+            const scoreTextWidth = this.scoreText ? this.scoreText.width : 100;
+            const helmetIconXOffset = 15 + (this.helmetIcon.displayWidth / 2); // Offset from score text, considering scaled width
+            this.helmetIcon.x = GAME_WIDTH - 20 - scoreTextWidth - helmetIconXOffset;
+            this.helmetIcon.y = 20 + (this.scoreText ? this.scoreText.height / 2 : 12); // Vertically align with score text
         }
     }
 
