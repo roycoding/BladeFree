@@ -1,6 +1,40 @@
 # BladeFree - Release Notes
 
-## Version 0.1.1 (Current)
+## Version 0.1.2 (Current)
+
+**Release Date:** 2025-05-08 (Approx.)
+
+This release introduces several new gameplay mechanics, difficulty scaling, UI enhancements for mobile players, and improved metadata for sharing.
+
+### New Features & Enhancements:
+
+*   **Transfer Combos:**
+    *   Added "Transfer Combo" scores for transitioning between ramps and rails (Ramp-to-Ramp, Ramp-to-Rail, Rail-to-Ramp, Rail-to-Rail).
+    *   Transfer combo pop-up messages now have a distinct color and stay on screen longer (1500ms).
+*   **Trick System & Animations:**
+    *   Added "360" trick for ramp jumps, displaying the trick name and points upon landing.
+    *   Implemented a 2-frame (9 then 17) animation sequence for the 360 jump, with refined timing for clarity.
+    *   Added "Royale Grind" trick when initiating a grind.
+    *   "Royale Grind" name now displays persistently above the accumulating grind score during a grind.
+    *   Removed the initial ephemeral pop-up for starting a grind, as the persistent display serves this purpose.
+*   **Difficulty Scaling:**
+    *   Obstacles start moving horizontally after 1 minute of gameplay, and faster after 2 minutes. Moving obstacles reverse direction at screen edges.
+    *   Obstacle spawn rate increases (spawn delay decreases) for every 700 points scored by the player, up to a minimum spawn delay.
+*   **Mobile UI Enhancements:**
+    *   Added on-screen prompts for mobile controls ("Tap Here Move Left/Right") that appear at the start of gameplay on non-desktop devices.
+    *   Prompts now include visual green (left) and purple (right) arrows instead of text arrows.
+    *   Prompts stay on screen longer (6 seconds) or until the player first moves.
+*   **Metadata & Planning:**
+    *   Updated `index.html` with comprehensive Open Graph and Twitter Card metadata for social media sharing, accurately describing the game as an "aggressive inline skating" game.
+    *   Updated `PLAN.md` to reflect the game as an "aggressive inline skating" game and added a new "Deployment & Optimization" phase.
+
+### Bug Fixes:
+
+*   Ensured only frames 9 and 17 are displayed during the 360 air animation.
+*   Addressed a potential error with grind name text display by explicitly nullifying the text object reference after destruction and before recreation.
+*   Corrected game descriptions in `PLAN.md` and `index.html` from "skateboarding" to "aggressive inline skating".
+
+## Version 0.1.1
 
 **Release Date:** 2025-05-08 (Approx.)
 
