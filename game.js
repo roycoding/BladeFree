@@ -16,6 +16,12 @@ const RAMP_TO_RAIL_POINTS = 100;
 const RAIL_TO_RAMP_POINTS = 100;
 const RAIL_TO_RAIL_POINTS = 125;
 
+// Difficulty Scaling Constants for Obstacles
+const OBSTACLE_MOVEMENT_TIER1_TIME = 60000; // 1 minute in ms
+const OBSTACLE_HORIZONTAL_SPEED_TIER1 = 30; // pixels/sec
+const OBSTACLE_MOVEMENT_TIER2_TIME = 120000; // 2 minutes in ms
+const OBSTACLE_HORIZONTAL_SPEED_TIER2 = 60; // pixels/sec
+
 
 // --- Start Scene ---
 class StartScene extends Phaser.Scene {
@@ -118,6 +124,8 @@ class GameplayScene extends Phaser.Scene {
         this.grindNameText = null;   // Text object for "Royale Grind" persistent display
         this.isPerformingRampJump = false; // Flag to indicate a 360 ramp jump is in progress
         this.pointsForCurrentRampJump = 0; // Points to award upon landing a 360
+
+        this.gameStartTime = 0; // To track elapsed time for difficulty scaling
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -192,6 +200,9 @@ class GameplayScene extends Phaser.Scene {
         this.background.setOrigin(0, 0); // Position at top-left
         this.background.setScrollFactor(0); // Make it static relative to the camera
         // No need to setBackgroundColor if we have a full background image
+
+        // Initialize game start time for difficulty scaling
+        this.gameStartTime = this.time.now;
 
         // Add the player sprite using the loaded spritesheet
         // Positioned horizontally centered, vertically at PLAYER_START_Y
@@ -611,6 +622,23 @@ class GameplayScene extends Phaser.Scene {
 
             // Make sure physics body matches sprite size
             spawnedItem.body.setSize(spawnedItem.width, spawnedItem.height);
+
+            // --- Difficulty Scaling: Apply horizontal movement to obstacles based on time ---
+            if (spawnType === 'obstacle') {
+                const elapsedTime = this.time.now - this.gameStartTime;
+                let horizontalSpeed = 0;
+
+                if (elapsedTime >= OBSTACLE_MOVEMENT_TIER2_TIME) {
+                    horizontalSpeed = OBSTACLE_HORIZONTAL_SPEED_TIER2;
+                } else if (elapsedTime >= OBSTACLE_MOVEMENT_TIER1_TIME) {
+                    horizontalSpeed = OBSTACLE_HORIZONTAL_SPEED_TIER1;
+                }
+
+                if (horizontalSpeed > 0) {
+                    spawnedItem.body.velocity.x = Phaser.Math.RND.sign() * horizontalSpeed;
+                    console.log(`Obstacle spawned with horizontal speed: ${spawnedItem.body.velocity.x} (elapsed: ${elapsedTime}ms)`);
+                }
+            }
 
         } else {
             console.error(`Failed to create ${spawnType} sprite.`);
@@ -1293,6 +1321,22 @@ class GameplayScene extends Phaser.Scene {
         // --- Scrolling (Placeholder) ---
         // The world/obstacles will move upwards in later phases.
         // The player's Y position remains fixed for now, unless jumping.
+
+        // --- Obstacle Horizontal Movement & Edge Reversal ---
+        this.obstacles.children.each(obstacle => {
+            if (obstacle && obstacle.body) {
+                // Check left boundary
+                if (obstacle.body.velocity.x < 0 && obstacle.x < obstacle.displayWidth / 2) {
+                    obstacle.body.velocity.x *= -1; // Reverse horizontal direction
+                    obstacle.x = obstacle.displayWidth / 2 + 1; // Prevent getting stuck
+                }
+                // Check right boundary
+                else if (obstacle.body.velocity.x > 0 && obstacle.x > GAME_WIDTH - obstacle.displayWidth / 2) {
+                    obstacle.body.velocity.x *= -1; // Reverse horizontal direction
+                    obstacle.x = GAME_WIDTH - obstacle.displayWidth / 2 - 1; // Prevent getting stuck
+                }
+            }
+        });
 
         // --- Obstacle, Ramp, Grindable & Collectible Cleanup ---
         // Check items in all groups and destroy them if they go off-screen below
