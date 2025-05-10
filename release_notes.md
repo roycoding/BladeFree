@@ -1,6 +1,15 @@
 # BladeFree - Release Notes
 
-## Version 0.2.4 (Current)
+## Version 0.2.5 (Current)
+
+**Release Date:** 2025-05-10
+
+This release updates the royskates.com overlay to be a clickable link.
+
+### Enhancements:
+*   **Clickable Overlay:** The `royskates_com.png` overlay graphic, displayed in the lower-left corner of the `StartScene` and `GameplayScene`, is now interactive and links to `https://royskates.com` when clicked.
+
+## Version 0.2.4
 
 **Release Date:** 2025-05-10
 
