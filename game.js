@@ -1236,7 +1236,11 @@ class GameplayScene extends Phaser.Scene {
         let fontSize = '18px'; // Default font size
 
         if (isSpecialMessage && itemName) {
-            popupText = itemName; // Only the special message
+            if (points !== null) { // If points are provided with a special message
+                popupText = `${itemName}\n+${points}`;
+            } else {
+                popupText = itemName; // Only the special message if no points
+            }
             fontSize = '28px'; // Larger font for special messages
         } else if (itemName) {
             popupText = `${itemName}\n+${points}`; // Item name and points
