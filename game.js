@@ -33,6 +33,7 @@ class StartScene extends Phaser.Scene {
     constructor() {
         super('StartScene');
         this.muteButton = null;
+        this.royskatesComOverlay = null; // Add property for the new overlay
     }
 
     preload() {
@@ -42,6 +43,8 @@ class StartScene extends Phaser.Scene {
         this.load.audio('start_music', 'assets/audio/start_music.mp3');
         // Load title image
         this.load.image('title_image', 'assets/graphics/title.png');
+        // Load royskates.com overlay for StartScene
+        this.load.image('royskates_com_graphic', 'assets/graphics/royskates_com.png');
         // Load skater spritesheet for the play button
         this.load.spritesheet('skater', 'assets/graphics/skater.png', {
             frameWidth: 32,
@@ -110,6 +113,16 @@ class StartScene extends Phaser.Scene {
                 this.sound.play('ui_confirm', { volume: 0.3 });
             }
         });
+
+        // Royskates.com Overlay (Lower Right)
+        const royskatesOverlayPadding = 5; // Small padding from the edge
+        this.royskatesComOverlay = this.add.sprite(
+            GAME_WIDTH - royskatesOverlayPadding, 
+            GAME_HEIGHT - royskatesOverlayPadding - this.muteButton.displayHeight - 5, // Position above mute button
+            'royskates_com_graphic'
+        )
+        .setOrigin(1, 1) // Anchor to bottom-right
+        .setDepth(99);   // Ensure it's on top but potentially below mute button if overlapping
 
         console.log("StartScene created");
     }
@@ -196,7 +209,7 @@ class GameplayScene extends Phaser.Scene {
         // --- Background Image ---
         this.load.image('asphalt_bg', 'assets/graphics/asphalt.png');
         this.load.image('asphalt_bladefree', 'assets/graphics/asphalt_bladefree.png'); // Load BladeFree tile
-        this.load.image('asphalt_royskates', 'assets/graphics/asphalt_royskates.png'); // Load Royskates tile
+        this.load.image('royskates_com_graphic', 'assets/graphics/royskates_com.png'); // Load Royskates tile
 
         // --- Obstacle Placeholder ---
         // Obstacles will now use frames from the 'skater' spritesheet.
@@ -456,10 +469,15 @@ class GameplayScene extends Phaser.Scene {
             .setDepth(2);      // Depth to be above background, below main UI
 
         // Static Royskates Overlay (Bottom Center)
-        const bottomOverlayMargin = 10;
-        this.royskatesOverlay = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT - bottomOverlayMargin, 'asphalt_royskates')
-            .setOrigin(0.5, 1) // Anchor bottom-center
-            .setDepth(2);      // Depth to be above background, below main UI
+        const bottomOverlayMargin = 10; // Padding from the bottom edge
+        const royskatesOverlayPaddingGameplay = 5; // Padding from right edge
+        this.royskatesOverlay = this.add.sprite(
+            GAME_WIDTH - royskatesOverlayPaddingGameplay, 
+            GAME_HEIGHT - bottomOverlayMargin - this.muteButton.displayHeight - 5, // Position above mute button
+            'royskates_com_graphic'
+        )
+            .setOrigin(1, 1) // Anchor bottom-right
+            .setDepth(99);      // Depth to be above background, below main UI but potentially below mute button
         
         // Explicitly use this.sys.time.now to ensure we're getting the most direct time reference
         this.gameStartTime = this.sys.time.now; // For difficulty scaling logic
