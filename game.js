@@ -1781,7 +1781,16 @@ class GameOverScene extends Phaser.Scene {
             if (this.isShowingResetConfirmation) return;
             if (this.laterBladerImage && this.laterBladerImage.visible) return;
 
-            this.sound.stopAll();
+            this.sound.stopAll(); // Stop all sounds, including existing looping music
+
+            // Play grind_start sound, then land sound on completion
+            const quitGrindSound = this.sound.add('grind_start', { volume: 0.6 });
+            quitGrindSound.once('complete', () => {
+                this.sound.play('land', { volume: 0.5 });
+            });
+            quitGrindSound.play();
+
+            // Proceed with visual quit sequence
             if (this.gameOverBackgroundImage) {
                 this.gameOverBackgroundImage.setVisible(false);
             }
