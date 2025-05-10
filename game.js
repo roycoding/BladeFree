@@ -2035,8 +2035,9 @@ class GameOverScene extends Phaser.Scene {
 
         // Display High Score Celebration Sprites if new high score
         if (this.newHighScoreAchieved) {
-            const celebrationY = GAME_HEIGHT * 0.45; // Vertical position for celebration sprites
-            const sidePadding = 100; // Padding from screen edges
+            // Position for Dog and Medal - lower on the screen
+            const celebrationY = GAME_HEIGHT * 0.70; // Lowered Y position
+            const sidePadding = 150; // Adjusted padding for new position
 
             // Dog on the left
             this.highScoreDog = this.add.sprite(sidePadding, celebrationY, 'skater', 34) // Frame 34 for dog
@@ -2052,7 +2053,9 @@ class GameOverScene extends Phaser.Scene {
             
             // Optional: Add a "NEW HIGH SCORE!" text if not already clear
             if (this.newHighScoreText) this.newHighScoreText.destroy(); // Clear previous if any
-            this.newHighScoreText = this.add.text(GAME_WIDTH / 2, this.highScoreTextDisplay.y - 40, 'NEW HIGH SCORE!', {
+            // Position "NEW HIGH SCORE!" text above the "Your Score" text
+            const newHighScoreTextY = this.scoreTextDisplay.y - this.scoreTextDisplay.height - 10; 
+            this.newHighScoreText = this.add.text(GAME_WIDTH / 2, newHighScoreTextY, 'NEW HIGH SCORE!', {
                 fontSize: '36px', fill: '#FFD700', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 6
             }).setOrigin(0.5).setDepth(5);
         }
