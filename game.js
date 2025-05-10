@@ -511,6 +511,7 @@ class GameplayScene extends Phaser.Scene {
             'royskates_com_graphic'
         )
             .setOrigin(0, 1) // Anchor bottom-left
+            .setScale(0.75)  // Make it smaller
             .setDepth(99)      // Ensure it's on top
             .setInteractive({ useHandCursor: true });
         
