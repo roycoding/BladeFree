@@ -89,31 +89,27 @@ class StartScene extends Phaser.Scene {
             strokeThickness: 5
         }).setOrigin(0.5);
 
-        // Mute Button
-        const muteButtonPadding = 20;
-        const initialMuteText = this.sound.mute ? 'Unmute' : 'Mute';
-        this.muteButton = this.add.text(
+        }).setOrigin(0.5);
+
+        // Mute Button (Sprite)
+        const muteButtonPadding = 5; // Small padding from the edge
+        const initialMuteFrame = this.sound.mute ? 39 : 38; // 39 for muted, 38 for playing
+        this.muteButton = this.add.sprite(
             GAME_WIDTH - muteButtonPadding, 
             GAME_HEIGHT - muteButtonPadding, 
-            initialMuteText, 
-            { 
-                fontSize: '18px', 
-                fill: '#fff', 
-                fontFamily: 'Arial',
-                backgroundColor: '#00000080', // Semi-transparent black background
-                padding: { x: 8, y: 4 }
-            }
+            'skater', 
+            initialMuteFrame
         )
         .setOrigin(1, 1) // Anchor to bottom-right
         .setDepth(100)   // Ensure it's on top
         .setInteractive({ useHandCursor: true });
+        // this.muteButton.setScale(1.0); // Adjust scale if needed, default is 1.0 for original sprite size
 
         this.muteButton.on('pointerdown', () => {
             this.sound.mute = !this.sound.mute;
-            this.muteButton.setText(this.sound.mute ? 'Unmute' : 'Mute');
-            // Optionally play a UI sound, but consider it might be muted
+            this.muteButton.setFrame(this.sound.mute ? 39 : 38);
             if (!this.sound.mute) {
-                this.sound.play('ui_confirm', { volume: 0.3 }); // Play softly if unmuting
+                this.sound.play('ui_confirm', { volume: 0.3 });
             }
         });
 
@@ -617,20 +613,17 @@ class GameplayScene extends Phaser.Scene {
             }, [], this);
         }
 
-        // Mute Button for GameplayScene
-        const muteButtonPaddingGameplay = 20;
-        const initialMuteTextGameplay = this.sound.mute ? 'Unmute' : 'Mute';
-        this.muteButton = this.add.text(
+            }, [], this);
+        }
+
+        // Mute Button (Sprite) for GameplayScene
+        const muteButtonPaddingGameplay = 5; // Small padding
+        const initialMuteFrameGameplay = this.sound.mute ? 39 : 38;
+        this.muteButton = this.add.sprite(
             GAME_WIDTH - muteButtonPaddingGameplay, 
             GAME_HEIGHT - muteButtonPaddingGameplay, 
-            initialMuteTextGameplay, 
-            { 
-                fontSize: '18px', 
-                fill: '#fff', 
-                fontFamily: 'Arial',
-                backgroundColor: '#00000080',
-                padding: { x: 8, y: 4 }
-            }
+            'skater', 
+            initialMuteFrameGameplay
         )
         .setOrigin(1, 1)
         .setDepth(100)
@@ -638,12 +631,11 @@ class GameplayScene extends Phaser.Scene {
 
         this.muteButton.on('pointerdown', () => {
             this.sound.mute = !this.sound.mute;
-            this.muteButton.setText(this.sound.mute ? 'Unmute' : 'Mute');
+            this.muteButton.setFrame(this.sound.mute ? 39 : 38);
             if (!this.sound.mute) {
                 this.sound.play('ui_confirm', { volume: 0.3 });
             }
         });
-
 
         console.log("GameplayScene create/reset finished");
     }
@@ -1868,28 +1860,27 @@ class GameOverScene extends Phaser.Scene {
             this.showResetConfirmation();
         });
 
-        // Mute Button for GameOverScene
-        const muteButtonPaddingGameOver = 20;
-        const initialMuteTextGameOver = this.sound.mute ? 'Unmute' : 'Mute';
-        this.muteButton = this.add.text(
+        this.resetDot.on('pointerdown', () => {
+            if (this.isShowingResetConfirmation) return;
+            this.showResetConfirmation();
+        });
+
+        // Mute Button (Sprite) for GameOverScene
+        const muteButtonPaddingGameOver = 5; // Small padding
+        const initialMuteFrameGameOver = this.sound.mute ? 39 : 38;
+        this.muteButton = this.add.sprite(
             GAME_WIDTH - muteButtonPaddingGameOver, 
             GAME_HEIGHT - muteButtonPaddingGameOver, 
-            initialMuteTextGameOver, 
-            { 
-                fontSize: '18px', 
-                fill: '#fff', 
-                fontFamily: 'Arial',
-                backgroundColor: '#00000080',
-                padding: { x: 8, y: 4 }
-            }
+            'skater', 
+            initialMuteFrameGameOver
         )
         .setOrigin(1, 1)
-        .setDepth(100) // Ensure it's on top, even above confirmation screen elements if needed
+        .setDepth(100) 
         .setInteractive({ useHandCursor: true });
 
         this.muteButton.on('pointerdown', () => {
             this.sound.mute = !this.sound.mute;
-            this.muteButton.setText(this.sound.mute ? 'Unmute' : 'Mute');
+            this.muteButton.setFrame(this.sound.mute ? 39 : 38);
             if (!this.sound.mute) {
                 this.sound.play('ui_confirm', { volume: 0.3 });
             }
