@@ -1053,11 +1053,12 @@ class GameplayScene extends Phaser.Scene {
 
         // --- High Score Check (Only on Game Over) ---
         const finalScore = Math.floor(this.score);
+        let newHighScoreAchieved = false;
         if (finalScore > this.highScore) {
             this.highScore = finalScore; // Update the scene's high score variable
             localStorage.setItem('bladeFreeHighScore', this.highScore); // Save to localStorage
+            newHighScoreAchieved = true;
             // The GameOverScene will display this new high score.
-            // No need to update GameplayScene's highScoreText here, as the game is ending.
             console.log(`New high score achieved: ${this.highScore}`);
         }
 
@@ -1118,10 +1119,10 @@ class GameplayScene extends Phaser.Scene {
                     duration: 1500, // Duration of the drag
                     ease: 'Linear',
                     onComplete: () => {
-                        console.log(`Transitioning to GameOverScene with score: ${finalScore}`);
+                        console.log(`Transitioning to GameOverScene with score: ${finalScore}, newHighScore: ${newHighScoreAchieved}`);
                         // Clean up the drag group sprites
                         dragGroup.forEach(s => s.destroy());
-                        this.scene.start('GameOverScene', { score: finalScore });
+                        this.scene.start('GameOverScene', { score: finalScore, newHighScoreAchieved: newHighScoreAchieved });
                     }
                 });
             }
@@ -1741,6 +1742,10 @@ class GameOverScene extends Phaser.Scene {
         this.muteButton = null; // Mute button
         this.royskatesComOverlay = null; // For the new overlay on the main game over screen
         this.quitRoyskatesOverlay = null; // For the overlay on the "Later Blader" quit screen
+        this.newHighScoreAchieved = false; // Flag to indicate if a new high score was made this session
+        this.highScoreDog = null;          // Sprite for the dog on new high score
+        this.highScoreMedal = null;        // Sprite for the medal on new high score
+        this.newHighScoreText = null;      // Text for "NEW HIGH SCORE!"
     }
 
     preload() {
@@ -1764,7 +1769,8 @@ class GameOverScene extends Phaser.Scene {
     // Receive data from the scene that started this one (GameplayScene)
     init(data) {
         this.finalScore = data.score || 0; // Get score passed from GameplayScene
-        console.log(`GameOverScene received score: ${this.finalScore}`);
+        this.newHighScoreAchieved = data.newHighScoreAchieved || false; // Get new high score flag
+        console.log(`GameOverScene received score: ${this.finalScore}, newHighScoreAchieved: ${this.newHighScoreAchieved}`);
     }
 
     create() {
@@ -1873,7 +1879,10 @@ class GameOverScene extends Phaser.Scene {
             this.quitButton.setVisible(false); 
             if (this.muteButton) this.muteButton.setVisible(false); 
             if (this.resetDot) this.resetDot.setVisible(false); 
-            if (this.royskatesComOverlay) this.royskatesComOverlay.setVisible(false); // Hide royskates overlay
+            if (this.royskatesComOverlay) this.royskatesComOverlay.setVisible(false); 
+            if (this.highScoreDog) this.highScoreDog.setVisible(false); 
+            if (this.highScoreMedal) this.highScoreMedal.setVisible(false);
+            if (this.newHighScoreText) this.newHighScoreText.setVisible(false); // Hide new high score text
 
             this.laterBladerImage = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'later_blader_img')
                 .setOrigin(0.5)
@@ -2024,6 +2033,30 @@ class GameOverScene extends Phaser.Scene {
             window.open('https://royskates.com', '_blank');
         });
 
+        // Display High Score Celebration Sprites if new high score
+        if (this.newHighScoreAchieved) {
+            const celebrationY = GAME_HEIGHT * 0.45; // Vertical position for celebration sprites
+            const sidePadding = 100; // Padding from screen edges
+
+            // Dog on the left
+            this.highScoreDog = this.add.sprite(sidePadding, celebrationY, 'skater', 34) // Frame 34 for dog
+                .setOrigin(0.5, 0.5)
+                .setScale(2) // Make it a bit larger
+                .setDepth(5); // Ensure visible
+
+            // Medal on the right
+            this.highScoreMedal = this.add.sprite(GAME_WIDTH - sidePadding, celebrationY, 'skater', 15) // Frame 15 for medal
+                .setOrigin(0.5, 0.5)
+                .setScale(2.5) // Make it a bit larger
+                .setDepth(5); // Ensure visible
+            
+            // Optional: Add a "NEW HIGH SCORE!" text if not already clear
+            if (this.newHighScoreText) this.newHighScoreText.destroy(); // Clear previous if any
+            this.newHighScoreText = this.add.text(GAME_WIDTH / 2, this.highScoreTextDisplay.y - 40, 'NEW HIGH SCORE!', {
+                fontSize: '36px', fill: '#FFD700', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 6
+            }).setOrigin(0.5).setDepth(5);
+        }
+
 
         console.log("GameOverScene created");
     }
@@ -2038,7 +2071,10 @@ class GameOverScene extends Phaser.Scene {
         this.restartButton.setVisible(false);
         this.quitButton.setVisible(false);
         this.resetDot.setVisible(false); 
-        if (this.royskatesComOverlay) this.royskatesComOverlay.setVisible(false); // Hide royskates overlay
+        if (this.royskatesComOverlay) this.royskatesComOverlay.setVisible(false); 
+        if (this.highScoreDog) this.highScoreDog.setVisible(false); 
+        if (this.highScoreMedal) this.highScoreMedal.setVisible(false);
+        if (this.newHighScoreText) this.newHighScoreText.setVisible(false); // Hide new high score text
 
         // Show confirmation screen background (using title.png)
         this.confirmationBg = this.add.image(0, 0, 'title_image').setOrigin(0,0).setDepth(19); // High depth
@@ -2171,7 +2207,21 @@ class GameOverScene extends Phaser.Scene {
         this.quitButton.setVisible(true);
         this.resetDot.setVisible(true);
         if (this.muteButton) this.muteButton.setVisible(true); 
-        if (this.royskatesComOverlay) this.royskatesComOverlay.setVisible(true); // Restore royskates overlay
+        if (this.royskatesComOverlay) this.royskatesComOverlay.setVisible(true); 
+
+        if (didReset) { // If high score was reset, new high score achievement is no longer "new"
+            this.newHighScoreAchieved = false; 
+            if (this.highScoreDog) { this.highScoreDog.destroy(); this.highScoreDog = null; }
+            if (this.highScoreMedal) { this.highScoreMedal.destroy(); this.highScoreMedal = null; }
+            if (this.newHighScoreText) { this.newHighScoreText.destroy(); this.newHighScoreText = null; }
+        } else {
+            // If not reset, and it was a new high score, ensure celebration elements are visible
+            if (this.newHighScoreAchieved) {
+                if (this.highScoreDog) this.highScoreDog.setVisible(true);
+                if (this.highScoreMedal) this.highScoreMedal.setVisible(true);
+                if (this.newHighScoreText) this.newHighScoreText.setVisible(true);
+            }
+        }
 
         if (didReset) {
             const resetConfirmText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 80, 'High Score Reset!', {
