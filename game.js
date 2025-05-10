@@ -1709,7 +1709,8 @@ class GameOverScene extends Phaser.Scene {
         this.copyrightLinkText = null;
         this.copyrightSuffixText = null;
         this.muteButton = null; // Mute button
-        this.royskatesComOverlay = null; // For the new overlay
+        this.royskatesComOverlay = null; // For the new overlay on the main game over screen
+        this.quitRoyskatesOverlay = null; // For the overlay on the "Later Blader" quit screen
     }
 
     preload() {
@@ -1848,6 +1849,23 @@ class GameOverScene extends Phaser.Scene {
                 .setOrigin(0.5)
                 .setScale(0.01)
                 .setAngle(0);
+            
+            // Add royskates.com overlay to the quit screen
+            const quitOverlayPadding = 5;
+            if (this.quitRoyskatesOverlay) this.quitRoyskatesOverlay.destroy(); // Clean up if somehow exists
+            this.quitRoyskatesOverlay = this.add.sprite(
+                quitOverlayPadding,
+                GAME_HEIGHT - quitOverlayPadding,
+                'royskates_com_graphic'
+            )
+            .setOrigin(0, 1) // Anchor bottom-left
+            .setScale(0.75)
+            .setDepth(101) // Ensure it's on top of the Later Blader image
+            .setInteractive({ useHandCursor: true });
+
+            this.quitRoyskatesOverlay.on('pointerdown', () => {
+                window.open('https://royskates.com', '_blank');
+            });
 
             this.tweens.add({
                 targets: this.laterBladerImage,
@@ -1858,6 +1876,10 @@ class GameOverScene extends Phaser.Scene {
                 onComplete: () => {
                     console.log("Later Blader animation complete.");
                     this.time.delayedCall(2000, () => {
+                        if (this.quitRoyskatesOverlay) {
+                            this.quitRoyskatesOverlay.destroy();
+                            this.quitRoyskatesOverlay = null;
+                        }
                         this.scene.start('StartScene');
                     }, [], this);
                 }
