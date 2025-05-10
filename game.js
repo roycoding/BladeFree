@@ -2046,6 +2046,15 @@ class GameOverScene extends Phaser.Scene {
                 .setScale(2) // Make it a bit larger
                 .setDepth(5); // Ensure visible
 
+            // Add spinning animation to the dog
+            this.tweens.add({
+                targets: this.highScoreDog,
+                angle: 360,
+                duration: 2000, // Time for one full spin
+                repeat: -1, // Loop indefinitely
+                ease: 'Linear'
+            });
+
             // Medal on the right, centered above the Quit button
             // Assuming Quit button's X is GAME_WIDTH - buttonPadding and origin is 1 for X
             const medalX = this.quitButton.x - (this.quitButton.displayWidth / 2);
@@ -2053,6 +2062,17 @@ class GameOverScene extends Phaser.Scene {
                 .setOrigin(0.5, 0.5)
                 .setScale(2.5) // Make it a bit larger
                 .setDepth(5); // Ensure visible
+
+            // Add pulsing animation to the medal
+            this.tweens.add({
+                targets: this.highScoreMedal,
+                scaleX: 2.8, // Scale up slightly more
+                scaleY: 2.8,
+                duration: 800, // Duration of one pulse
+                ease: 'Sine.easeInOut',
+                yoyo: true, // Reverse the animation
+                repeat: -1 // Loop indefinitely
+            });
             
             // Optional: Add a "NEW HIGH SCORE!" text if not already clear
             if (this.newHighScoreText) this.newHighScoreText.destroy(); // Clear previous if any
