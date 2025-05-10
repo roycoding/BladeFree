@@ -32,6 +32,7 @@ const MIN_OBSTACLE_SPAWN_DELAY = 500; // Minimum spawn delay in ms
 class StartScene extends Phaser.Scene {
     constructor() {
         super('StartScene');
+        this.muteButton = null;
     }
 
     preload() {
@@ -88,6 +89,34 @@ class StartScene extends Phaser.Scene {
             strokeThickness: 5
         }).setOrigin(0.5);
 
+        // Mute Button
+        const muteButtonPadding = 20;
+        const initialMuteText = this.sound.mute ? 'Unmute' : 'Mute';
+        this.muteButton = this.add.text(
+            GAME_WIDTH - muteButtonPadding, 
+            GAME_HEIGHT - muteButtonPadding, 
+            initialMuteText, 
+            { 
+                fontSize: '18px', 
+                fill: '#fff', 
+                fontFamily: 'Arial',
+                backgroundColor: '#00000080', // Semi-transparent black background
+                padding: { x: 8, y: 4 }
+            }
+        )
+        .setOrigin(1, 1) // Anchor to bottom-right
+        .setDepth(100)   // Ensure it's on top
+        .setInteractive({ useHandCursor: true });
+
+        this.muteButton.on('pointerdown', () => {
+            this.sound.mute = !this.sound.mute;
+            this.muteButton.setText(this.sound.mute ? 'Unmute' : 'Mute');
+            // Optionally play a UI sound, but consider it might be muted
+            if (!this.sound.mute) {
+                this.sound.play('ui_confirm', { volume: 0.3 }); // Play softly if unmuting
+            }
+        });
+
         console.log("StartScene created");
     }
 }
@@ -142,6 +171,7 @@ class GameplayScene extends Phaser.Scene {
         this.sceneRunningTime = 0; // For accurate scene-specific timer display
         this.bladeFreeOverlay = null; // Static BladeFree overlay at the top
         this.royskatesOverlay = null; // Static Royskates overlay at the bottom
+        this.muteButton = null;       // Mute button
         
         this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -401,6 +431,12 @@ class GameplayScene extends Phaser.Scene {
             this.rightPromptArrow = null;
         }
 
+        // Reset mute button if it exists
+        if (this.muteButton) {
+            this.muteButton.destroy();
+            this.muteButton = null;
+        }
+
         // Reset elapsed time text and scene running time
         if (this.elapsedTimeText) {
             this.elapsedTimeText.setText('Time: 00:00');
@@ -580,6 +616,33 @@ class GameplayScene extends Phaser.Scene {
                 this.hideMobilePrompts();
             }, [], this);
         }
+
+        // Mute Button for GameplayScene
+        const muteButtonPaddingGameplay = 20;
+        const initialMuteTextGameplay = this.sound.mute ? 'Unmute' : 'Mute';
+        this.muteButton = this.add.text(
+            GAME_WIDTH - muteButtonPaddingGameplay, 
+            GAME_HEIGHT - muteButtonPaddingGameplay, 
+            initialMuteTextGameplay, 
+            { 
+                fontSize: '18px', 
+                fill: '#fff', 
+                fontFamily: 'Arial',
+                backgroundColor: '#00000080',
+                padding: { x: 8, y: 4 }
+            }
+        )
+        .setOrigin(1, 1)
+        .setDepth(100)
+        .setInteractive({ useHandCursor: true });
+
+        this.muteButton.on('pointerdown', () => {
+            this.sound.mute = !this.sound.mute;
+            this.muteButton.setText(this.sound.mute ? 'Unmute' : 'Mute');
+            if (!this.sound.mute) {
+                this.sound.play('ui_confirm', { volume: 0.3 });
+            }
+        });
 
 
         console.log("GameplayScene create/reset finished");
@@ -1599,6 +1662,7 @@ class GameOverScene extends Phaser.Scene {
         this.copyrightPrefixText = null;
         this.copyrightLinkText = null;
         this.copyrightSuffixText = null;
+        this.muteButton = null; // Mute button
     }
 
     preload() {
@@ -1716,8 +1780,10 @@ class GameOverScene extends Phaser.Scene {
             this.cameras.main.setBackgroundColor('#000000');
             this.scoreTextDisplay.setVisible(false);
             this.highScoreTextDisplay.setVisible(false);
-            this.restartButton.setVisible(false); // Hide button
-            this.quitButton.setVisible(false); // Hide button
+            this.restartButton.setVisible(false); 
+            this.quitButton.setVisible(false); 
+            if (this.muteButton) this.muteButton.setVisible(false); // Hide mute button during quit sequence
+            if (this.resetDot) this.resetDot.setVisible(false); // Also hide reset dot
 
             this.laterBladerImage = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'later_blader_img')
                 .setOrigin(0.5)
@@ -1801,6 +1867,36 @@ class GameOverScene extends Phaser.Scene {
             if (this.isShowingResetConfirmation) return;
             this.showResetConfirmation();
         });
+
+        // Mute Button for GameOverScene
+        const muteButtonPaddingGameOver = 20;
+        const initialMuteTextGameOver = this.sound.mute ? 'Unmute' : 'Mute';
+        this.muteButton = this.add.text(
+            GAME_WIDTH - muteButtonPaddingGameOver, 
+            GAME_HEIGHT - muteButtonPaddingGameOver, 
+            initialMuteTextGameOver, 
+            { 
+                fontSize: '18px', 
+                fill: '#fff', 
+                fontFamily: 'Arial',
+                backgroundColor: '#00000080',
+                padding: { x: 8, y: 4 }
+            }
+        )
+        .setOrigin(1, 1)
+        .setDepth(100) // Ensure it's on top, even above confirmation screen elements if needed
+        .setInteractive({ useHandCursor: true });
+
+        this.muteButton.on('pointerdown', () => {
+            this.sound.mute = !this.sound.mute;
+            this.muteButton.setText(this.sound.mute ? 'Unmute' : 'Mute');
+            if (!this.sound.mute) {
+                this.sound.play('ui_confirm', { volume: 0.3 });
+            }
+        });
+        // Ensure mute button is hidden during "Later Blader" sequence
+        // and restored if that sequence is interrupted or not active.
+        // This will be handled by the quit logic that hides other buttons.
 
 
         console.log("GameOverScene created");
@@ -1947,6 +2043,7 @@ class GameOverScene extends Phaser.Scene {
         this.restartButton.setVisible(true);
         this.quitButton.setVisible(true);
         this.resetDot.setVisible(true);
+        if (this.muteButton) this.muteButton.setVisible(true); // Restore mute button
 
         if (didReset) {
             const resetConfirmText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 80, 'High Score Reset!', {
