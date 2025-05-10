@@ -89,8 +89,6 @@ class StartScene extends Phaser.Scene {
             strokeThickness: 5
         }).setOrigin(0.5);
 
-        }).setOrigin(0.5);
-
         // Mute Button (Sprite)
         const muteButtonPadding = 5; // Small padding from the edge
         const initialMuteFrame = this.sound.mute ? 39 : 38; // 39 for muted, 38 for playing
@@ -610,9 +608,6 @@ class GameplayScene extends Phaser.Scene {
             // Fade out prompts after a delay or on first move
             this.time.delayedCall(6000, () => { // Increased duration to 6 seconds
                 this.hideMobilePrompts();
-            }, [], this);
-        }
-
             }, [], this);
         }
 
