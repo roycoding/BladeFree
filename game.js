@@ -33,7 +33,9 @@ class StartScene extends Phaser.Scene {
     constructor() {
         super('StartScene');
         this.muteButton = null;
-        this.royskatesComOverlay = null; // Add property for the new overlay
+        this.royskatesComOverlay = null; 
+        this.leftStartSkater = null;   // For the left skater graphic
+        this.rightStartSkater = null;  // For the right skater graphic
     }
 
     preload() {
@@ -43,6 +45,8 @@ class StartScene extends Phaser.Scene {
         this.load.audio('start_music', 'assets/audio/start_music.mp3');
         // Load title image
         this.load.image('title_image', 'assets/graphics/title.png');
+        // Load start skater graphic
+        this.load.image('start_skater_graphic', 'assets/graphics/start_skater.png');
         // Load royskates.com overlay for StartScene
         this.load.image('royskates_com_graphic', 'assets/graphics/royskates_com.png');
         // Load skater spritesheet for the play button
@@ -91,6 +95,20 @@ class StartScene extends Phaser.Scene {
             stroke: '#000000', // Black stroke
             strokeThickness: 5
         }).setOrigin(0.5);
+
+        // Add Start Skater Graphics
+        const skaterGraphicY = GAME_HEIGHT * 0.45; // Adjust Y position as needed
+        const skaterGraphicPadding = 50; // Padding from side edges
+
+        this.leftStartSkater = this.add.image(skaterGraphicPadding, skaterGraphicY, 'start_skater_graphic')
+            .setOrigin(0, 0.5) // Anchor left-middle
+            .setFlipX(true)    // Flip horizontally
+            .setDepth(1);      // Ensure it's above the title background
+
+        this.rightStartSkater = this.add.image(GAME_WIDTH - skaterGraphicPadding, skaterGraphicY, 'start_skater_graphic')
+            .setOrigin(1, 0.5) // Anchor right-middle
+            .setDepth(1);      // Ensure it's above the title background
+
 
         // Mute Button (Sprite)
         const muteButtonPadding = 5; // Small padding from the edge
