@@ -122,6 +122,7 @@ class StartScene extends Phaser.Scene {
             'royskates_com_graphic'
         )
         .setOrigin(0, 1) // Anchor to bottom-left
+        .setScale(0.75)  // Make it smaller
         .setDepth(99)   // Ensure it's on top
         .setInteractive({ useHandCursor: true });
 
@@ -1708,6 +1709,7 @@ class GameOverScene extends Phaser.Scene {
         this.copyrightLinkText = null;
         this.copyrightSuffixText = null;
         this.muteButton = null; // Mute button
+        this.royskatesComOverlay = null; // For the new overlay
     }
 
     preload() {
@@ -1723,6 +1725,8 @@ class GameOverScene extends Phaser.Scene {
         this.load.audio('spray', 'assets/audio/spray.mp3');
         // Load "Later Blader" image
         this.load.image('later_blader_img', 'assets/graphics/later_blader.png');
+        // Load royskates.com overlay for GameOverScene
+        this.load.image('royskates_com_graphic', 'assets/graphics/royskates_com.png');
         // Game over sound is loaded by GameplayScene before transition
     }
 
@@ -1836,8 +1840,9 @@ class GameOverScene extends Phaser.Scene {
             this.highScoreTextDisplay.setVisible(false);
             this.restartButton.setVisible(false); 
             this.quitButton.setVisible(false); 
-            if (this.muteButton) this.muteButton.setVisible(false); // Hide mute button during quit sequence
-            if (this.resetDot) this.resetDot.setVisible(false); // Also hide reset dot
+            if (this.muteButton) this.muteButton.setVisible(false); 
+            if (this.resetDot) this.resetDot.setVisible(false); 
+            if (this.royskatesComOverlay) this.royskatesComOverlay.setVisible(false); // Hide royskates overlay
 
             this.laterBladerImage = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'later_blader_img')
                 .setOrigin(0.5)
@@ -1951,6 +1956,22 @@ class GameOverScene extends Phaser.Scene {
         // and restored if that sequence is interrupted or not active.
         // This will be handled by the quit logic that hides other buttons.
 
+        // Royskates.com Overlay (Bottom Center)
+        const royskatesOverlayPaddingGameOver = 10; // Padding from the bottom
+        this.royskatesComOverlay = this.add.sprite(
+            GAME_WIDTH / 2, 
+            GAME_HEIGHT - royskatesOverlayPaddingGameOver, 
+            'royskates_com_graphic'
+        )
+        .setOrigin(0.5, 1) // Anchor to bottom-center
+        .setScale(0.75)    // Make it smaller
+        .setDepth(99)      // Ensure it's on top
+        .setInteractive({ useHandCursor: true });
+
+        this.royskatesComOverlay.on('pointerdown', () => {
+            window.open('https://royskates.com', '_blank');
+        });
+
 
         console.log("GameOverScene created");
     }
@@ -1964,7 +1985,8 @@ class GameOverScene extends Phaser.Scene {
         this.highScoreTextDisplay.setVisible(false);
         this.restartButton.setVisible(false);
         this.quitButton.setVisible(false);
-        this.resetDot.setVisible(false); // Hide the dot itself
+        this.resetDot.setVisible(false); 
+        if (this.royskatesComOverlay) this.royskatesComOverlay.setVisible(false); // Hide royskates overlay
 
         // Show confirmation screen background (using title.png)
         this.confirmationBg = this.add.image(0, 0, 'title_image').setOrigin(0,0).setDepth(19); // High depth
@@ -2096,7 +2118,8 @@ class GameOverScene extends Phaser.Scene {
         this.restartButton.setVisible(true);
         this.quitButton.setVisible(true);
         this.resetDot.setVisible(true);
-        if (this.muteButton) this.muteButton.setVisible(true); // Restore mute button
+        if (this.muteButton) this.muteButton.setVisible(true); 
+        if (this.royskatesComOverlay) this.royskatesComOverlay.setVisible(true); // Restore royskates overlay
 
         if (didReset) {
             const resetConfirmText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 80, 'High Score Reset!', {
