@@ -167,13 +167,14 @@ class GameplayScene extends Phaser.Scene {
         this.royskatesOverlay = null; // Static Royskates overlay at the bottom
         this.muteButton = null;       // Mute button
         
-        this.inventoryItems = [24, 25, 26, 28, 29, 30, 31]; // Frames for inventory items (excluding helmet)
+        this.inventoryItems = [23, 24, 25, 26, 28, 29, 30, 31]; // Added 23 (Skate T-shirt)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
         this.inventoryUIIcons = {}; // To store references to UI sprites for inventory items
         // this.isGameOver = false; // No longer needed, scene state handles this
 
         // Mapping for collectible items
         this.collectibleData = {
+            23: { name: 'Skate T-shirt', points: 25 },
             24: { name: 'Skates', points: 25 },
             25: { name: 'Wheels', points: 25 },
             26: { name: 'Wax', points: 25 },
@@ -818,23 +819,39 @@ class GameplayScene extends Phaser.Scene {
             if (spawnType === 'collectible_helmet') {
                 randomFrame = 27; // Force helmet frame
             } else {
-                // Base collectible frames (excluding helmet)
-                let collectibleFrames = [24, 25, 26, 28, 29, 30, 31];
+                // Use inventoryItems as the base for collectible frames (excluding helmet, which is frame 27)
+                let collectibleFrames = [...this.inventoryItems]; // Create a copy to modify
+
                 // If player doesn't have a helmet, add helmet (frame 27) to potential spawns
                 if (!this.hasHelmet) {
-                    // Add helmet to the pool with a certain chance, or always if you prefer
-                    // For example, 20% chance to be a helmet if a collectible spawns and player has no helmet
+                    // Add helmet to the pool with a certain chance
+                    // e.g., 20% chance for the next collectible to be a helmet if player doesn't have one
                     if (Phaser.Math.Between(1, 5) === 1) { 
-                        collectibleFrames = [27]; // Make it a helmet
-                    } else {
-                         // Or, to just add it to the general pool:
-                         // collectibleFrames.push(27);
+                        // Temporarily make the helmet the only spawnable collectible for this instance
+                        // This increases its chance significantly when it's chosen.
+                        // Alternatively, you could add it to the pool: collectibleFrames.push(27);
+                        // For now, let's make it a high chance if this path is taken.
+                        collectibleFrames = [27]; 
                     }
+                    // If you wanted to just add it to the pool instead of forcing it:
+                    // else if (!collectibleFrames.includes(27)) { // Ensure not to add duplicates if it was already there
+                    //     collectibleFrames.push(27);
+                    // }
+                } else {
+                    // If player has a helmet, ensure frame 27 is not in the spawn list for regular collectibles
+                    collectibleFrames = collectibleFrames.filter(frame => frame !== 27);
                 }
-                // If collectibleFrames is empty (e.g. player has helmet and only helmet was forced by chance),
-                // default to a non-helmet item or handle as needed. For now, let's ensure it's not empty.
+
+                // If collectibleFrames somehow ended up empty (e.g., all inventory items collected and helmet logic removed all options)
+                // default to a non-helmet item or handle as needed.
+                // This ensures we always have something to spawn if 'collectible' type was chosen.
                 if (collectibleFrames.length === 0) {
-                    collectibleFrames = [24, 25, 26, 28, 29, 30, 31]; // Fallback to non-helmet items
+                    // Fallback to the original list of inventory items if all else fails
+                    // This case should be rare given the logic.
+                    collectibleFrames = [...this.inventoryItems].filter(frame => frame !== 27); 
+                    if (collectibleFrames.length === 0) { // If even that is empty (e.g. only helmet was in inventoryItems)
+                        collectibleFrames = [24]; // Absolute fallback to a default item
+                    }
                 }
                 randomFrame = Phaser.Utils.Array.GetRandom(collectibleFrames);
             }
