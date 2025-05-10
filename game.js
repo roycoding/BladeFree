@@ -122,7 +122,12 @@ class StartScene extends Phaser.Scene {
             'royskates_com_graphic'
         )
         .setOrigin(0, 1) // Anchor to bottom-left
-        .setDepth(99);   // Ensure it's on top
+        .setDepth(99)   // Ensure it's on top
+        .setInteractive({ useHandCursor: true });
+
+        this.royskatesComOverlay.on('pointerdown', () => {
+            window.open('https://royskates.com', '_blank');
+        });
 
         console.log("StartScene created");
     }
@@ -476,7 +481,12 @@ class GameplayScene extends Phaser.Scene {
             'royskates_com_graphic'
         )
             .setOrigin(0, 1) // Anchor bottom-left
-            .setDepth(99);      // Ensure it's on top
+            .setDepth(99)      // Ensure it's on top
+            .setInteractive({ useHandCursor: true });
+        
+        this.royskatesOverlay.on('pointerdown', () => {
+            window.open('https://royskates.com', '_blank');
+        });
         
         // Explicitly use this.sys.time.now to ensure we're getting the most direct time reference
         this.gameStartTime = this.sys.time.now; // For difficulty scaling logic
