@@ -2036,17 +2036,20 @@ class GameOverScene extends Phaser.Scene {
         // Display High Score Celebration Sprites if new high score
         if (this.newHighScoreAchieved) {
             // Position for Dog and Medal - lower on the screen
-            const celebrationY = GAME_HEIGHT * 0.70; // Lowered Y position
-            const sidePadding = 150; // Adjusted padding for new position
+            const celebrationY = GAME_HEIGHT * 0.70; // Y position for celebration sprites
 
-            // Dog on the left
-            this.highScoreDog = this.add.sprite(sidePadding, celebrationY, 'skater', 34) // Frame 34 for dog
+            // Dog on the left, centered above the Restart button
+            // Assuming Restart button's X is buttonPadding and origin is 0 for X
+            const dogX = this.restartButton.x + (this.restartButton.displayWidth / 2);
+            this.highScoreDog = this.add.sprite(dogX, celebrationY, 'skater', 34) // Frame 34 for dog
                 .setOrigin(0.5, 0.5)
                 .setScale(2) // Make it a bit larger
                 .setDepth(5); // Ensure visible
 
-            // Medal on the right
-            this.highScoreMedal = this.add.sprite(GAME_WIDTH - sidePadding, celebrationY, 'skater', 15) // Frame 15 for medal
+            // Medal on the right, centered above the Quit button
+            // Assuming Quit button's X is GAME_WIDTH - buttonPadding and origin is 1 for X
+            const medalX = this.quitButton.x - (this.quitButton.displayWidth / 2);
+            this.highScoreMedal = this.add.sprite(medalX, celebrationY, 'skater', 15) // Frame 15 for medal
                 .setOrigin(0.5, 0.5)
                 .setScale(2.5) // Make it a bit larger
                 .setDepth(5); // Ensure visible
