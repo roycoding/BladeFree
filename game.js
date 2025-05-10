@@ -97,7 +97,7 @@ class StartScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Add Start Skater Graphics
-        const skaterGraphicY = GAME_HEIGHT * 0.55; // Moved lower to avoid title overlap
+        const skaterGraphicY = 430; // Adjusted Y position: GAME_HEIGHT * 0.55 + 100
         const skaterGraphicPadding = 50; // Padding from side edges
 
         this.leftStartSkater = this.add.image(skaterGraphicPadding, skaterGraphicY, 'start_skater_graphic')
