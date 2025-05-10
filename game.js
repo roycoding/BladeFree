@@ -114,15 +114,15 @@ class StartScene extends Phaser.Scene {
             }
         });
 
-        // Royskates.com Overlay (Lower Right)
+        // Royskates.com Overlay (Lower Left)
         const royskatesOverlayPadding = 5; // Small padding from the edge
         this.royskatesComOverlay = this.add.sprite(
-            GAME_WIDTH - royskatesOverlayPadding, 
-            GAME_HEIGHT - royskatesOverlayPadding - this.muteButton.displayHeight - 5, // Position above mute button
+            royskatesOverlayPadding, 
+            GAME_HEIGHT - royskatesOverlayPadding, 
             'royskates_com_graphic'
         )
-        .setOrigin(1, 1) // Anchor to bottom-right
-        .setDepth(99);   // Ensure it's on top but potentially below mute button if overlapping
+        .setOrigin(0, 1) // Anchor to bottom-left
+        .setDepth(99);   // Ensure it's on top
 
         console.log("StartScene created");
     }
@@ -468,16 +468,15 @@ class GameplayScene extends Phaser.Scene {
             .setOrigin(0.5, 0) // Anchor top-center
             .setDepth(2);      // Depth to be above background, below main UI
 
-        // Static Royskates Overlay (Bottom Center)
-        const bottomOverlayMargin = 10; // Padding from the bottom edge
-        const royskatesOverlayPaddingGameplay = 5; // Padding from right edge
+        // Static Royskates Overlay (Lower Left)
+        const royskatesOverlayPaddingGameplay = 5; // Padding from edges
         this.royskatesOverlay = this.add.sprite(
-            GAME_WIDTH - royskatesOverlayPaddingGameplay, 
-            GAME_HEIGHT - bottomOverlayMargin - this.muteButton.displayHeight - 5, // Position above mute button
+            royskatesOverlayPaddingGameplay, 
+            GAME_HEIGHT - royskatesOverlayPaddingGameplay, 
             'royskates_com_graphic'
         )
-            .setOrigin(1, 1) // Anchor bottom-right
-            .setDepth(99);      // Depth to be above background, below main UI but potentially below mute button
+            .setOrigin(0, 1) // Anchor bottom-left
+            .setDepth(99);      // Ensure it's on top
         
         // Explicitly use this.sys.time.now to ensure we're getting the most direct time reference
         this.gameStartTime = this.sys.time.now; // For difficulty scaling logic
