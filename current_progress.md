@@ -41,6 +41,23 @@ Create a web browser-based game called "BladeFree," inspired by SkiFree's freest
     *   **Mobile Controls:** Basic touch input (tap left/right half) implemented for player movement.
     *   **Graphics & Animation (Started):** Player placeholder replaced with a sprite sheet (`assets/graphics/skater.png`, 32x48 frames). Animations defined in `GameplayScene.create` for `skate-cycle`, `jump-airborne`, `jump-landing`, `grind`, and `fall`. Player animation state machine implemented in `update`.
 
+## Recent Changes (2025-05-10)
+
+*   Added "Skate T-shirt" (frame 23) as a new collectible and inventory item.
+*   Implemented "Switch Royale" grind variant with random player flipX.
+*   Added mute button (sprite-based) to Start, Gameplay, and GameOver scenes.
+*   Added game version and copyright info (with clickable link) to high score reset screen.
+*   Updated `index.html` with `favicon.ico` link and `theme-color` meta tag.
+*   Added audio credits to `README.md`.
+*   Updated `PLAN.md` and `release_notes.md` for versions up to 0.2.3.
+*   Made BladeFree/Royskates overlays static, adjusted timer position.
+*   Improved inventory layout (two rows) and helmet icon visibility.
+*   **Jump Off Rail Early (Reverted):**
+    *   An attempt was made to allow players to jump off rails early using horizontal input.
+    *   This involved adding a cooldown to prevent immediate re-grinding of the same rail and setting the player to an airborne state upon leaving the rail.
+    *   **Issues Encountered:** The implementation led to several unwanted side effects, including the player being immediately pulled back onto the rail if moving towards it, which could trigger incorrect transfer points. Transfers between rails also became unpredictable.
+    *   **Outcome:** This feature has been reverted for now due to these complexities and will be revisited later. The game currently uses the previous grind logic where grinds end primarily by the player no longer overlapping the rail or by reaching its end.
+
 ## Recent Changes (2025-05-05)
 
 *   Replaced yellow circle collectible placeholders with frames 24-31 from `skater.png`.
