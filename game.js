@@ -84,6 +84,17 @@ class StartScene extends Phaser.Scene {
 
         playButton.on('pointerdown', startGame);
 
+        // Add pulsing animation to the play button
+        this.tweens.add({
+            targets: playButton,
+            scaleX: 2.2, // Scale up slightly
+            scaleY: 2.2,
+            duration: 700, // Duration of one pulse (in ms)
+            ease: 'Sine.easeInOut', // Smooth easing
+            yoyo: true, // Reverse the animation back to original scale
+            repeat: -1 // Loop indefinitely
+        });
+
         // Also allow ANY key press to start
         this.input.keyboard.once('keydown', startGame);
 
