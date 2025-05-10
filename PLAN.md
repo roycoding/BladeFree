@@ -185,7 +185,7 @@
         - [x] If `hasHelmet`, set `hasHelmet = false`, update UI, play "helmet break" sound, prevent game over.
         - [x] Animate helmet flying off player on collision. *(Helmet icon hidden, new sprite falls and spins off screen, message displayed)*
         - [x] If `!hasHelmet`, proceed with game over.
-    - [ ] `GameplayScene`: `preload` "helmet break" sound. *(Used 'collide' as placeholder, needs dedicated sound)*
+    - [x] `GameplayScene`: `preload` "helmet break" sound. *(Current 'collide' sound deemed sufficient for helmet break)*
 
 ## Phase 5: Audio & Polish
 
@@ -201,9 +201,9 @@
     - [x] `GameOverScene`: Ensure music stops when transitioning to `GameplayScene`.
     - [x] `GameplayScene`: Ensure its music stops when transitioning to `GameOverScene` and `StartScene` music stops if transitioning from there. *(Gameplay to GameOver was already handled; StartScene transition now also handles its music)*.
 - [ ] **Audio Controls:**
-    - [ ] `index.html`: Add mute button element.
-    - [ ] `game.js`/UI: Implement `toggleMute()` function (`this.sound.mute`).
-    - [ ] `game.js`/UI: Update mute button appearance based on state.
+    - [ ] `index.html`: Add mute button element. *(This refers to HTML-based controls)*
+    - [x] `game.js`/UI: Implement `toggleMute()` function (`this.sound.mute`). *(In-game Phaser button implemented)*
+    - [x] `game.js`/UI: Update mute button appearance based on state. *(In-game Phaser button implemented)*
     - [ ] `game.js`/UI: Persist mute state in `localStorage`.
     - [ ] `index.html`: Add volume slider element (range input).
     - [ ] `game.js`/UI: Implement `setVolume(value)` function (`this.sound.volume`).
@@ -213,11 +213,11 @@
     - [x] Replace ramp placeholder with final graphics.
         - [x] `preload` new ramp asset(s). (`ramp.png` added)
         - [x] Update `spawnObstacle` to use new ramp graphics.
-        - [ ] Adjust physics body if needed. *(May need to verify after visual check, sprite size is now 80x40)*
+        - [x] Adjust physics body if needed. *(Dynamic sizing `spawnedItem.body.setSize(spawnedItem.width, spawnedItem.height)` considered sufficient)*
     - [x] Replace rail/ledge placeholder with final graphics.
         - [x] `preload` new rail/ledge asset(s). (`rail1.png` added)
         - [x] Update `spawnObstacle` to use new rail/ledge graphics.
-        - [ ] Adjust physics body if needed. *(May need to verify after visual check)*
+        - [x] Adjust physics body if needed. *(Dynamic sizing `spawnedItem.body.setSize(spawnedItem.width, spawnedItem.height)` considered sufficient)*
         - [ ] Consider variable lengths for future.
     - [x] Create sprite sheets for player animations (skating, jumping, grinding, falling).
     - [x] Use Phaser's animation manager (`this.anims.create`) to define animations.
@@ -241,8 +241,8 @@
     - [ ] Identify and fix bugs.
     - [ ] Optimize performance if needed.
 - [ ] **Difficulty Scaling:**
-    - [ ] `GameplayScene`: Add `timeSurvived` counter.
-    - [ ] `GameplayScene`: `update`: Increment `timeSurvived`.
+    - [x] `GameplayScene`: Add `timeSurvived` counter. *(Fulfilled by `sceneRunningTime`)*
+    - [x] `GameplayScene`: `update`: Increment `timeSurvived`. *(Fulfilled by `sceneRunningTime += delta`)*
     - [ ] `GameplayScene`: `update`: Gradually increase `SCROLL_SPEED` based on `timeSurvived`.
         - [ ] Define a base scroll speed and a maximum scroll speed.
         - [ ] Define how quickly the speed increases (e.g., per second or per score milestone).
