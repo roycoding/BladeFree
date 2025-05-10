@@ -1368,7 +1368,12 @@ class GameplayScene extends Phaser.Scene {
                 this.grindNameText.destroy();
                 this.grindNameText = null; // Explicitly nullify before recreating
             }
-            this.grindNameText = this.add.text(player.x, player.y - 65, 'Royale Grind', { // Position above grind points display
+
+            // Randomly flip player for grind direction and determine trick name
+            player.setFlipX(Phaser.Math.Between(0, 1) === 1);
+            const grindDisplayName = player.flipX ? "Switch Royale" : "Royale Grind";
+
+            this.grindNameText = this.add.text(player.x, player.y - 65, grindDisplayName, { // Position above grind points display
                 fontSize: '20px', fill: '#00ff00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 3
             }).setOrigin(0.5).setDepth(2).setVisible(true);
 
@@ -1408,6 +1413,11 @@ class GameplayScene extends Phaser.Scene {
 
             // Optional: Reset player tint if it was changed
             // player.clearTint();
+            
+            // Reset player flip state after grind
+            if (this.player) { // Ensure player exists
+                this.player.setFlipX(false);
+            }
             // Player will naturally fall due to gravity pull logic in update if they jumped off
         }
     }
