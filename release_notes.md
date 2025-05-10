@@ -1,6 +1,16 @@
 # BladeFree - Release Notes
 
-## Version 0.2.3 (Current)
+## Version 0.2.4 (Current)
+
+**Release Date:** 2025-05-10
+
+This release focuses on stability by reverting a recently attempted feature that introduced complexities.
+
+### Changes:
+*   **Reverted "Jump Off Rail Early" Feature:** The functionality allowing players to jump off rails early using horizontal input, along with its associated grind cooldown logic, has been reverted. This decision was made due to implementation complexities and unwanted side effects, such as issues with immediate re-grinding and unpredictable transfer behavior. The game now uses the previous, more stable grind mechanism where grinds end primarily when the player no longer overlaps the rail or reaches its end.
+*   Documentation (`current_progress.md`) has been updated to reflect this reversion.
+
+## Version 0.2.3
 
 **Release Date:** 2025-05-09
 
