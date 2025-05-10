@@ -53,11 +53,11 @@
     - [x] `create`: Position high score text.
     - [x] `handleCollision`: Compare final score with high score.
     - [x] `handleCollision`: If higher, update high score variable and save to `localStorage`.
-    - [ ] `GameOverScene`: Implement new high score celebration.
-        - [ ] Display "New High Score!" message prominently.
-        - [ ] Show a graphic of the inline skater with a medal or trophy.
-        - [ ] Play a special sound effect.
-        - [ ] `preload` new graphic assets for medal/trophy.
+    - [x] `GameOverScene`: Implement new high score celebration.
+        - [x] Display "New High Score!" message prominently.
+        - [x] Show a graphic of the inline skater with a medal or trophy. (Dog and Medal sprites added and animated)
+        - [ ] Play a special sound effect. *(No specific new sound effect added for this yet)*
+        - [x] `preload` new graphic assets for medal/trophy. (Frames 15 and 34 from skater.png used)
         - [ ] `preload` new sound effect.
     - [x] Add secret key combination (e.g., Shift+Delete) to reset high score in `localStorage`.
     - [x] Add mobile-friendly high score reset (e.g., tap small icon in GameOverScene, show confirmation screen).

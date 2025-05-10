@@ -1,6 +1,19 @@
 # BladeFree - Release Notes
 
-## Version 0.2.6 (Current)
+## Version 0.2.7 (Current)
+
+**Release Date:** 2025-05-10
+
+This release adds a visual celebration for achieving a new high score.
+
+### Enhancements:
+*   **New High Score Celebration:**
+    *   When a new high score is achieved, the `GameOverScene` now displays a "NEW HIGH SCORE!" message.
+    *   A spinning dog sprite (frame 34) appears on the left, centered above the "RESTART" button.
+    *   A pulsing medal sprite (frame 15) appears on the right, centered above the "QUIT" button.
+    *   Positions of these elements have been adjusted for better layout.
+
+## Version 0.2.6
 
 **Release Date:** 2025-05-10
 
