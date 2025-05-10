@@ -1,6 +1,18 @@
 # BladeFree - Release Notes
 
-## Version 0.2.5 (Current)
+## Version 0.2.6 (Current)
+
+**Release Date:** 2025-05-10
+
+This release includes visual enhancements to the Start Screen.
+
+### Enhancements:
+*   **Start Screen Visuals:**
+    *   Added new skater graphics (`assets/graphics/start_skater.png`) to the left and right sides of the `StartScene`.
+    *   Adjusted the vertical positioning of these skater graphics to prevent overlap with the main title.
+    *   Added a pulsing (scaling) animation to the "PLAY" button on the `StartScene` for better visual feedback.
+
+## Version 0.2.5
 
 **Release Date:** 2025-05-10
 

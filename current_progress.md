@@ -43,6 +43,8 @@ Create a web browser-based game called "BladeFree," inspired by SkiFree's freest
 
 ## Recent Changes (2025-05-10)
 
+*   Added new skater graphics to the left and right sides of the `StartScene` and adjusted their positioning.
+*   Added a pulsing animation to the "PLAY" button on the `StartScene`.
 *   Made the `royskates_com.png` overlay in the `StartScene` and `GameplayScene` clickable, linking to `https://royskates.com`.
 *   Added "Skate T-shirt" (frame 23) as a new collectible and inventory item.
 *   Implemented "Switch Royale" grind variant with random player flipX.
