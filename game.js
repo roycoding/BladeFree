@@ -2355,29 +2355,3 @@ const config = {
 // --- Initialize Phaser Game ---
 const game = new Phaser.Game(config);
 console.log("Phaser game initialized");
-        });
-        timeline.play(); // Play the main dog part of the animation
-    }
-}
-
-
-// --- Phaser Game Configuration ---
-const config = {
-    type: Phaser.AUTO, // Automatically choose WebGL or Canvas
-    width: GAME_WIDTH,
-    height: GAME_HEIGHT,
-    parent: 'game-container', // ID of the div to contain the game canvas
-    physics: {
-        default: 'arcade', // Use the Arcade Physics engine
-        arcade: {
-            gravity: { y: 0 }, // No global gravity for now
-            // debug: true // Set to true to see physics bodies and velocity vectors
-        }
-    },
-    // Define scenes and the order they load. First scene is the starting one.
-    scene: [StartScene, GameplayScene, GameOverScene]
-};
-
-// --- Initialize Phaser Game ---
-const game = new Phaser.Game(config);
-console.log("Phaser game initialized");
