@@ -43,6 +43,8 @@ Create a web browser-based game called "BladeFree," inspired by SkiFree's freest
 
 ## Recent Changes (2025-05-10)
 
+*   Enhanced the new high score celebration: the animated sprite now cycles through all collectible and obstacle items, each performing a "spin, grow, then spin, shrink" sequence. The medal's pulsing animation was also made more pronounced.
+*   Adjusted the positioning of the `royskates.com` logo overlay in multiple scenes for better mobile visibility.
 *   Implemented a visual celebration for new high scores in `GameOverScene`, including a "NEW HIGH SCORE!" message, a spinning dog sprite, and a pulsing medal sprite, with adjusted positioning.
 *   Added new skater graphics to the left and right sides of the `StartScene` and adjusted their positioning.
 *   Added a pulsing animation to the "PLAY" button on the `StartScene`.

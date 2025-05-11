@@ -1,6 +1,20 @@
 # BladeFree - Release Notes
 
-## Version 0.2.7 (Current)
+## Version 0.2.8 (Current)
+
+**Release Date:** 2025-05-10
+
+This release significantly enhances the new high score celebration animation and includes minor UI adjustments.
+
+### Enhancements:
+*   **Enhanced New High Score Celebration:**
+    *   The animated sprite (previously just a dog/skate) now cycles through all collectible and obstacle items (frames 23-36).
+    *   Each item performs a "spin, grow, then spin, shrink" animation sequence.
+    *   The medal sprite's pulsing animation has been made more pronounced.
+*   **UI Adjustment:**
+    *   The `royskates.com` logo overlay in the Start, Gameplay, and "Later Blader" screens has been repositioned slightly for better visibility, especially on mobile devices.
+
+## Version 0.2.7
 
 **Release Date:** 2025-05-10
 
