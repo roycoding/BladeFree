@@ -2282,28 +2282,42 @@ class GameOverScene extends Phaser.Scene {
         const animationDuration = 1500; // Duration for spin and scale
 
         if (isDogPhase) {
-            // --- Dog Phase: Spin and Shrink ---
-            console.log("Starting Dog Phase: Spin and Shrink");
+            // --- Dog Phase: Spin, Grow, then Spin, Shrink ---
+            console.log("Starting Dog Phase: Spin, Grow, then Spin, Shrink");
             sprite.setFrame(34); // Dog frame
             sprite.setAngle(0);  // Reset angle
-            sprite.setScale(targetScale); // Ensure it's at full scale before shrinking
-            sprite.setAlpha(1); // Ensure visible
+            sprite.setScale(0);    // Start shrunk
+            sprite.setAlpha(1);  // Ensure visible as it grows
 
+            // 1. Dog Spin and Grow
             this.tweens.add({
                 targets: sprite,
                 angle: 360, // Spin
-                scaleX: 0,   // Shrink
-                scaleY: 0,
+                scaleX: targetScale, // Grow
+                scaleY: targetScale,
                 duration: animationDuration,
-                ease: 'Linear', // Consistent speed for spin and shrink
-                onComplete: () => {
+                ease: 'Linear',
+                onComplete: () => { // Dog has finished spinning and growing
                     if (sprite && sprite.active) {
-                        this.startDogSkateAnimationCycle(sprite, false); // Transition to Skate Phase
+                        // 2. Dog Spin and Shrink
+                        this.tweens.add({
+                            targets: sprite,
+                            angle: sprite.angle + 360, // Continue spinning
+                            scaleX: 0,
+                            scaleY: 0,
+                            duration: animationDuration,
+                            ease: 'Linear',
+                            onComplete: () => {
+                                if (sprite && sprite.active) {
+                                    this.startDogSkateAnimationCycle(sprite, false); // Transition to Skate Phase
+                                }
+                            }
+                        });
                     }
                 }
             });
         } else {
-            // --- Skate Phase: Spin and Grow ---
+            // --- Skate Phase: Spin, Grow, then Spin, Shrink ---
             console.log("Starting Skate Phase: Spin and Grow");
             sprite.setFrame(24); // Skate frame
             sprite.setAngle(0);  // Reset angle
