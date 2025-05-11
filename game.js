@@ -2276,72 +2276,85 @@ class GameOverScene extends Phaser.Scene {
         sprite.setAlpha(0);  // Start faded out
         sprite.setAngle(0);  // Reset angle
 
-        console.log('[GameOverScene] this.tweens:', this.tweens);
-        // console.log('[GameOverScene] this.scene.tweens:', this.scene.tweens); // Reverted this line
-        console.log('[GameOverScene] typeof this.tweens.createTimeline:', typeof this.tweens.createTimeline);
-        
-        // Use this.tweens, which is the standard way to access the scene's tween manager
-        const timeline = this.tweens.createTimeline(); 
+        console.log('[GameOverScene] Attempting to start dog/skate animation cycle.');
+        // console.log('[GameOverScene] this.tweens:', this.tweens); // Keep for now if needed
+        // console.log('[GameOverScene] typeof this.tweens.createTimeline:', typeof this.tweens.createTimeline); // Keep for now
 
-        timeline.add({ // 1. Dog Fade In
+        // --- Dog Phase ---
+        sprite.setFrame(34); // Dog frame
+        sprite.setAlpha(0);  // Start faded out
+        sprite.setAngle(0);  // Reset angle
+
+        // 1. Dog Fade In
+        this.tweens.add({
             targets: sprite,
             alpha: 1,
             duration: 500,
-            ease: 'Linear'
-        });
-
-        timeline.add({ // 2. Dog Spin
-            targets: sprite,
-            angle: 360,
-            duration: 2000,
             ease: 'Linear',
-            offset: '-=250' // Start spinning slightly before full fade-in
-        });
-        
-        timeline.add({ // 3. Dog Fade Out
-            targets: sprite,
-            alpha: 0,
-            duration: 500,
-            ease: 'Linear',
-            delay: 1500, // Hold visible for a bit after spin
             onComplete: () => {
                 if (!sprite || !sprite.active) return;
-                // --- Skate Phase ---
-                sprite.setFrame(24); // Skate frame
-                sprite.setAngle(0);  // Reset angle for skate
-
-                const skateTimeline = this.tweens.createTimeline(); // Use this.tweens
-
-                skateTimeline.add({ // 4. Skate Fade In
-                    targets: sprite,
-                    alpha: 1,
-                    duration: 500,
-                    ease: 'Linear'
-                });
-
-                skateTimeline.add({ // 5. Skate Spin
+                // 2. Dog Spin (starts after fade-in completes)
+                this.tweens.add({
                     targets: sprite,
                     angle: 360,
                     duration: 2000,
                     ease: 'Linear',
-                    offset: '-=250'
-                });
-
-                skateTimeline.add({ // 6. Skate Fade Out
-                    targets: sprite,
-                    alpha: 0,
-                    duration: 500,
-                    ease: 'Linear',
-                    delay: 1500,
                     onComplete: () => {
-                        // Loop back to start the cycle with the dog
-                        this.startDogSkateAnimationCycle(sprite);
+                        if (!sprite || !sprite.active) return;
+                        // 3. Dog Fade Out (starts after spin completes, with a delay)
+                        this.time.delayedCall(1500, () => { // Hold visible
+                            if (!sprite || !sprite.active) return;
+                            this.tweens.add({
+                                targets: sprite,
+                                alpha: 0,
+                                duration: 500,
+                                ease: 'Linear',
+                                onComplete: () => {
+                                    if (!sprite || !sprite.active) return;
+                                    // --- Skate Phase ---
+                                    sprite.setFrame(24); // Skate frame
+                                    sprite.setAngle(0);  // Reset angle for skate
+                                    // 4. Skate Fade In
+                                    this.tweens.add({
+                                        targets: sprite,
+                                        alpha: 1,
+                                        duration: 500,
+                                        ease: 'Linear',
+                                        onComplete: () => {
+                                            if (!sprite || !sprite.active) return;
+                                            // 5. Skate Spin
+                                            this.tweens.add({
+                                                targets: sprite,
+                                                angle: 360,
+                                                duration: 2000,
+                                                ease: 'Linear',
+                                                onComplete: () => {
+                                                    if (!sprite || !sprite.active) return;
+                                                    // 6. Skate Fade Out (starts after spin, with delay)
+                                                    this.time.delayedCall(1500, () => { // Hold visible
+                                                        if (!sprite || !sprite.active) return;
+                                                        this.tweens.add({
+                                                            targets: sprite,
+                                                            alpha: 0,
+                                                            duration: 500,
+                                                            ease: 'Linear',
+                                                            onComplete: () => {
+                                                                // Loop back to start the cycle with the dog
+                                                                this.startDogSkateAnimationCycle(sprite);
+                                                            }
+                                                        });
+                                                    }, [], this);
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }, [], this);
                     }
                 });
-                skateTimeline.play(); // Play the skate part of the animation
             }
         });
-        timeline.play(); // Play the main dog part of the animation
     }
 }
 
