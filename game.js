@@ -2048,11 +2048,12 @@ class GameOverScene extends Phaser.Scene {
                 .setDepth(5); // Ensure visible
             
             // Delay the start of the animation cycle slightly to ensure all systems are ready
-            this.time.delayedCall(0, () => {
-                if (this.highScoreDog && this.highScoreDog.active) { // Check if sprite still exists and is active
+            // and that 'this' context is correctly bound if startDogSkateAnimationCycle is called from the timer
+            this.time.delayedCall(10, () => { // Increased delay slightly just in case 0 is too immediate
+                if (this.highScoreDog && this.highScoreDog.active) { 
                     this.startDogSkateAnimationCycle(this.highScoreDog);
                 }
-            }, [], this);
+            }, [], this); // 'this' here correctly refers to the GameOverScene instance
 
             // Medal on the right, centered above the Quit button
             // Assuming Quit button's X is GAME_WIDTH - buttonPadding and origin is 1 for X
@@ -2276,11 +2277,11 @@ class GameOverScene extends Phaser.Scene {
         sprite.setAngle(0);  // Reset angle
 
         console.log('[GameOverScene] this.tweens:', this.tweens);
-        console.log('[GameOverScene] this.scene.tweens:', this.scene.tweens); // Log scene's tween manager
-        console.log('[GameOverScene] typeof this.scene.tweens.createTimeline:', typeof this.scene.tweens.createTimeline);
+        // console.log('[GameOverScene] this.scene.tweens:', this.scene.tweens); // Reverted this line
+        console.log('[GameOverScene] typeof this.tweens.createTimeline:', typeof this.tweens.createTimeline);
         
-        // Explicitly use this.scene.tweens to ensure we're getting the scene's tween manager
-        const timeline = this.scene.tweens.createTimeline(); 
+        // Use this.tweens, which is the standard way to access the scene's tween manager
+        const timeline = this.tweens.createTimeline(); 
 
         timeline.add({ // 1. Dog Fade In
             targets: sprite,
@@ -2309,7 +2310,7 @@ class GameOverScene extends Phaser.Scene {
                 sprite.setFrame(24); // Skate frame
                 sprite.setAngle(0);  // Reset angle for skate
 
-                const skateTimeline = this.scene.tweens.createTimeline(); // Use this.scene.tweens
+                const skateTimeline = this.tweens.createTimeline(); // Use this.tweens
 
                 skateTimeline.add({ // 4. Skate Fade In
                     targets: sprite,
