@@ -2047,7 +2047,12 @@ class GameOverScene extends Phaser.Scene {
                 .setAlpha(0) // Start invisible for fade-in
                 .setDepth(5); // Ensure visible
             
-            this.startDogSkateAnimationCycle(this.highScoreDog); // Start the animation cycle
+            // Delay the start of the animation cycle slightly to ensure all systems are ready
+            this.time.delayedCall(0, () => {
+                if (this.highScoreDog && this.highScoreDog.active) { // Check if sprite still exists and is active
+                    this.startDogSkateAnimationCycle(this.highScoreDog);
+                }
+            }, [], this);
 
             // Medal on the right, centered above the Quit button
             // Assuming Quit button's X is GAME_WIDTH - buttonPadding and origin is 1 for X
@@ -2271,8 +2276,11 @@ class GameOverScene extends Phaser.Scene {
         sprite.setAngle(0);  // Reset angle
 
         console.log('[GameOverScene] this.tweens:', this.tweens);
-        console.log('[GameOverScene] typeof this.tweens.createTimeline:', typeof this.tweens.createTimeline);
-        const timeline = this.tweens.createTimeline(); // Correct method to create a timeline
+        console.log('[GameOverScene] this.scene.tweens:', this.scene.tweens); // Log scene's tween manager
+        console.log('[GameOverScene] typeof this.scene.tweens.createTimeline:', typeof this.scene.tweens.createTimeline);
+        
+        // Explicitly use this.scene.tweens to ensure we're getting the scene's tween manager
+        const timeline = this.scene.tweens.createTimeline(); 
 
         timeline.add({ // 1. Dog Fade In
             targets: sprite,
@@ -2301,7 +2309,7 @@ class GameOverScene extends Phaser.Scene {
                 sprite.setFrame(24); // Skate frame
                 sprite.setAngle(0);  // Reset angle for skate
 
-                const skateTimeline = this.tweens.createTimeline();
+                const skateTimeline = this.scene.tweens.createTimeline(); // Use this.scene.tweens
 
                 skateTimeline.add({ // 4. Skate Fade In
                     targets: sprite,
