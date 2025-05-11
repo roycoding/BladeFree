@@ -2043,8 +2043,8 @@ class GameOverScene extends Phaser.Scene {
             const dogX = this.restartButton.x + (this.restartButton.displayWidth / 2);
             this.highScoreDog = this.add.sprite(dogX, celebrationY, 'skater', 34) // Start with dog frame
                 .setOrigin(0.5, 0.5)
-                .setScale(2) // Make it a bit larger
-                .setAlpha(0) // Start invisible for fade-in
+                .setScale(2) // Start at full scale
+                .setAlpha(1) // Start visible
                 .setDepth(5); // Ensure visible
             
             // Delay the start of the animation cycle slightly to ensure all systems are ready
@@ -2272,95 +2272,58 @@ class GameOverScene extends Phaser.Scene {
         }
     }
 
-    startDogSkateAnimationCycle(sprite) {
+    startDogSkateAnimationCycle(sprite, isDogPhase = true) {
         if (!sprite || !sprite.active) { // Stop if sprite is destroyed or inactive
+            console.log("Animation cycle target sprite is inactive or destroyed. Stopping cycle.");
             return;
         }
 
-        // --- Dog Phase ---
-        sprite.setFrame(34); // Dog frame
-        sprite.setAlpha(0);  // Start faded out
-        sprite.setAngle(0);  // Reset angle
+        const targetScale = 2; // The full scale the sprites should reach
+        const animationDuration = 1500; // Duration for spin and scale
 
-        console.log('[GameOverScene] Attempting to start dog/skate animation cycle.');
-        // console.log('[GameOverScene] this.tweens:', this.tweens); // Keep for now if needed
-        // console.log('[GameOverScene] typeof this.tweens.createTimeline:', typeof this.tweens.createTimeline); // Keep for now
+        if (isDogPhase) {
+            // --- Dog Phase: Spin and Shrink ---
+            console.log("Starting Dog Phase: Spin and Shrink");
+            sprite.setFrame(34); // Dog frame
+            sprite.setAngle(0);  // Reset angle
+            sprite.setScale(targetScale); // Ensure it's at full scale before shrinking
+            sprite.setAlpha(1); // Ensure visible
 
-        // --- Dog Phase ---
-        sprite.setFrame(34); // Dog frame
-        sprite.setAlpha(0);  // Start faded out
-        sprite.setAngle(0);  // Reset angle
-
-        // 1. Dog Fade In
-        this.tweens.add({
-            targets: sprite,
-            alpha: 1,
-            duration: 500,
-            ease: 'Linear',
-            onComplete: () => {
-                if (!sprite || !sprite.active) return;
-                // 2. Dog Spin (starts after fade-in completes)
-                this.tweens.add({
-                    targets: sprite,
-                    angle: 360,
-                    duration: 2000,
-                    ease: 'Linear',
-                    onComplete: () => {
-                        if (!sprite || !sprite.active) return;
-                        // 3. Dog Fade Out (starts after spin completes, with a delay)
-                        this.time.delayedCall(1500, () => { // Hold visible
-                            if (!sprite || !sprite.active) return;
-                            this.tweens.add({
-                                targets: sprite,
-                                alpha: 0,
-                                duration: 500,
-                                ease: 'Linear',
-                                onComplete: () => {
-                                    if (!sprite || !sprite.active) return;
-                                    // --- Skate Phase ---
-                                    sprite.setFrame(24); // Skate frame
-                                    sprite.setAngle(0);  // Reset angle for skate
-                                    // 4. Skate Fade In
-                                    this.tweens.add({
-                                        targets: sprite,
-                                        alpha: 1,
-                                        duration: 500,
-                                        ease: 'Linear',
-                                        onComplete: () => {
-                                            if (!sprite || !sprite.active) return;
-                                            // 5. Skate Spin
-                                            this.tweens.add({
-                                                targets: sprite,
-                                                angle: 360,
-                                                duration: 2000,
-                                                ease: 'Linear',
-                                                onComplete: () => {
-                                                    if (!sprite || !sprite.active) return;
-                                                    // 6. Skate Fade Out (starts after spin, with delay)
-                                                    this.time.delayedCall(1500, () => { // Hold visible
-                                                        if (!sprite || !sprite.active) return;
-                                                        this.tweens.add({
-                                                            targets: sprite,
-                                                            alpha: 0,
-                                                            duration: 500,
-                                                            ease: 'Linear',
-                                                            onComplete: () => {
-                                                                // Loop back to start the cycle with the dog
-                                                                this.startDogSkateAnimationCycle(sprite);
-                                                            }
-                                                        });
-                                                    }, [], this);
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }, [], this);
+            this.tweens.add({
+                targets: sprite,
+                angle: 360, // Spin
+                scaleX: 0,   // Shrink
+                scaleY: 0,
+                duration: animationDuration,
+                ease: 'Linear', // Consistent speed for spin and shrink
+                onComplete: () => {
+                    if (sprite && sprite.active) {
+                        this.startDogSkateAnimationCycle(sprite, false); // Transition to Skate Phase
                     }
-                });
-            }
-        });
+                }
+            });
+        } else {
+            // --- Skate Phase: Spin and Grow ---
+            console.log("Starting Skate Phase: Spin and Grow");
+            sprite.setFrame(24); // Skate frame
+            sprite.setAngle(0);  // Reset angle
+            sprite.setScale(0);    // Start shrunk
+            sprite.setAlpha(1);  // Ensure visible as it grows
+
+            this.tweens.add({
+                targets: sprite,
+                angle: 360, // Spin
+                scaleX: targetScale, // Grow
+                scaleY: targetScale,
+                duration: animationDuration,
+                ease: 'Linear',
+                onComplete: () => {
+                    if (sprite && sprite.active) {
+                        this.startDogSkateAnimationCycle(sprite, true); // Loop back to Dog Phase
+                    }
+                }
+            });
+        }
     }
 }
 
