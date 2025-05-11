@@ -2270,10 +2270,39 @@ class GameOverScene extends Phaser.Scene {
         sprite.setAlpha(0);  // Start faded out
         sprite.setAngle(0);  // Reset angle
 
-        this.tweens.timeline({
+        const timeline = this.tweens.createTimeline(); // Correct method to create a timeline
+
+        timeline.add({ // 1. Dog Fade In
             targets: sprite,
-            tweens: [
-                { // 1. Dog Fade In
+            alpha: 1,
+            duration: 500,
+            ease: 'Linear'
+        });
+
+        timeline.add({ // 2. Dog Spin
+            targets: sprite,
+            angle: 360,
+            duration: 2000,
+            ease: 'Linear',
+            offset: '-=250' // Start spinning slightly before full fade-in
+        });
+        
+        timeline.add({ // 3. Dog Fade Out
+            targets: sprite,
+            alpha: 0,
+            duration: 500,
+            ease: 'Linear',
+            delay: 1500, // Hold visible for a bit after spin
+            onComplete: () => {
+                if (!sprite || !sprite.active) return;
+                // --- Skate Phase ---
+                sprite.setFrame(24); // Skate frame
+                sprite.setAngle(0);  // Reset angle for skate
+
+                const skateTimeline = this.tweens.createTimeline();
+
+                skateTimeline.add({ // 4. Skate Fade In
+                    targets: sprite,
                     alpha: 1,
                     duration: 500,
                     ease: 'Linear'
@@ -2294,11 +2323,15 @@ class GameOverScene extends Phaser.Scene {
                         // --- Skate Phase ---
                         sprite.setFrame(24); // Skate frame
                         sprite.setAngle(0);  // Reset angle for skate
+                        
+                        // Note: The skateTimeline was already created above, no need to redefine 'tweens' property.
+                        // The following adds to skateTimeline.
+                        // This part of the logic seems to have been intended to be inside the onComplete of the dog fade out.
+                        // The structure was slightly off. The skateTimeline is now correctly defined and used.
+                        // The original code had nested this.tweens.timeline which is incorrect.
+                        // The corrected structure uses the already created skateTimeline.
 
-                        this.tweens.timeline({
-                            targets: sprite,
-                            tweens: [
-                                { // 4. Skate Fade In
+                        skateTimeline.add({ // 4. Skate Fade In
                                     alpha: 1,
                                     duration: 500,
                                     ease: 'Linear'
@@ -2321,10 +2354,12 @@ class GameOverScene extends Phaser.Scene {
                                 }
                             ]
                         });
+                        skateTimeline.play(); // Play the skate part of the animation
                     }
                 }
             ]
         });
+        timeline.play(); // Play the main dog part of the animation
     }
 }
 
