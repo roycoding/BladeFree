@@ -2072,14 +2072,20 @@ class GameOverScene extends Phaser.Scene {
                 ease: 'Sine.easeInOut',
                 yoyo: true, // Reverse the animation
                 repeat: -1, // Loop indefinitely
-                onStart: (tween, targets) => { // Ensure it starts from a smaller scale
-                    targets[0].setScale(2.0);
+                onStart: (tween, targets) => { 
+                    if (targets && targets[0] && targets[0].active) {
+                        targets[0].setScale(2.0); // Ensure it starts from a smaller scale
+                    }
                 },
-                onYoyo: (tween, targets) => { // When reversing, go to smaller scale
-                     targets[0].setScale(2.0);
+                onYoyo: (tween, targets) => { 
+                    if (targets && targets[0] && targets[0].active) {
+                        targets[0].setScale(2.0); // When reversing, go to smaller scale
+                    }
                 },
-                onRepeat: (tween, targets) => { // When repeating, reset to smaller scale
-                     targets[0].setScale(2.0);
+                onRepeat: (tween, targets) => { 
+                    if (targets && targets[0] && targets[0].active) {
+                        targets[0].setScale(2.0); // When repeating, reset to smaller scale
+                    }
                 }
             });
             
