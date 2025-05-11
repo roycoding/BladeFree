@@ -1743,9 +1743,11 @@ class GameOverScene extends Phaser.Scene {
         this.royskatesComOverlay = null; // For the new overlay on the main game over screen
         this.quitRoyskatesOverlay = null; // For the overlay on the "Later Blader" quit screen
         this.newHighScoreAchieved = false; // Flag to indicate if a new high score was made this session
-        this.highScoreDog = null;          // Sprite for the dog on new high score
+        this.highScoreDog = null;          // Sprite used for the cycling celebration animation
         this.highScoreMedal = null;        // Sprite for the medal on new high score
         this.newHighScoreText = null;      // Text for "NEW HIGH SCORE!"
+        this.celebrationFrames = [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]; // All collectible & obstacle frames
+        this.currentCelebrationFrameIndex = 0;
     }
 
     preload() {
@@ -2041,19 +2043,18 @@ class GameOverScene extends Phaser.Scene {
             // Dog on the left, centered above the Restart button
             // Assuming Restart button's X is buttonPadding and origin is 0 for X
             const dogX = this.restartButton.x + (this.restartButton.displayWidth / 2);
-            this.highScoreDog = this.add.sprite(dogX, celebrationY, 'skater', 34) // Start with dog frame
+            this.highScoreDog = this.add.sprite(dogX, celebrationY, 'skater', this.celebrationFrames[this.currentCelebrationFrameIndex])
                 .setOrigin(0.5, 0.5)
-                .setScale(2) // Start at full scale
-                .setAlpha(1) // Start visible
-                .setDepth(5); // Ensure visible
+                .setScale(0) // Start scaled down to grow in
+                .setAlpha(1) 
+                .setDepth(5); 
             
             // Delay the start of the animation cycle slightly to ensure all systems are ready
-            // and that 'this' context is correctly bound if startDogSkateAnimationCycle is called from the timer
-            this.time.delayedCall(10, () => { // Increased delay slightly just in case 0 is too immediate
+            this.time.delayedCall(10, () => { 
                 if (this.highScoreDog && this.highScoreDog.active) { 
-                    this.startDogSkateAnimationCycle(this.highScoreDog);
+                    this.startCelebrationItemAnimationCycle(this.highScoreDog); // Call renamed method
                 }
-            }, [], this); // 'this' here correctly refers to the GameOverScene instance
+            }, [], this); 
 
             // Medal on the right, centered above the Quit button
             // Assuming Quit button's X is GAME_WIDTH - buttonPadding and origin is 1 for X
@@ -2272,85 +2273,57 @@ class GameOverScene extends Phaser.Scene {
         }
     }
 
-    startDogSkateAnimationCycle(sprite, isDogPhase = true) {
-        if (!sprite || !sprite.active) { // Stop if sprite is destroyed or inactive
-            console.log("Animation cycle target sprite is inactive or destroyed. Stopping cycle.");
+    startCelebrationItemAnimationCycle(sprite) {
+        if (!sprite || !sprite.active) { 
+            console.log("Celebration sprite is inactive or destroyed. Stopping animation cycle.");
             return;
         }
 
-        const targetScale = 2; // The full scale the sprites should reach
-        const animationDuration = 1500; // Duration for spin and scale
+        const targetScale = 2; 
+        const animationDuration = 1200; // Slightly faster duration for each phase
 
-        if (isDogPhase) {
-            // --- Dog Phase: Spin, Grow, then Spin, Shrink ---
-            console.log("Starting Dog Phase: Spin, Grow, then Spin, Shrink");
-            sprite.setFrame(34); // Dog frame
-            sprite.setAngle(0);  // Reset angle
-            sprite.setScale(0);    // Start shrunk
-            sprite.setAlpha(1);  // Ensure visible as it grows
+        // Determine current item to display
+        const currentFrame = this.celebrationFrames[this.currentCelebrationFrameIndex];
+        console.log(`Starting animation for frame: ${currentFrame}`);
 
-            // 1. Dog Spin and Grow
-            this.tweens.add({
-                targets: sprite,
-                angle: 360, // Spin
-                scaleX: targetScale, // Grow
-                scaleY: targetScale,
-                duration: animationDuration,
-                ease: 'Linear',
-                onComplete: () => { // Dog has finished spinning and growing
-                    if (sprite && sprite.active) {
-                        // 2. Dog Spin and Shrink
-                        this.tweens.add({
-                            targets: sprite,
-                            angle: sprite.angle + 360, // Continue spinning
-                            scaleX: 0,
-                            scaleY: 0,
-                            duration: animationDuration,
-                            ease: 'Linear',
-                            onComplete: () => {
-                                if (sprite && sprite.active) {
-                                    this.startDogSkateAnimationCycle(sprite, false); // Transition to Skate Phase
+        sprite.setFrame(currentFrame);
+        sprite.setAngle(0);
+        sprite.setScale(0); // Start shrunk
+        sprite.setAlpha(1); // Ensure visible
+
+        // 1. Spin and Grow
+        this.tweens.add({
+            targets: sprite,
+            angle: 360,
+            scaleX: targetScale,
+            scaleY: targetScale,
+            duration: animationDuration,
+            ease: 'Linear',
+            onComplete: () => {
+                if (sprite && sprite.active) {
+                    // 2. Spin and Shrink (after a brief pause at full size)
+                    this.time.delayedCall(500, () => { // Pause at full size
+                        if (sprite && sprite.active) {
+                            this.tweens.add({
+                                targets: sprite,
+                                angle: sprite.angle + 360, // Continue spinning
+                                scaleX: 0,
+                                scaleY: 0,
+                                duration: animationDuration,
+                                ease: 'Linear',
+                                onComplete: () => {
+                                    if (sprite && sprite.active) {
+                                        // Advance to next frame and loop
+                                        this.currentCelebrationFrameIndex = (this.currentCelebrationFrameIndex + 1) % this.celebrationFrames.length;
+                                        this.startCelebrationItemAnimationCycle(sprite);
+                                    }
                                 }
-                            }
-                        });
-                    }
+                            });
+                        }
+                    }, [], this);
                 }
-            });
-        } else {
-            // --- Skate Phase: Spin, Grow, then Spin, Shrink ---
-            console.log("Starting Skate Phase: Spin and Grow");
-            sprite.setFrame(24); // Skate frame
-            sprite.setAngle(0);  // Reset angle
-            sprite.setScale(0);    // Start shrunk
-            sprite.setAlpha(1);  // Ensure visible as it grows
-
-            this.tweens.add({
-                targets: sprite,
-                angle: 360, // Spin
-                scaleX: targetScale, // Grow
-                scaleY: targetScale,
-                duration: animationDuration,
-                ease: 'Linear',
-                onComplete: () => { // Skate has finished spinning and growing
-                    if (sprite && sprite.active) {
-                        // Now, make the skate spin and shrink
-                        this.tweens.add({
-                            targets: sprite,
-                            angle: sprite.angle + 360, // Continue spinning
-                            scaleX: 0,
-                            scaleY: 0,
-                            duration: animationDuration,
-                            ease: 'Linear',
-                            onComplete: () => {
-                                if (sprite && sprite.active) {
-                                    this.startDogSkateAnimationCycle(sprite, true); // Loop back to Dog Phase
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-        }
+            }
+        });
     }
 }
 
