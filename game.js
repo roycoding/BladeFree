@@ -144,7 +144,7 @@ class StartScene extends Phaser.Scene {
         });
 
         // Royskates.com Overlay (Lower Left)
-        const royskatesOverlayPadding = 5; // Small padding from the edge
+        const royskatesOverlayPadding = 10; // Increased padding from the edge
         this.royskatesComOverlay = this.add.sprite(
             royskatesOverlayPadding, 
             GAME_HEIGHT - royskatesOverlayPadding, 
@@ -504,7 +504,7 @@ class GameplayScene extends Phaser.Scene {
             .setDepth(2);      // Depth to be above background, below main UI
 
         // Static Royskates Overlay (Lower Left)
-        const royskatesOverlayPaddingGameplay = 5; // Padding from edges
+        const royskatesOverlayPaddingGameplay = 10; // Increased padding from edges
         this.royskatesOverlay = this.add.sprite(
             royskatesOverlayPaddingGameplay, 
             GAME_HEIGHT - royskatesOverlayPaddingGameplay, 
@@ -1892,7 +1892,7 @@ class GameOverScene extends Phaser.Scene {
                 .setAngle(0);
             
             // Add royskates.com overlay to the quit screen
-            const quitOverlayPadding = 5;
+            const quitOverlayPadding = 10; // Increased padding
             if (this.quitRoyskatesOverlay) this.quitRoyskatesOverlay.destroy(); // Clean up if somehow exists
             this.quitRoyskatesOverlay = this.add.sprite(
                 quitOverlayPadding,
