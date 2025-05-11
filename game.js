@@ -2270,6 +2270,8 @@ class GameOverScene extends Phaser.Scene {
         sprite.setAlpha(0);  // Start faded out
         sprite.setAngle(0);  // Reset angle
 
+        console.log('[GameOverScene] this.tweens:', this.tweens);
+        console.log('[GameOverScene] typeof this.tweens.createTimeline:', typeof this.tweens.createTimeline);
         const timeline = this.tweens.createTimeline(); // Correct method to create a timeline
 
         timeline.add({ // 1. Dog Fade In
