@@ -2041,19 +2041,13 @@ class GameOverScene extends Phaser.Scene {
             // Dog on the left, centered above the Restart button
             // Assuming Restart button's X is buttonPadding and origin is 0 for X
             const dogX = this.restartButton.x + (this.restartButton.displayWidth / 2);
-            this.highScoreDog = this.add.sprite(dogX, celebrationY, 'skater', 34) // Frame 34 for dog
+            this.highScoreDog = this.add.sprite(dogX, celebrationY, 'skater', 34) // Start with dog frame
                 .setOrigin(0.5, 0.5)
                 .setScale(2) // Make it a bit larger
+                .setAlpha(0) // Start invisible for fade-in
                 .setDepth(5); // Ensure visible
-
-            // Add spinning animation to the dog
-            this.tweens.add({
-                targets: this.highScoreDog,
-                angle: 360,
-                duration: 2000, // Time for one full spin
-                repeat: -1, // Loop indefinitely
-                ease: 'Linear'
-            });
+            
+            this.startDogSkateAnimationCycle(this.highScoreDog); // Start the animation cycle
 
             // Medal on the right, centered above the Quit button
             // Assuming Quit button's X is GAME_WIDTH - buttonPadding and origin is 1 for X
@@ -2066,12 +2060,21 @@ class GameOverScene extends Phaser.Scene {
             // Add pulsing animation to the medal
             this.tweens.add({
                 targets: this.highScoreMedal,
-                scaleX: 2.8, // Scale up slightly more
-                scaleY: 2.8,
-                duration: 800, // Duration of one pulse
+                scaleX: 3.0, // Scale up more
+                scaleY: 3.0,
+                duration: 700, // Duration of one pulse
                 ease: 'Sine.easeInOut',
                 yoyo: true, // Reverse the animation
-                repeat: -1 // Loop indefinitely
+                repeat: -1, // Loop indefinitely
+                onStart: (tween, targets) => { // Ensure it starts from a smaller scale
+                    targets[0].setScale(2.0);
+                },
+                onYoyo: (tween, targets) => { // When reversing, go to smaller scale
+                     targets[0].setScale(2.0);
+                },
+                onRepeat: (tween, targets) => { // When repeating, reset to smaller scale
+                     targets[0].setScale(2.0);
+                }
             });
             
             // Optional: Add a "NEW HIGH SCORE!" text if not already clear
@@ -2255,6 +2258,73 @@ class GameOverScene extends Phaser.Scene {
             }).setOrigin(0.5).setDepth(20);
             this.time.delayedCall(1500, () => { resetConfirmText.destroy(); });
         }
+    }
+
+    startDogSkateAnimationCycle(sprite) {
+        if (!sprite || !sprite.active) { // Stop if sprite is destroyed or inactive
+            return;
+        }
+
+        // --- Dog Phase ---
+        sprite.setFrame(34); // Dog frame
+        sprite.setAlpha(0);  // Start faded out
+        sprite.setAngle(0);  // Reset angle
+
+        this.tweens.timeline({
+            targets: sprite,
+            tweens: [
+                { // 1. Dog Fade In
+                    alpha: 1,
+                    duration: 500,
+                    ease: 'Linear'
+                },
+                { // 2. Dog Spin
+                    angle: 360,
+                    duration: 2000,
+                    ease: 'Linear',
+                    offset: '-=250' // Start spinning slightly before full fade-in
+                },
+                { // 3. Dog Fade Out
+                    alpha: 0,
+                    duration: 500,
+                    ease: 'Linear',
+                    delay: 1500, // Hold visible for a bit after spin
+                    onComplete: () => {
+                        if (!sprite || !sprite.active) return;
+                        // --- Skate Phase ---
+                        sprite.setFrame(24); // Skate frame
+                        sprite.setAngle(0);  // Reset angle for skate
+
+                        this.tweens.timeline({
+                            targets: sprite,
+                            tweens: [
+                                { // 4. Skate Fade In
+                                    alpha: 1,
+                                    duration: 500,
+                                    ease: 'Linear'
+                                },
+                                { // 5. Skate Spin
+                                    angle: 360,
+                                    duration: 2000,
+                                    ease: 'Linear',
+                                    offset: '-=250'
+                                },
+                                { // 6. Skate Fade Out
+                                    alpha: 0,
+                                    duration: 500,
+                                    ease: 'Linear',
+                                    delay: 1500,
+                                    onComplete: () => {
+                                        // Loop back to start the cycle with the dog
+                                        this.startDogSkateAnimationCycle(sprite);
+                                    }
+                                }
+                            ]
+                        });
+                    }
+                }
+            ]
+        });
     }
 }
 
