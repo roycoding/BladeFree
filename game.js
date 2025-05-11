@@ -2317,9 +2317,22 @@ class GameOverScene extends Phaser.Scene {
                 scaleY: targetScale,
                 duration: animationDuration,
                 ease: 'Linear',
-                onComplete: () => {
+                onComplete: () => { // Skate has finished spinning and growing
                     if (sprite && sprite.active) {
-                        this.startDogSkateAnimationCycle(sprite, true); // Loop back to Dog Phase
+                        // Now, make the skate spin and shrink
+                        this.tweens.add({
+                            targets: sprite,
+                            angle: sprite.angle + 360, // Continue spinning
+                            scaleX: 0,
+                            scaleY: 0,
+                            duration: animationDuration,
+                            ease: 'Linear',
+                            onComplete: () => {
+                                if (sprite && sprite.active) {
+                                    this.startDogSkateAnimationCycle(sprite, true); // Loop back to Dog Phase
+                                }
+                            }
+                        });
                     }
                 }
             });
