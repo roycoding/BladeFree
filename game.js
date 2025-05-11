@@ -2306,58 +2306,55 @@ class GameOverScene extends Phaser.Scene {
                     alpha: 1,
                     duration: 500,
                     ease: 'Linear'
-                },
-                { // 2. Dog Spin
+                });
+
+                skateTimeline.add({ // 5. Skate Spin
+                    targets: sprite,
                     angle: 360,
                     duration: 2000,
                     ease: 'Linear',
-                    offset: '-=250' // Start spinning slightly before full fade-in
-                },
-                { // 3. Dog Fade Out
+                    offset: '-=250'
+                });
+
+                skateTimeline.add({ // 6. Skate Fade Out
+                    targets: sprite,
                     alpha: 0,
                     duration: 500,
                     ease: 'Linear',
-                    delay: 1500, // Hold visible for a bit after spin
+                    delay: 1500,
                     onComplete: () => {
-                        if (!sprite || !sprite.active) return;
-                        // --- Skate Phase ---
-                        sprite.setFrame(24); // Skate frame
-                        sprite.setAngle(0);  // Reset angle for skate
-                        
-                        // Note: The skateTimeline was already created above, no need to redefine 'tweens' property.
-                        // The following adds to skateTimeline.
-                        // This part of the logic seems to have been intended to be inside the onComplete of the dog fade out.
-                        // The structure was slightly off. The skateTimeline is now correctly defined and used.
-                        // The original code had nested this.tweens.timeline which is incorrect.
-                        // The corrected structure uses the already created skateTimeline.
-
-                        skateTimeline.add({ // 4. Skate Fade In
-                                    alpha: 1,
-                                    duration: 500,
-                                    ease: 'Linear'
-                                },
-                                { // 5. Skate Spin
-                                    angle: 360,
-                                    duration: 2000,
-                                    ease: 'Linear',
-                                    offset: '-=250'
-                                },
-                                { // 6. Skate Fade Out
-                                    alpha: 0,
-                                    duration: 500,
-                                    ease: 'Linear',
-                                    delay: 1500,
-                                    onComplete: () => {
-                                        // Loop back to start the cycle with the dog
-                                        this.startDogSkateAnimationCycle(sprite);
-                                    }
-                                }
-                            ]
-                        });
-                        skateTimeline.play(); // Play the skate part of the animation
+                        // Loop back to start the cycle with the dog
+                        this.startDogSkateAnimationCycle(sprite);
                     }
-                }
-            ]
+                });
+                skateTimeline.play(); // Play the skate part of the animation
+            }
+        });
+        timeline.play(); // Play the main dog part of the animation
+    }
+}
+
+
+// --- Phaser Game Configuration ---
+const config = {
+    type: Phaser.AUTO, // Automatically choose WebGL or Canvas
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
+    parent: 'game-container', // ID of the div to contain the game canvas
+    physics: {
+        default: 'arcade', // Use the Arcade Physics engine
+        arcade: {
+            gravity: { y: 0 }, // No global gravity for now
+            // debug: true // Set to true to see physics bodies and velocity vectors
+        }
+    },
+    // Define scenes and the order they load. First scene is the starting one.
+    scene: [StartScene, GameplayScene, GameOverScene]
+};
+
+// --- Initialize Phaser Game ---
+const game = new Phaser.Game(config);
+console.log("Phaser game initialized");
         });
         timeline.play(); // Play the main dog part of the animation
     }
