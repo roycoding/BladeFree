@@ -1459,7 +1459,7 @@ class GameplayScene extends Phaser.Scene {
             this.currentGrindPoints = 0;
             if (!this.grindPointsDisplay) {
                 this.grindPointsDisplay = this.add.text(player.x, player.y - 40, `+0`, { // Accumulating points
-                    fontSize: '22px', fill: '#00ff00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 4
+                    fontSize: '22px', fill: '#18ec21', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 4
                 }).setOrigin(0.5).setDepth(2);
             }
             this.grindPointsDisplay.setPosition(player.x, player.y - 40).setText(`+0`).setVisible(true);
@@ -1475,7 +1475,7 @@ class GameplayScene extends Phaser.Scene {
             const grindDisplayName = player.flipX ? "Switch Royale" : "Royale Grind";
 
             this.grindNameText = this.add.text(player.x, player.y - 65, grindDisplayName, { // Position above grind points display
-                fontSize: '20px', fill: '#00ff00', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 3
+                fontSize: '20px', fill: '#18ec21', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 3
             }).setOrigin(0.5).setDepth(2).setVisible(true);
 
             // Update last trick info
