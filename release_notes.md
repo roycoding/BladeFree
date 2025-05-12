@@ -1,6 +1,24 @@
 # BladeFree - Release Notes
 
-## Version 0.2.8 (Current)
+## Version 1.0.0 (🎉 Official Release! 🎉)
+
+**Release Date:** 2025-05-11
+
+BladeFree 1.0.0 is here! This version brings further difficulty enhancements and improved player instructions.
+
+### New Features & Enhancements:
+*   **Difficulty Scaling:**
+    *   Added a third tier of horizontal obstacle speed, activating after 3 minutes of gameplay, making the late game more challenging.
+*   **Gameplay Instructions:**
+    *   The initial instruction overlay in the `GameplayScene` has been significantly enhanced. It now displays graphical icons for obstacles, collectibles, ramps, and rails alongside the text instructions, providing clearer guidance to new players. Layout and spacing have been improved for readability.
+*   **Timer Accuracy:**
+    *   Ensured the timer affecting obstacle speed-up difficulty now correctly uses `sceneRunningTime`, synchronizing it with the on-screen game timer and ensuring it resets accurately with each new game.
+*   **Color Standardization:**
+    *   Standardized the green color used for various pop-up messages (collectibles, tricks, grind points display) to `#18ec21` for visual consistency.
+*   **Message Durations:**
+    *   Increased the on-screen duration for important messages: "SKULL PROTECTION!", "You cracked your HELMET...", and transfer combo pop-ups.
+
+## Version 0.2.8
 
 **Release Date:** 2025-05-10
 

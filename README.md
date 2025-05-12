@@ -1,5 +1,7 @@
 # BladeFree
 
+**Current Version: 1.0.0**
+
 BladeFree is a web browser-based game inspired by SkiFree's freestyle mode, featuring an aggressive inline skater. The game is a down-scrolling endless runner where the player avoids obstacles, performs tricks (jumps, grinds), and collects items for points.
 
 This game is from [royskates.com](http://royskates.com).

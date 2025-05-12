@@ -1,5 +1,5 @@
 // Define constants for game settings
-const GAME_VERSION = "0.2.8"; // Current game version
+const GAME_VERSION = "1.0.0"; // Official Release!
 // Define constants for game settings
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;

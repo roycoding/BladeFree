@@ -41,7 +41,16 @@ Create a web browser-based game called "BladeFree," inspired by SkiFree's freest
     *   **Mobile Controls:** Basic touch input (tap left/right half) implemented for player movement.
     *   **Graphics & Animation (Started):** Player placeholder replaced with a sprite sheet (`assets/graphics/skater.png`, 32x48 frames). Animations defined in `GameplayScene.create` for `skate-cycle`, `jump-airborne`, `jump-landing`, `grind`, and `fall`. Player animation state machine implemented in `update`.
 
-## Recent Changes (2025-05-10)
+## Recent Changes (2025-05-11) - Version 1.0.0 Release!
+
+*   **Difficulty Scaling:** Added a third tier of horizontal obstacle speed (activates after 3 minutes).
+*   **Timer Synchronization:** Corrected the difficulty scaling timer for obstacle speed to use `sceneRunningTime`, ensuring accurate reset with each new game.
+*   **Gameplay Instructions:** Significantly enhanced the initial instruction overlay in `GameplayScene` with graphical icons for obstacles, collectibles, ramps, and rails, and improved layout.
+*   **UI Polish:**
+    *   Standardized green color for pop-up messages to `#18ec21`.
+    *   Increased on-screen duration for helmet-related and transfer combo messages.
+
+## Previous Changes (2025-05-10)
 
 *   Enhanced the new high score celebration: the animated sprite now cycles through all collectible and obstacle items, each performing a "spin, grow, then spin, shrink" sequence. The medal's pulsing animation was also made more pronounced.
 *   Adjusted the positioning of the `royskates.com` logo overlay in multiple scenes for better mobile visibility.

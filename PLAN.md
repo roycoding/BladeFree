@@ -243,10 +243,11 @@
 - [ ] **Difficulty Scaling:**
     - [x] `GameplayScene`: Add `timeSurvived` counter. *(Fulfilled by `sceneRunningTime`)*
     - [x] `GameplayScene`: `update`: Increment `timeSurvived`. *(Fulfilled by `sceneRunningTime += delta`)*
+    - [x] Implement multi-tiered horizontal speed increase for obstacles based on `sceneRunningTime`. (3 tiers implemented)
     - [ ] `GameplayScene`: `update`: Gradually increase `SCROLL_SPEED` based on `timeSurvived`.
         - [ ] Define a base scroll speed and a maximum scroll speed.
         - [ ] Define how quickly the speed increases (e.g., per second or per score milestone).
-    - [ ] Consider other difficulty scaling factors (e.g., obstacle density, spawn patterns).
+    - [ ] Consider other difficulty scaling factors (e.g., obstacle density, spawn patterns). *(Spawn rate increase by score is implemented)*
 
 ## Phase 7: Deployment & Optimization
 
