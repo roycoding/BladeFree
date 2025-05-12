@@ -215,6 +215,7 @@ class GameplayScene extends Phaser.Scene {
         this.bladeFreeOverlay = null; // Static BladeFree overlay at the top
         this.royskatesOverlay = null; // Static Royskates overlay at the bottom
         this.muteButton = null;       // Mute button
+        this.instructionText = null;  // For initial gameplay instructions
         
         this.inventoryItems = [23, 24, 25, 26, 28, 29, 30, 31]; // Added 23 (Skate T-shirt)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -482,6 +483,12 @@ class GameplayScene extends Phaser.Scene {
             this.muteButton = null;
         }
 
+        // Reset instruction text if it exists
+        if (this.instructionText) {
+            this.instructionText.destroy();
+            this.instructionText = null;
+        }
+
         // Reset elapsed time text and scene running time
         if (this.elapsedTimeText) {
             this.elapsedTimeText.setText('Time: 00:00');
@@ -671,6 +678,38 @@ class GameplayScene extends Phaser.Scene {
                 this.hideMobilePrompts();
             }, [], this);
         }
+
+        // --- Initial Instructions Text ---
+        const instructions = "AVOID OBSTACLES!\nCOLLECT ITEMS!\nHIT RAMPS & RAILS!";
+        this.instructionText = this.add.text(
+            GAME_WIDTH / 2, 
+            this.bladeFreeOverlay.y + this.bladeFreeOverlay.displayHeight + 50, // Position below BladeFree overlay and timer
+            instructions, 
+            { 
+                fontSize: '26px', 
+                fill: '#FFFF00', // Yellow for high visibility
+                fontFamily: 'Arial', 
+                align: 'center',
+                stroke: '#000000',
+                strokeThickness: 5,
+                wordWrap: { width: GAME_WIDTH - 100, useAdvancedWrap: true }
+            }
+        )
+        .setOrigin(0.5, 0) // Anchor top-center
+        .setDepth(20);     // Ensure it's on top
+
+        this.tweens.add({
+            targets: this.instructionText,
+            alpha: 0,
+            delay: 3500, // Stay visible for 3.5 seconds
+            duration: 500, // Fade out over 0.5 seconds
+            onComplete: () => {
+                if (this.instructionText) {
+                    this.instructionText.destroy();
+                    this.instructionText = null;
+                }
+            }
+        });
 
         // Mute Button (Sprite) for GameplayScene
         const muteButtonPaddingGameplay = 5; // Small padding
