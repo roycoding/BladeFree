@@ -1,5 +1,14 @@
 # BladeFree - Release Notes
 
+## Version 1.0.1 (Current)
+
+**Release Date:** 2025-05-11
+
+This release includes a fix for the layout of graphics in the initial gameplay instructions.
+
+### Bug Fixes:
+*   **Instruction Display:** Corrected the positioning of ramp and rail icons in the initial instruction overlay to prevent visual overlap.
+
 ## Version 1.0.0 (🎉 Official Release! 🎉)
 
 **Release Date:** 2025-05-11

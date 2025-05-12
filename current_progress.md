@@ -1,4 +1,4 @@
-# BladeFree - Progress Summary (2025-05-10)
+# BladeFree - Progress Summary (2025-05-11)
 
 ## Project Goal
 
@@ -41,7 +41,11 @@ Create a web browser-based game called "BladeFree," inspired by SkiFree's freest
     *   **Mobile Controls:** Basic touch input (tap left/right half) implemented for player movement.
     *   **Graphics & Animation (Started):** Player placeholder replaced with a sprite sheet (`assets/graphics/skater.png`, 32x48 frames). Animations defined in `GameplayScene.create` for `skate-cycle`, `jump-airborne`, `jump-landing`, `grind`, and `fall`. Player animation state machine implemented in `update`.
 
-## Recent Changes (2025-05-11) - Version 1.0.0 Release!
+## Recent Changes (2025-05-11) - Version 1.0.1
+
+*   **Instruction Display Fix:** Corrected the positioning of ramp and rail icons within the initial gameplay instruction overlay to prevent visual overlap and improve clarity.
+
+## Previous Changes (2025-05-11) - Version 1.0.0 Release!
 
 *   **Difficulty Scaling:** Added a third tier of horizontal obstacle speed (activates after 3 minutes).
 *   **Timer Synchronization:** Corrected the difficulty scaling timer for obstacle speed to use `sceneRunningTime`, ensuring accurate reset with each new game.
