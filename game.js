@@ -1205,13 +1205,34 @@ class GameplayScene extends Phaser.Scene {
             // --- Misty Flip Animation ---
             this.currentRampTrickType = 'MistyFlip';
             player.setTexture('skater', 18); // Start with frame 18
-            this.jumpAnimationTimer = this.time.delayedCall(frameSwitchDelay, () => {
+
+            const delay1 = timeToApexMs * 0.66; // Time to switch to frame 9 (flipped)
+            const delay2 = timeToApexMs * 1.33; // Time to switch to frame 8 (relative to jump start)
+
+            this.jumpAnimationTimer = this.time.delayedCall(delay1, () => {
                 if (this.player && this.isJumping && this.currentRampTrickType === 'MistyFlip') {
                     this.player.setTexture('skater', 9); // Switch to frame 9
                     this.player.setFlipY(true);       // Flipped vertically
+                    console.log(`Misty Flip: Switched to flipped frame 9 at ${delay1}ms.`);
+
+                    // Schedule the next frame change
+                    // Note: The delay for the *next* call is relative to *now*, 
+                    // so it's delay2 - delay1.
+                    if (this.jumpAnimationTimer) { // Clear the reference to the first timer
+                        this.jumpAnimationTimer = null; 
+                    }
+                    // We don't store the second timer in this.jumpAnimationTimer because cancelling the first one should stop the sequence.
+                    // If the first timer completes, this second part will run.
+                    this.time.delayedCall(delay2 - delay1, () => {
+                        if (this.player && this.isJumping && this.currentRampTrickType === 'MistyFlip') {
+                            this.player.setTexture('skater', 8); // Switch to frame 8
+                            this.player.setFlipY(false);      // Ensure normal vertical flip
+                            console.log(`Misty Flip: Switched to frame 8 at ${delay2}ms.`);
+                        }
+                    }, [], this);
                 }
             }, [], this);
-            console.log(`Misty Flip initiated! Flipped frame 9 in ${frameSwitchDelay}ms.`);
+            console.log(`Misty Flip initiated! Frame 18 set. Next changes at ${delay1}ms and ${delay2}ms.`);
         }
         
         this.sound.play('jump'); // Play jump sound
