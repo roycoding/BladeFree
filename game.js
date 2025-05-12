@@ -1027,7 +1027,7 @@ class GameplayScene extends Phaser.Scene {
             });
             
             // Show "Your helmet cracked..." message, centered on screen
-            const helmetMessageDuration = 2000; // 2 seconds
+            const helmetMessageDuration = 4000; // Increased to 4 seconds
             this.showPointsPopup(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, null, "You cracked your HELMET,\nbut not your HEAD!", true, helmetMessageDuration);
 
 
@@ -1158,7 +1158,7 @@ class GameplayScene extends Phaser.Scene {
             if (transferPoints > 0) {
                 this.score += transferPoints;
                 this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
-                this.showPointsPopup(player.x, player.y - 60, transferPoints, transferMessage, true, 1500); // Show above normal ramp points, duration 1500ms
+                this.showPointsPopup(player.x, player.y - 60, transferPoints, transferMessage, true, 3000); // Increased duration to 3000ms
             }
         }
 
@@ -1273,7 +1273,7 @@ class GameplayScene extends Phaser.Scene {
                 // Don't award points for the first helmet, it's a power-up
                 console.log("Helmet acquired! SKULL PROTECTION!");
                 // Show "SKULL PROTECTION" in larger letters, centered on screen
-                this.showPointsPopup(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, null, "SKULL PROTECTION", true); 
+                this.showPointsPopup(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, null, "SKULL PROTECTION", true, 1600); 
             }
             // "Else" case for collecting helmet when already having one is removed
             // because helmets should not spawn if player already has one.
@@ -1424,7 +1424,7 @@ class GameplayScene extends Phaser.Scene {
                     this.score += transferPoints;
                     this.scoreText.setText(`Score: ${Math.floor(this.score)}`);
                     // Display this message slightly differently or ensure it doesn't overlap with grind points
-                    this.showPointsPopup(player.x, player.y - 70, transferPoints, transferMessage, true, 1500); // Duration 1500ms
+                    this.showPointsPopup(player.x, player.y - 70, transferPoints, transferMessage, true, 3000); // Increased duration to 3000ms
                 }
             }
 
