@@ -198,8 +198,9 @@ class GameplayScene extends Phaser.Scene {
 
         this.jumpAnimationTimer = null; // Timer for 360 animation frame switch
         this.grindNameText = null;   // Text object for "Royale Grind" persistent display
-        this.isPerformingRampJump = false; // Flag to indicate a 360 ramp jump is in progress
-        this.pointsForCurrentRampJump = 0; // Points to award upon landing a 360
+        this.isPerformingRampJump = false; // Flag to indicate a ramp jump is in progress
+        this.pointsForCurrentRampJump = 0; // Points to award upon landing a ramp jump
+        this.currentRampTrickType = null; // To store '360' or 'MistyFlip'
 
         this.gameStartTime = 0; // To track elapsed time for difficulty scaling
         this.lastScoreThresholdForSpawnDelay = 0; // Tracks score for spawn rate increase
@@ -454,6 +455,7 @@ class GameplayScene extends Phaser.Scene {
         }
         this.isPerformingRampJump = false;
         this.pointsForCurrentRampJump = 0;
+        this.currentRampTrickType = null; // Reset current ramp trick
         this.lastScoreThresholdForSpawnDelay = 0; // Reset for spawn rate scaling
 
         // Reset mobile prompts
@@ -975,9 +977,11 @@ class GameplayScene extends Phaser.Scene {
                 this.jumpAnimationTimer = null;
             }
             this.isJumping = false; // Player is no longer in a controlled jump state
-            if (this.isPerformingRampJump) { // Also reset ramp jump flag
+            if (this.isPerformingRampJump) { 
                 this.isPerformingRampJump = false;
                 this.pointsForCurrentRampJump = 0;
+                this.currentRampTrickType = null;
+                if (player) player.setFlipY(false); // Reset vertical flip on collision
             }
         }
 
@@ -1175,38 +1179,52 @@ class GameplayScene extends Phaser.Scene {
         this.isGrinding = false; // Ensure not grinding when jumping
         player.setVelocityY(-JUMP_VELOCITY);
         this.isJumping = true; // Set jumping flag
-        player.anims.stop(); // Stop any current animation before setting texture for 360
-        
-        // --- 360 Animation ---
-        player.setTexture('skater', 9); // Start with frame 9 for first half of jump
-        const timeToApexMs = (JUMP_VELOCITY / JUMP_GRAVITY_PULL) * 1000; // Time to reach the peak of the jump
+        player.anims.stop(); // Stop any current animation
+        player.setFlipX(false); // Ensure default horizontal flip
+        player.setFlipY(false); // Ensure default vertical flip
+
+        const timeToApexMs = (JUMP_VELOCITY / JUMP_GRAVITY_PULL) * 1000;
+        const frameSwitchDelay = timeToApexMs * 1.33; // Common delay for frame switch
 
         if (this.jumpAnimationTimer) { // Clear any existing timer
             this.jumpAnimationTimer.remove(false);
         }
-        // Switch to frame 17 later in the jump (e.g., at 133% of timeToApex) to make frame 9 visible longer
-        const frameSwitchDelay = timeToApexMs * 1.33; 
-        this.jumpAnimationTimer = this.time.delayedCall(frameSwitchDelay, () => {
-            if (this.player && this.isJumping) { // Check if still jumping
-                this.player.setTexture('skater', 17); // Switch to frame 17
-            }
-        }, [], this);
-        
-        console.log(`360 Jump initiated! VelocityY: ${player.body.velocity.y}, PlayerY: ${player.y}. Frame 17 in ${frameSwitchDelay}ms.`);
-        this.sound.play('jump'); // Play jump sound
 
-        // Don't destroy the ramp, let it scroll off. It's marked as 'hit' now.
-        // ramp.destroy();
+        // Randomly choose trick
+        if (Phaser.Math.Between(0, 1) === 0) {
+            // --- 360 Animation ---
+            this.currentRampTrickType = '360';
+            player.setTexture('skater', 9); // Start with frame 9
+            this.jumpAnimationTimer = this.time.delayedCall(frameSwitchDelay, () => {
+                if (this.player && this.isJumping && this.currentRampTrickType === '360') {
+                    this.player.setTexture('skater', 17); // Switch to frame 17
+                }
+            }, [], this);
+            console.log(`360 Jump initiated! Frame 17 in ${frameSwitchDelay}ms.`);
+        } else {
+            // --- Misty Flip Animation ---
+            this.currentRampTrickType = 'MistyFlip';
+            player.setTexture('skater', 18); // Start with frame 18
+            this.jumpAnimationTimer = this.time.delayedCall(frameSwitchDelay, () => {
+                if (this.player && this.isJumping && this.currentRampTrickType === 'MistyFlip') {
+                    this.player.setTexture('skater', 9); // Switch to frame 9
+                    this.player.setFlipY(true);       // Flipped vertically
+                }
+            }, [], this);
+            console.log(`Misty Flip initiated! Flipped frame 9 in ${frameSwitchDelay}ms.`);
+        }
+        
+        this.sound.play('jump'); // Play jump sound
 
         // Update last trick info
         this.lastTrickObject = ramp;
         this.lastTrickObjectType = 'ramp';
         this.timeLastTrickEnded = this.time.now; // Mark time of current ramp interaction
 
-        // Set flags for landing the 360 trick
+        // Set flags for landing the ramp trick
         this.isPerformingRampJump = true;
         this.pointsForCurrentRampJump = rampPoints;
-        // The "360" points pop-up will be shown on landing
+        // The trick name and points pop-up will be shown on landing
     }
 
     // --- Collectible Handling ---
@@ -1355,10 +1373,13 @@ class GameplayScene extends Phaser.Scene {
 
         // If not already grinding, start the grind
         if (!this.isGrinding) {
-            if (this.isPerformingRampJump) { // Landed a 360 onto the rail
-                this.showPointsPopup(player.x, player.y - 30, this.pointsForCurrentRampJump, "360"); // Show 360 points
+            if (this.isPerformingRampJump) { // Landed a ramp trick onto the rail
+                const trickName = this.currentRampTrickType === 'MistyFlip' ? "Misty Flip" : "360";
+                this.showPointsPopup(player.x, player.y - 30, this.pointsForCurrentRampJump, trickName);
                 this.isPerformingRampJump = false;
                 this.pointsForCurrentRampJump = 0;
+                this.currentRampTrickType = null;
+                if (player) player.setFlipY(false); // Reset vertical flip
             }
             if (this.jumpAnimationTimer) { // Cancel jump animation if landing into a grind
                 this.jumpAnimationTimer.remove(false);
@@ -1476,6 +1497,7 @@ class GameplayScene extends Phaser.Scene {
             // Reset player flip state after grind
             if (this.player) { // Ensure player exists
                 this.player.setFlipX(false);
+                this.player.setFlipY(false); // Ensure vertical flip is also reset
             }
             // Player will naturally fall due to gravity pull logic in update if they jumped off
         }
@@ -1637,10 +1659,13 @@ class GameplayScene extends Phaser.Scene {
             this.sound.play('land'); // Play landing sound
             this.isJumping = false; // Reset jumping flag
             
-            if (this.isPerformingRampJump) { // Landed a 360 on the ground
-                this.showPointsPopup(this.player.x, this.player.y - 30, this.pointsForCurrentRampJump, "360");
+            if (this.isPerformingRampJump) { // Landed a ramp trick on the ground
+                const trickName = this.currentRampTrickType === 'MistyFlip' ? "Misty Flip" : "360";
+                this.showPointsPopup(this.player.x, this.player.y - 30, this.pointsForCurrentRampJump, trickName);
                 this.isPerformingRampJump = false;
                 this.pointsForCurrentRampJump = 0;
+                this.currentRampTrickType = null;
+                if (this.player) this.player.setFlipY(false); // Reset vertical flip
             }
 
             if (this.jumpAnimationTimer) { // Cancel timer if it's still pending
