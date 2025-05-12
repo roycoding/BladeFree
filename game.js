@@ -1348,29 +1348,29 @@ class GameplayScene extends Phaser.Scene {
 
         const pointsText = this.add.text(x, y, popupText, {
             fontSize: fontSize,
-            fill: '#ffff00', // Yellow for points
+            fill: '#18ec21', // Default to green for points/tricks/collectibles
             fontFamily: 'Arial',
             align: 'center', // Center align if multiple lines
             stroke: '#000000', // Black stroke for visibility
             strokeThickness: 4
         }).setOrigin(0.5);
 
-        // Determine text color
-        let fillColor = '#18ec21'; // Default green color
+        // Determine text color for special messages, otherwise it uses the default from creation
         if (isSpecialMessage && itemName) {
+            let specialFillColor = null;
             if (itemName.includes('HELMET') || itemName.includes('SKULL')) {
-                fillColor = '#b234e2'; // Purple/magenta for helmet messages
-            } else if (itemName.toLowerCase().includes('transfer')) { // New condition for transfers (case-insensitive)
-                fillColor = '#FF8C00'; // Dark Orange for transfers
+                specialFillColor = '#b234e2'; // Purple/magenta for helmet messages
+            } else if (itemName.toLowerCase().includes('transfer')) { 
+                specialFillColor = '#FF8C00'; // Dark Orange for transfers
             } else if (itemName.toLowerCase().includes('collection complete')) {
-                 fillColor = '#FFFF00'; // Yellow for collection complete
+                 specialFillColor = '#FFFF00'; // Yellow for collection complete
             }
-            // Default to yellow for other special messages if not specified above
-            else if (isSpecialMessage) {
-                fillColor = '#FFFF00';
+            // If a special color was determined, apply it. Otherwise, it keeps the default #18ec21.
+            if (specialFillColor) {
+                pointsText.setStyle({ fill: specialFillColor });
             }
         }
-        pointsText.setStyle({ fill: fillColor }); // Apply the determined color
+        // If not a special message, it will retain the initial fill color (#18ec21)
 
         // Make sure popup is rendered on top
         pointsText.setDepth(2); // Higher than player (depth 1)
