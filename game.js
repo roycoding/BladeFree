@@ -714,7 +714,9 @@ class GameplayScene extends Phaser.Scene {
         const textLine3 = this.add.text(GAME_WIDTH / 2, currentInstructionY, "HIT RAMPS & RAILS!", instructionTextStyle).setOrigin(0.5).setDepth(20);
         const rampIconX = textLine3.getRightCenter().x + textGraphicPadding + (80 * rampRailIconScale / 2);
         const rampIcon = this.add.image(rampIconX, currentInstructionY, 'ramp_graphic').setScale(rampRailIconScale).setOrigin(0, 0.5).setDepth(20);
-        const railIconX = rampIcon.getRightCenter().x + multiGraphicPadding + (20 * rampRailIconScale / 2); // Rail width is 20, height 80
+        // Adjust railIconX to correctly position the rotated rail's pivot.
+        // Use half of the rail's original height (which becomes its width when rotated) for the offset.
+        const railIconX = rampIcon.getRightCenter().x + multiGraphicPadding + (80 * rampRailIconScale / 2); 
         const railIcon = this.add.image(railIconX, currentInstructionY, 'rail_graphic').setScale(rampRailIconScale).setOrigin(0, 0.5).setRotation(Math.PI / 2).setDepth(20); // Rotated
         this.instructionElements.push(textLine3, rampIcon, railIcon);
         currentInstructionY += instructionLineHeight * 0.8; // Extra space before item lists
