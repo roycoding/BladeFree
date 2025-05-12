@@ -734,7 +734,7 @@ class GameplayScene extends Phaser.Scene {
 
         // Calculate combined width of ramp and rail for centering
         const rampWidth = 80 * rampRailIconScale;
-        const railDisplayWidthAfterRotation = 80 * rampRailIconScale; // Rail's original height becomes its width
+        const railDisplayWidthAfterRotation = 288 * rampRailIconScale; // Rail's original height becomes its width
         
         const combinedWidth = rampWidth + itemRowPadding + railDisplayWidthAfterRotation;
         let currentX = GAME_WIDTH / 2 - combinedWidth / 2;
