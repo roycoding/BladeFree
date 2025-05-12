@@ -692,7 +692,8 @@ class GameplayScene extends Phaser.Scene {
                 align: 'center',
                 stroke: '#000000',
                 strokeThickness: 5,
-                wordWrap: { width: GAME_WIDTH - 100, useAdvancedWrap: true }
+                wordWrap: { width: GAME_WIDTH - 100, useAdvancedWrap: true },
+                lineSpacing: 10 // Added line spacing
             }
         )
         .setOrigin(0.5, 0) // Anchor top-center
