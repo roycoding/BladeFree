@@ -22,6 +22,8 @@ const OBSTACLE_MOVEMENT_TIER1_TIME = 60000; // 1 minute in ms
 const OBSTACLE_HORIZONTAL_SPEED_TIER1 = 30; // pixels/sec
 const OBSTACLE_MOVEMENT_TIER2_TIME = 120000; // 2 minutes in ms
 const OBSTACLE_HORIZONTAL_SPEED_TIER2 = 60; // pixels/sec
+const OBSTACLE_MOVEMENT_TIER3_TIME = 180000; // 3 minutes in ms
+const OBSTACLE_HORIZONTAL_SPEED_TIER3 = 90; // pixels/sec
 
 // Difficulty Scaling Constants for Spawn Rate
 const SPAWN_DELAY_REDUCTION_PER_1000_PTS = 100; // ms reduction in spawn delay
@@ -1047,7 +1049,9 @@ class GameplayScene extends Phaser.Scene {
             
                 let horizontalSpeed = 0;
 
-                if (elapsedTime >= OBSTACLE_MOVEMENT_TIER2_TIME) {
+                if (elapsedTime >= OBSTACLE_MOVEMENT_TIER3_TIME) {
+                    horizontalSpeed = OBSTACLE_HORIZONTAL_SPEED_TIER3;
+                } else if (elapsedTime >= OBSTACLE_MOVEMENT_TIER2_TIME) {
                     horizontalSpeed = OBSTACLE_HORIZONTAL_SPEED_TIER2;
                 } else if (elapsedTime >= OBSTACLE_MOVEMENT_TIER1_TIME) {
                     horizontalSpeed = OBSTACLE_HORIZONTAL_SPEED_TIER1;
