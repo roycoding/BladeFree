@@ -681,80 +681,70 @@ class GameplayScene extends Phaser.Scene {
 
         // --- Initial Instructions Text & Graphics ---
         const instructionTextStyle = {
-            fontSize: '24px',
+            fontSize: '26px', // Slightly larger main instruction text
             fill: '#FFFF00',
             fontFamily: 'Arial',
             align: 'center',
             stroke: '#000000',
-            strokeThickness: 5
+            strokeThickness: 5,
+            lineSpacing: 10 // Add some line spacing for the main text itself if it wraps
         };
-        const instructionGraphicScale = 1.2;
-        const rampRailIconScale = 0.5;
-        const itemDisplayScale = 0.8; // Scale for displaying collectible/obstacle items
-        const textGraphicPadding = 15; // Padding between text and its graphic
-        const multiGraphicPadding = 10; // Padding between multiple graphics on one line
-        const itemRowPadding = 5; // Padding between items in a row
+        const itemDisplayScale = 0.9; // Scale for displaying collectible/obstacle/ramp/rail items
+        const itemRowPadding = 8; // Padding between items in a row
+        const rampRailIconScale = 0.6;
 
-        let currentInstructionY = this.bladeFreeOverlay.y + this.bladeFreeOverlay.displayHeight + 45;
-        const instructionLineHeight = 65; // Further increased line height for graphics & spacing
+        let currentInstructionY = this.bladeFreeOverlay.y + this.bladeFreeOverlay.displayHeight + 35; // Start Y pos
+        const mainInstructionLineSpacing = 40; // Space after a main instruction line (before items)
+        const itemRowLineSpacing = 45;       // Space after a row of items (before next main instruction)
 
-        // Line 1: AVOID OBSTACLES! [OBSTACLE_ICON]
+        // --- Line 1: AVOID OBSTACLES! ---
         const textLine1 = this.add.text(GAME_WIDTH / 2, currentInstructionY, "AVOID OBSTACLES!", instructionTextStyle).setOrigin(0.5).setDepth(20);
-        const obstacleIcon = this.add.sprite(textLine1.getRightCenter().x + textGraphicPadding + (32 * instructionGraphicScale / 2), currentInstructionY, 'skater', 32).setScale(instructionGraphicScale).setOrigin(0, 0.5).setDepth(20);
-        this.instructionElements.push(textLine1, obstacleIcon);
-        currentInstructionY += instructionLineHeight;
-
-        // Line 2: COLLECT ITEMS! [ITEM_ICON]
-        const textLine2 = this.add.text(GAME_WIDTH / 2, currentInstructionY, "COLLECT ITEMS!", instructionTextStyle).setOrigin(0.5).setDepth(20);
-        const itemIcon = this.add.sprite(textLine2.getRightCenter().x + textGraphicPadding + (32 * instructionGraphicScale / 2), currentInstructionY, 'skater', 24).setScale(instructionGraphicScale).setOrigin(0, 0.5).setDepth(20);
-        this.instructionElements.push(textLine2, itemIcon);
-        currentInstructionY += instructionLineHeight;
-
-        // Line 3: HIT RAMPS & RAILS! [RAMP_ICON] [RAIL_ICON]
-        const textLine3 = this.add.text(GAME_WIDTH / 2, currentInstructionY, "HIT RAMPS & RAILS!", instructionTextStyle).setOrigin(0.5).setDepth(20);
-        const rampIconX = textLine3.getRightCenter().x + textGraphicPadding + (80 * rampRailIconScale / 2);
-        const rampIcon = this.add.image(rampIconX, currentInstructionY, 'ramp_graphic').setScale(rampRailIconScale).setOrigin(0, 0.5).setDepth(20);
-        // Adjust railIconX to correctly position the rotated rail's pivot.
-        // Use half of the rail's original height (which becomes its width when rotated) for the offset.
-        const railIconX = rampIcon.getRightCenter().x + multiGraphicPadding + (80 * rampRailIconScale / 2); 
-        const railIcon = this.add.image(railIconX, currentInstructionY, 'rail_graphic').setScale(rampRailIconScale).setOrigin(0, 0.5).setRotation(Math.PI / 2).setDepth(20); // Rotated
-        this.instructionElements.push(textLine3, rampIcon, railIcon);
-        currentInstructionY += instructionLineHeight * 0.8; // Extra space before item lists
-
-        // --- Display Collectibles ---
-        const collectiblesTitle = this.add.text(GAME_WIDTH / 2, currentInstructionY, "Collect these:", instructionTextStyle).setOrigin(0.5).setDepth(20);
-        this.instructionElements.push(collectiblesTitle);
-        currentInstructionY += 35; // Space after title
-
-        const collectibleFramesToShow = [23, 24, 25, 26, 27, 28, 29, 30, 31]; // All collectible frames including helmet for display
-        let currentItemX = GAME_WIDTH / 2 - ((collectibleFramesToShow.length * (32 * itemDisplayScale + itemRowPadding)) - itemRowPadding) / 2; // Center the row
-
-        collectibleFramesToShow.forEach(frame => {
-            const collectibleSprite = this.add.sprite(currentItemX, currentInstructionY, 'skater', frame)
-                .setScale(itemDisplayScale)
-                .setOrigin(0, 0.5) // Align left-middle for horizontal layout
-                .setDepth(20);
-            this.instructionElements.push(collectibleSprite);
-            currentItemX += (32 * itemDisplayScale) + itemRowPadding;
-        });
-        currentInstructionY += 40; // Space after collectibles row
-
-        // --- Display Obstacles ---
-        const obstaclesTitle = this.add.text(GAME_WIDTH / 2, currentInstructionY, "Avoid these:", instructionTextStyle).setOrigin(0.5).setDepth(20);
-        this.instructionElements.push(obstaclesTitle);
-        currentInstructionY += 35; // Space after title
+        this.instructionElements.push(textLine1);
+        currentInstructionY += mainInstructionLineSpacing;
 
         const obstacleFramesToShow = [32, 33, 34, 35, 36];
-        currentItemX = GAME_WIDTH / 2 - ((obstacleFramesToShow.length * (32 * itemDisplayScale + itemRowPadding)) - itemRowPadding) / 2; // Center the row
-
+        let currentItemX = GAME_WIDTH / 2 - ((obstacleFramesToShow.length * (32 * itemDisplayScale + itemRowPadding)) - itemRowPadding) / 2;
         obstacleFramesToShow.forEach(frame => {
             const obstacleSprite = this.add.sprite(currentItemX, currentInstructionY, 'skater', frame)
-                .setScale(itemDisplayScale)
-                .setOrigin(0, 0.5)
-                .setDepth(20);
+                .setScale(itemDisplayScale).setOrigin(0, 0.5).setDepth(20);
             this.instructionElements.push(obstacleSprite);
             currentItemX += (32 * itemDisplayScale) + itemRowPadding;
         });
+        currentInstructionY += itemRowLineSpacing;
+
+        // --- Line 2: COLLECT ITEMS! ---
+        const textLine2 = this.add.text(GAME_WIDTH / 2, currentInstructionY, "COLLECT ITEMS!", instructionTextStyle).setOrigin(0.5).setDepth(20);
+        this.instructionElements.push(textLine2);
+        currentInstructionY += mainInstructionLineSpacing;
+
+        const collectibleFramesToShow = [23, 24, 25, 26, 27, 28, 29, 30, 31];
+        currentItemX = GAME_WIDTH / 2 - ((collectibleFramesToShow.length * (32 * itemDisplayScale + itemRowPadding)) - itemRowPadding) / 2;
+        collectibleFramesToShow.forEach(frame => {
+            const collectibleSprite = this.add.sprite(currentItemX, currentInstructionY, 'skater', frame)
+                .setScale(itemDisplayScale).setOrigin(0, 0.5).setDepth(20);
+            this.instructionElements.push(collectibleSprite);
+            currentItemX += (32 * itemDisplayScale) + itemRowPadding;
+        });
+        currentInstructionY += itemRowLineSpacing;
+
+        // --- Line 3: HIT RAMPS & RAILS! ---
+        const textLine3 = this.add.text(GAME_WIDTH / 2, currentInstructionY, "HIT RAMPS & RAILS!", instructionTextStyle).setOrigin(0.5).setDepth(20);
+        this.instructionElements.push(textLine3);
+        currentInstructionY += mainInstructionLineSpacing;
+
+        // Calculate combined width of ramp and rail for centering
+        const rampWidth = 80 * rampRailIconScale;
+        const railWidthWhenHorizontal = 80 * rampRailIconScale; // Original height becomes width
+        const combinedWidth = rampWidth + itemRowPadding + railWidthWhenHorizontal;
+        let startXForRampRail = GAME_WIDTH / 2 - combinedWidth / 2;
+
+        const rampIcon = this.add.image(startXForRampRail, currentInstructionY, 'ramp_graphic')
+            .setScale(rampRailIconScale).setOrigin(0, 0.5).setDepth(20);
+        this.instructionElements.push(rampIcon);
+        
+        const railIcon = this.add.image(startXForRampRail + rampWidth + itemRowPadding, currentInstructionY, 'rail_graphic')
+            .setScale(rampRailIconScale).setOrigin(0, 0.5).setRotation(Math.PI / 2).setDepth(20);
+        this.instructionElements.push(railIcon);
 
         // Tween all instruction elements
         if (this.instructionElements.length > 0) {
