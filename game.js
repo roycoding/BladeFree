@@ -218,6 +218,7 @@ class GameplayScene extends Phaser.Scene {
         this.royskatesOverlay = null; // Static Royskates overlay at the bottom
         this.muteButton = null;       // Mute button
         this.instructionElements = []; // Array to hold all instruction text and graphics
+        this.grindTrickNames = ["Royale Grind", "Unity", "Alley-oop Unity", "Frontside", "Backside", "Fahrvergnügen"];
         
         this.inventoryItems = [23, 24, 25, 26, 28, 29, 30, 31]; // Added 23 (Skate T-shirt)
         this.playerInventory = {};    // To track collected status e.g. {24: false, 25: true}
@@ -1571,9 +1572,12 @@ class GameplayScene extends Phaser.Scene {
                 this.grindNameText = null; // Explicitly nullify before recreating
             }
 
-            // Randomly flip player for grind direction and determine trick name
+            // Randomly flip player for grind direction
             player.setFlipX(Phaser.Math.Between(0, 1) === 1);
-            const grindDisplayName = player.flipX ? "Switch Royale" : "Royale Grind";
+            
+            // Randomly select a base grind name
+            const baseGrindName = Phaser.Utils.Array.GetRandom(this.grindTrickNames);
+            const grindDisplayName = player.flipX ? `Switch ${baseGrindName}` : baseGrindName;
 
             this.grindNameText = this.add.text(player.x, player.y - 65, grindDisplayName, { // Position above grind points display
                 fontSize: '20px', fill: '#18ec21', fontFamily: 'Arial', stroke: '#000000', strokeThickness: 3
