@@ -690,11 +690,13 @@ class GameplayScene extends Phaser.Scene {
         };
         const instructionGraphicScale = 1.2;
         const rampRailIconScale = 0.5;
+        const itemDisplayScale = 0.8; // Scale for displaying collectible/obstacle items
         const textGraphicPadding = 15; // Padding between text and its graphic
         const multiGraphicPadding = 10; // Padding between multiple graphics on one line
+        const itemRowPadding = 5; // Padding between items in a row
 
         let currentInstructionY = this.bladeFreeOverlay.y + this.bladeFreeOverlay.displayHeight + 45;
-        const instructionLineHeight = 55; // Increased line height for graphics
+        const instructionLineHeight = 65; // Further increased line height for graphics & spacing
 
         // Line 1: AVOID OBSTACLES! [OBSTACLE_ICON]
         const textLine1 = this.add.text(GAME_WIDTH / 2, currentInstructionY, "AVOID OBSTACLES!", instructionTextStyle).setOrigin(0.5).setDepth(20);
@@ -715,6 +717,42 @@ class GameplayScene extends Phaser.Scene {
         const railIconX = rampIcon.getRightCenter().x + multiGraphicPadding + (20 * rampRailIconScale / 2); // Rail width is 20, height 80
         const railIcon = this.add.image(railIconX, currentInstructionY, 'rail_graphic').setScale(rampRailIconScale).setOrigin(0, 0.5).setRotation(Math.PI / 2).setDepth(20); // Rotated
         this.instructionElements.push(textLine3, rampIcon, railIcon);
+        currentInstructionY += instructionLineHeight * 0.8; // Extra space before item lists
+
+        // --- Display Collectibles ---
+        const collectiblesTitle = this.add.text(GAME_WIDTH / 2, currentInstructionY, "Collect these:", instructionTextStyle).setOrigin(0.5).setDepth(20);
+        this.instructionElements.push(collectiblesTitle);
+        currentInstructionY += 35; // Space after title
+
+        const collectibleFramesToShow = [23, 24, 25, 26, 27, 28, 29, 30, 31]; // All collectible frames including helmet for display
+        let currentItemX = GAME_WIDTH / 2 - ((collectibleFramesToShow.length * (32 * itemDisplayScale + itemRowPadding)) - itemRowPadding) / 2; // Center the row
+
+        collectibleFramesToShow.forEach(frame => {
+            const collectibleSprite = this.add.sprite(currentItemX, currentInstructionY, 'skater', frame)
+                .setScale(itemDisplayScale)
+                .setOrigin(0, 0.5) // Align left-middle for horizontal layout
+                .setDepth(20);
+            this.instructionElements.push(collectibleSprite);
+            currentItemX += (32 * itemDisplayScale) + itemRowPadding;
+        });
+        currentInstructionY += 40; // Space after collectibles row
+
+        // --- Display Obstacles ---
+        const obstaclesTitle = this.add.text(GAME_WIDTH / 2, currentInstructionY, "Avoid these:", instructionTextStyle).setOrigin(0.5).setDepth(20);
+        this.instructionElements.push(obstaclesTitle);
+        currentInstructionY += 35; // Space after title
+
+        const obstacleFramesToShow = [32, 33, 34, 35, 36];
+        currentItemX = GAME_WIDTH / 2 - ((obstacleFramesToShow.length * (32 * itemDisplayScale + itemRowPadding)) - itemRowPadding) / 2; // Center the row
+
+        obstacleFramesToShow.forEach(frame => {
+            const obstacleSprite = this.add.sprite(currentItemX, currentInstructionY, 'skater', frame)
+                .setScale(itemDisplayScale)
+                .setOrigin(0, 0.5)
+                .setDepth(20);
+            this.instructionElements.push(obstacleSprite);
+            currentItemX += (32 * itemDisplayScale) + itemRowPadding;
+        });
 
         // Tween all instruction elements
         if (this.instructionElements.length > 0) {
