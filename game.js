@@ -1042,10 +1042,10 @@ class GameplayScene extends Phaser.Scene {
 
             // --- Difficulty Scaling: Apply horizontal movement to obstacles based on time ---
             if (spawnType === 'obstacle') {
-                const currentTime = this.time.now; // Use the current time from the main game loop
-                const sceneStartTime = this.gameStartTime; // The start time set in create()
-                const elapsedTime = currentTime - sceneStartTime;
-                console.log(`spawnObstacle: currentTime = ${currentTime}, sceneStartTime = ${sceneStartTime}, calculated elapsedTime = ${elapsedTime} for difficulty.`);
+                // Use sceneRunningTime for elapsedTime to ensure it's based on current session's active duration
+                const elapsedTime = this.sceneRunningTime; 
+                // The console.log below can be kept for debugging or removed if this fixes the issue.
+                // console.log(`spawnObstacle: using sceneRunningTime = ${elapsedTime} for difficulty.`);
             
                 let horizontalSpeed = 0;
 
