@@ -51,19 +51,29 @@
             background-size: 242px; /* Size of the background image tiles */
             background-attachment: fixed; /* This will make the background fixed during scroll */
         }
+        /* New wrapper for centering content vertically */
+        .content-wrapper {
+            display: flex;
+            flex-direction: column; /* Stack children vertically */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure it takes full viewport height */
+        }
         /* Ensure canvas is centered and scales reasonably on smaller screens */
         #game-container canvas {
             max-width: 100%;
-            max-height: 100vh;
+            max-height: 100vh; /* This might be too restrictive if header takes space */
             border-radius: 15px; /* Add rounded corners to the canvas */
         }
     </style>
 </head>
 <body>
-    <header style="text-align: center; margin-bottom: 10px;">
-        <img src="https://royskates.com/graphics/roys_directory_title3.png" alt="Roy's Old School Aggressive Inline Skating Directory" style="width: 400px; height: auto; display: block; margin: 0 auto;">
-    </header>
-    <div id="game-container"></div>
+    <div class="content-wrapper">
+        <header style="text-align: center; margin-bottom: 10px;">
+            <img src="https://royskates.com/graphics/roys_directory_title3.png" alt="Roy's Old School Aggressive Inline Skating Directory" style="width: 400px; height: auto; display: block; margin: 0 auto;">
+        </header>
+        <div id="game-container"></div>
+    </div>
     <!-- Include our game logic -->
     <script src="game.js"></script>
 </body>
