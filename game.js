@@ -734,16 +734,25 @@ class GameplayScene extends Phaser.Scene {
 
         // Calculate combined width of ramp and rail for centering
         const rampWidth = 80 * rampRailIconScale;
-        const railWidthWhenHorizontal = 80 * rampRailIconScale; // Original height becomes width
-        const combinedWidth = rampWidth + itemRowPadding + railWidthWhenHorizontal;
-        let startXForRampRail = GAME_WIDTH / 2 - combinedWidth / 2;
-
-        const rampIcon = this.add.image(startXForRampRail, currentInstructionY, 'ramp_graphic')
-            .setScale(rampRailIconScale).setOrigin(0, 0.5).setDepth(20);
-        this.instructionElements.push(rampIcon);
+        const railDisplayWidthAfterRotation = 80 * rampRailIconScale; // Rail's original height becomes its width
         
-        const railIcon = this.add.image(startXForRampRail + rampWidth + itemRowPadding, currentInstructionY, 'rail_graphic')
-            .setScale(rampRailIconScale).setOrigin(0, 0.5).setRotation(Math.PI / 2).setDepth(20);
+        const combinedWidth = rampWidth + itemRowPadding + railDisplayWidthAfterRotation;
+        let currentX = GAME_WIDTH / 2 - combinedWidth / 2;
+
+        // Position Ramp
+        const rampIcon = this.add.image(currentX + rampWidth / 2, currentInstructionY, 'ramp_graphic')
+            .setScale(rampRailIconScale)
+            .setOrigin(0.5, 0.5) // Center origin
+            .setDepth(20);
+        this.instructionElements.push(rampIcon);
+        currentX += rampWidth + itemRowPadding;
+        
+        // Position Rail (rotated)
+        const railIcon = this.add.image(currentX + railDisplayWidthAfterRotation / 2, currentInstructionY, 'rail_graphic')
+            .setScale(rampRailIconScale)
+            .setOrigin(0.5, 0.5) // Center origin
+            .setRotation(Math.PI / 2)
+            .setDepth(20);
         this.instructionElements.push(railIcon);
 
         // Tween all instruction elements
