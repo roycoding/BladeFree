@@ -1,6 +1,15 @@
 # BladeFree - Release Notes
 
-## Version 1.0.2 (Current)
+## Version 1.0.3 (Current)
+
+**Release Date:** 2025-05-13
+
+This release addresses an issue with how the game is recognized when added to the home screen on mobile devices.
+
+### Fixes:
+*   **Web App Manifest:** Corrected the `site.webmanifest` file to ensure the game's name ("BladeFree") and icons are properly utilized by browsers (e.g., Firefox Mobile on Android) for "Add to Home screen" functionality. This includes adding the application name, correcting icon paths, and ensuring a valid `start_url`.
+
+## Version 1.0.2
 
 **Release Date:** 2025-05-11
 
