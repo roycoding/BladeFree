@@ -1728,10 +1728,28 @@ class GameplayScene extends Phaser.Scene {
             
             if (this.grindPointsDisplay && this.grindPointsDisplay.visible) {
                 this.grindPointsDisplay.setText(`+${Math.floor(this.currentGrindPoints)}`);
-                this.grindPointsDisplay.setPosition(this.player.x, this.player.y - 40); 
+                let displayX = this.player.x;
+                const edgePadding = 10;
+                const textHalfWidth = this.grindPointsDisplay.displayWidth / 2;
+
+                if (displayX - textHalfWidth < edgePadding) {
+                    displayX = edgePadding + textHalfWidth;
+                } else if (displayX + textHalfWidth > GAME_WIDTH - edgePadding) {
+                    displayX = (GAME_WIDTH - edgePadding) - textHalfWidth;
+                }
+                this.grindPointsDisplay.setPosition(displayX, this.player.y - 40); 
             }
             if (this.grindNameText && this.grindNameText.visible) {
-                this.grindNameText.setPosition(this.player.x, this.player.y - 65); // Keep it above player and grind points
+                let nameX = this.player.x;
+                const edgePadding = 10;
+                const nameHalfWidth = this.grindNameText.displayWidth / 2;
+
+                if (nameX - nameHalfWidth < edgePadding) {
+                    nameX = edgePadding + nameHalfWidth;
+                } else if (nameX + nameHalfWidth > GAME_WIDTH - edgePadding) {
+                    nameX = (GAME_WIDTH - edgePadding) - nameHalfWidth;
+                }
+                this.grindNameText.setPosition(nameX, this.player.y - 65); 
             }
         }
         // Removed the 'else' block that awarded points for survival time.
