@@ -1433,7 +1433,7 @@ class GameplayScene extends Phaser.Scene {
     showPointsPopup(x, y, points, itemName = null, isSpecialMessage = false, customDuration = null) { // Add customDuration
         // Construct the text string
         let popupText;
-        let fontSize = '22px'; // Increased default font size for better readability
+        let fontSize = '26px'; // Further increased default font size for better readability
 
         if (isSpecialMessage && itemName) {
             if (points !== null) { // If points are provided with a special message
