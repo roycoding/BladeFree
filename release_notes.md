@@ -1,6 +1,21 @@
 # BladeFree - Release Notes
 
-## Version 1.0.1 (Current)
+## Version 1.0.2 (Current)
+
+**Release Date:** 2025-05-11
+
+This release adds more grind trick variety and improves the readability and positioning of various on-screen text displays.
+
+### Enhancements:
+*   **Expanded Grind Tricks:** Added several new base grind names ("Unity", "Alley-oop Unity", "Frontside", "Backside", "Fahrvergnügen"). "Royale Grind" updated to "Royale". The "Switch" prefix is dynamically applied if the skater is flipped.
+*   **Improved Text Readability:**
+    *   Increased the default font size for collectible and trick pop-up messages to 26px.
+    *   Increased the font size for the persistent grind name display to 24px.
+*   **Text Display Fixes:**
+    *   Implemented logic to prevent pop-up text (for tricks/collectibles) from being cut off at the screen edges.
+    *   Ensured the persistent grind name and accumulating grind points display also stay within screen bounds.
+
+## Version 1.0.1
 
 **Release Date:** 2025-05-11
 

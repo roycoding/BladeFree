@@ -41,7 +41,14 @@ Create a web browser-based game called "BladeFree," inspired by SkiFree's freest
     *   **Mobile Controls:** Basic touch input (tap left/right half) implemented for player movement.
     *   **Graphics & Animation (Started):** Player placeholder replaced with a sprite sheet (`assets/graphics/skater.png`, 32x48 frames). Animations defined in `GameplayScene.create` for `skate-cycle`, `jump-airborne`, `jump-landing`, `grind`, and `fall`. Player animation state machine implemented in `update`.
 
-## Recent Changes (2025-05-11) - Version 1.0.1
+## Recent Changes (2025-05-11) - Version 1.0.2
+
+*   **Grind Variety:** Added new grind names (Unity, Alley-oop Unity, Frontside, Backside, Fahrvergnügen) and updated "Royale Grind" to "Royale".
+*   **UI Text Improvements:**
+    *   Increased font size for collectible/trick pop-ups (to 26px) and persistent grind name display (to 24px).
+    *   Implemented boundary checks to prevent pop-up text, grind name, and grind points from running off-screen.
+
+## Previous Changes (2025-05-11) - Version 1.0.1
 
 *   **Instruction Display Fix:** Corrected the positioning of ramp and rail icons within the initial gameplay instruction overlay to prevent visual overlap and improve clarity.
 

@@ -1,5 +1,5 @@
 // Define constants for game settings
-const GAME_VERSION = "1.0.1"; 
+const GAME_VERSION = "1.0.2"; 
 // Define constants for game settings
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
