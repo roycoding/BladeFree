@@ -1477,6 +1477,17 @@ class GameplayScene extends Phaser.Scene {
         // Make sure popup is rendered on top
         pointsText.setDepth(2); // Higher than player (depth 1)
 
+        // Adjust X position to keep text on screen
+        const edgePadding = 10; // Minimum padding from screen edges
+        const textWidth = pointsText.displayWidth;
+        const textHalfWidth = textWidth / 2;
+
+        if (pointsText.x - textHalfWidth < edgePadding) { // Too far left
+            pointsText.x = edgePadding + textHalfWidth;
+        } else if (pointsText.x + textHalfWidth > GAME_WIDTH - edgePadding) { // Too far right
+            pointsText.x = (GAME_WIDTH - edgePadding) - textHalfWidth;
+        }
+
         // Create a tween to animate the text
         this.tweens.add({
             targets: pointsText,
